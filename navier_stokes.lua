@@ -34,7 +34,7 @@ dim = util.GetParamNumber("-dim", 2) -- default dimension is 2.
 -- decide to use the double-valued CSR Matrix. This is the default case for the
 -- Algebra chooser and so we leave the intiallizer of the AlgebraChooser empty.
 algChooser = CPUAlgebraSelector()
-algChooser:set_fixed_blocksize(1)
+algChooser:set_fixed_blocksize(dim+1)
 InitUG(dim, algChooser);
 
 -- Next, we decide which grid to use. This can again be passed as a command line
@@ -45,7 +45,7 @@ else print("Choosen Dimension not supported. Exiting."); exit(); end
 -- We additionally use parameters which allow to specify the number of
 -- pre- and total-refinement steps (wrt domain distribution).
 numPreRefs = util.GetParamNumber("-numPreRefs", 0)
-numTotalRefs = util.GetParamNumber("-numTotalRefs", 0)
+numTotalRefs = util.GetParamNumber("-numRefs", 0)
 
 -- Calculate the number of post-refs and make sure that the result makes sense.
 numPostRefs = numTotalRefs - numPreRefs
@@ -131,6 +131,7 @@ if dim >= 3 then approxSpace:add_fct("w", "Lagrange", 1) end
 
 -- we add the pressure as Lagrange Ansatz function of first order
 approxSpace:add_fct("p", "Lagrange", 1)
+approxSpace:set_grouping(true)
 
 -- we init the approximation space. This fixes the dof pattern used and afterwards
 -- no function can be added or removed. This is needed to have fast access and
