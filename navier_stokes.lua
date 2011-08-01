@@ -262,6 +262,7 @@ dirichletBnd:add(ConstZeroDirichlet, "p", "Outlet")
 -- Finally we create the discretization object which combines all the
 -- separate discretizations into one domain discretization.
 domainDisc = DomainDiscretization()
+domainDisc:set_approximation_space(approxSpace)
 domainDisc:add(elemDisc)
 domainDisc:add(neumannDisc)
 domainDisc:add(dirichletBnd)
