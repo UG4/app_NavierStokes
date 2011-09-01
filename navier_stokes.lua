@@ -243,44 +243,55 @@ function inletVel2d(x, y, t)
 	return 4 * Um * y * (H-y) / (H*H), 0.0
 end
 
--- Next, we create objects that encapsulate our callback. Those can then
--- be registered at the discretization object. Note that we use the .. operator
--- to concatenate strings and numbers. This saves us from a lot of if dim == 2 ... else ...
--- For the dirichlet callback we use utilCreateLuaBoundaryNumber, where
--- a boolean and a number are returned.
-LuaInletVelX2d = util.CreateLuaBoundaryNumber("inletVelX" .. dim .. "d", dim)
-LuaInletVelY2d = util.CreateLuaBoundaryNumber("inletVelY" .. dim .. "d", dim)
-LuaInletVel2d = util.CreateLuaUserVector("inletVel" .. dim .. "d", dim)
-ConstZeroDirichlet = util.CreateConstBoundaryNumber(0.0, dim)
-
-LuaInletDisc = NavierStokesInflow()
-LuaInletDisc:set_functions("u,v,p")
-LuaInletDisc:set_subsets("Inner")
-LuaInletDisc:set_approximation_space(approxSpace)
-LuaInletDisc:add(LuaInletVel2d, "Inlet")
-
+----------------------
+-- OLD STYLE (begin)
+----------------------
 -- Now we create a Dirichlet Boundary object. At this object all boundary conditions
 -- are registered.
+--LuaInletVelX2d = util.CreateLuaBoundaryNumber("inletVelX" .. dim .. "d", dim)
+--LuaInletVelY2d = util.CreateLuaBoundaryNumber("inletVelY" .. dim .. "d", dim)
+
+ConstZeroDirichlet = util.CreateConstBoundaryNumber(0.0, dim)
 dirichletBnd = util.CreateDirichletBoundary(approxSpace)
-dirichletBnd:add(ConstZeroDirichlet, "u", "UpperWall,LowerWall,CylinderWall")
-dirichletBnd:add(ConstZeroDirichlet, "v", "UpperWall,LowerWall,CylinderWall")
 dirichletBnd:add(ConstZeroDirichlet, "p", "Outlet")
+--dirichletBnd:add(ConstZeroDirichlet, "u", "UpperWall,LowerWall,CylinderWall")
+--dirichletBnd:add(ConstZeroDirichlet, "v", "UpperWall,LowerWall,CylinderWall")
 --dirichletBnd:add(LuaInletVelX2d, "u", "Inlet")
 --dirichletBnd:add(LuaInletVelY2d, "v", "Inlet")
 
 --LuaNeumannPressure = util.CreateLuaBoundaryNumber("inletPressure"..dim.."d", dim)
 --neumannDisc = util.CreateNeumannBoundary(approxSpace, "Inner")
 --neumannDisc:add(LuaNeumannPressure, "p", "Inlet")
+----------------------
+-- OLD STYLE (end)
+----------------------
 
+-- Next, we create objects that encapsulate our callback. Those can then
+-- be registered at the discretization object. Note that we use the .. operator
+-- to concatenate strings and numbers. This saves us from a lot of if dim == 2 ... else ...
+-- For the dirichlet callback we use utilCreateLuaBoundaryNumber, where
+-- a boolean and a number are returned.
+LuaInletVel2d = util.CreateLuaUserVector("inletVel" .. dim .. "d", dim)
+LuaInletDisc = NavierStokesInflow()
+LuaInletDisc:set_functions("u,v,p")
+LuaInletDisc:set_subsets("Inner")
+LuaInletDisc:set_approximation_space(approxSpace)
+LuaInletDisc:add(LuaInletVel2d, "Inlet")
+
+WallDisc = NavierStokesWall()
+WallDisc:set_functions("u,v,p")
+WallDisc:set_approximation_space(approxSpace)
+WallDisc:add("UpperWall,LowerWall,CylinderWall")
 
 -- Finally we create the discretization object which combines all the
 -- separate discretizations into one domain discretization.
 domainDisc = DomainDiscretization()
 domainDisc:set_approximation_space(approxSpace)
 domainDisc:add(elemDisc)
---domainDisc:add(neumannDisc)
 domainDisc:add(LuaInletDisc)
+domainDisc:add(WallDisc)
 domainDisc:add(dirichletBnd)
+--domainDisc:add(neumannDisc)
 
 --------------------------------
 --------------------------------
