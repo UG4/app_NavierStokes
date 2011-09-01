@@ -227,7 +227,20 @@ end
 function inletVelY2d(x, y, t)
 	local H = 0.41
 	local Um = 0.2
-	return true, Um * math.sin(y/H*2*3.1415)
+--	return true, Um * math.sin(y/H*2*3.1415)
+	return true, 0.0
+end
+
+-- We need neumann boundary for the pressure at Inlet
+function inletPressure2d(x, y, t)
+	local b, vel = inletVelX2d(x,y,t)
+	return true, -1.0 * vel
+end
+
+function inletVel2d(x, y, t)
+	local H = 0.41
+	local Um = 0.3
+	return 4 * Um * y * (H-y) / (H*H), 0.0
 end
 
 -- Next, we create objects that encapsulate our callback. Those can then
@@ -237,34 +250,36 @@ end
 -- a boolean and a number are returned.
 LuaInletVelX2d = util.CreateLuaBoundaryNumber("inletVelX" .. dim .. "d", dim)
 LuaInletVelY2d = util.CreateLuaBoundaryNumber("inletVelY" .. dim .. "d", dim)
+LuaInletVel2d = util.CreateLuaUserVector("inletVel" .. dim .. "d", dim)
 ConstZeroDirichlet = util.CreateConstBoundaryNumber(0.0, dim)
 
-
--- We need neumann boundary for the pressure at Inlet
-function inletPressure2d(x, y, t)
-	local b, vel = inletVelX2d(x,y,t)
-	return true, -1.0 * vel
-end
-
-LuaNeumannPressure = util.CreateLuaBoundaryNumber("inletPressure"..dim.."d", dim)
-neumannDisc = util.CreateNeumannBoundary(approxSpace, "Inner")
-neumannDisc:add(LuaNeumannPressure, "p", "Inlet")
+LuaInletDisc = NavierStokesInflow()
+LuaInletDisc:set_functions("u,v,p")
+LuaInletDisc:set_subsets("Inner")
+LuaInletDisc:set_approximation_space(approxSpace)
+LuaInletDisc:add(LuaInletVel2d, "Inlet")
 
 -- Now we create a Dirichlet Boundary object. At this object all boundary conditions
 -- are registered.
 dirichletBnd = util.CreateDirichletBoundary(approxSpace)
-dirichletBnd:add(LuaInletVelX2d, "u", "Inlet")
-dirichletBnd:add(LuaInletVelY2d, "v", "Inlet")
 dirichletBnd:add(ConstZeroDirichlet, "u", "UpperWall,LowerWall,CylinderWall")
 dirichletBnd:add(ConstZeroDirichlet, "v", "UpperWall,LowerWall,CylinderWall")
 dirichletBnd:add(ConstZeroDirichlet, "p", "Outlet")
+--dirichletBnd:add(LuaInletVelX2d, "u", "Inlet")
+--dirichletBnd:add(LuaInletVelY2d, "v", "Inlet")
+
+--LuaNeumannPressure = util.CreateLuaBoundaryNumber("inletPressure"..dim.."d", dim)
+--neumannDisc = util.CreateNeumannBoundary(approxSpace, "Inner")
+--neumannDisc:add(LuaNeumannPressure, "p", "Inlet")
+
 
 -- Finally we create the discretization object which combines all the
 -- separate discretizations into one domain discretization.
 domainDisc = DomainDiscretization()
 domainDisc:set_approximation_space(approxSpace)
 domainDisc:add(elemDisc)
-domainDisc:add(neumannDisc)
+--domainDisc:add(neumannDisc)
+domainDisc:add(LuaInletDisc)
 domainDisc:add(dirichletBnd)
 
 --------------------------------
@@ -399,7 +414,7 @@ if newtonSolver:prepare(u) == false then
 end
 
 
-SaveVectorForConnectionViewer(u, "StartSolution.mat")
+SaveVectorForConnectionViewer(u, "StartSolution.vec")
 
 -- Now we can apply the newton solver. A newton itertation is performed to find
 -- the solution.
