@@ -122,7 +122,7 @@ neededSubsets = {"Inner", "Inlet", "Outlet", "UpperWall", "LowerWall", "Cylinder
 if util.CheckSubsets(dom, neededSubsets) == false then print("Wrong subsets detected.") end
 
 -- All subset are ok. So we can create the Approximation Space
-approxSpace = util.CreateApproximationSpace(dom)
+approxSpace = ApproximationSpace(dom)
 
 -- we add the components of the velocity as Lagrange Ansatz functions of first order
 if dim >= 1 then approxSpace:add_fct("u", "Lagrange", 1) end
