@@ -33,9 +33,7 @@ dim = util.GetParamNumber("-dim", 2) -- default dimension is 2.
 -- there are block structured matrices or simple double-valued matrices. We
 -- decide to use the double-valued CSR Matrix. This is the default case for the
 -- Algebra chooser and so we leave the intiallizer of the AlgebraChooser empty.
-algChooser = CPUAlgebraSelector()
-algChooser:set_fixed_blocksize(dim+1)
-InitUG(dim, algChooser);
+InitUG(dim, AlgebraType("CPU", dim+1));
 
 -- Next, we decide which grid to use. This can again be passed as a command line
 -- option or a default value is used.
