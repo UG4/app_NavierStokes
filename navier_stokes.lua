@@ -248,8 +248,8 @@ end
 ----------------------
 -- Now we create a Dirichlet Boundary object. At this object all boundary conditions
 -- are registered.
---LuaInletVelX2d = util.CreateLuaBoundaryNumber("inletVelX" .. dim .. "d", dim)
---LuaInletVelY2d = util.CreateLuaBoundaryNumber("inletVelY" .. dim .. "d", dim)
+--LuaInletVelX2d = LuaBoundaryNumber("inletVelX" .. dim .. "d")
+--LuaInletVelY2d = LuaBoundaryNumber("inletVelY" .. dim .. "d")
 
 ConstZeroDirichlet = util.CreateConstBoundaryNumber(0.0, dim)
 dirichletBnd = util.CreateDirichletBoundary(approxSpace)
@@ -259,7 +259,7 @@ dirichletBnd:add(ConstZeroDirichlet, "p", "Outlet")
 --dirichletBnd:add(LuaInletVelX2d, "u", "Inlet")
 --dirichletBnd:add(LuaInletVelY2d, "v", "Inlet")
 
---LuaNeumannPressure = util.CreateLuaBoundaryNumber("inletPressure"..dim.."d", dim)
+--LuaNeumannPressure = LuaBoundaryNumber("inletPressure"..dim.."d")
 --neumannDisc = util.CreateNeumannBoundary(approxSpace, "Inner")
 --neumannDisc:add(LuaNeumannPressure, "p", "Inlet")
 ----------------------
@@ -271,7 +271,7 @@ dirichletBnd:add(ConstZeroDirichlet, "p", "Outlet")
 -- to concatenate strings and numbers. This saves us from a lot of if dim == 2 ... else ...
 -- For the dirichlet callback we use utilCreateLuaBoundaryNumber, where
 -- a boolean and a number are returned.
-LuaInletVel2d = util.CreateLuaUserVector("inletVel" .. dim .. "d", dim)
+LuaInletVel2d = LuaUserVector("inletVel" .. dim .. "d")
 LuaInletDisc = NavierStokesInflow()
 LuaInletDisc:set_functions("u,v,p")
 LuaInletDisc:set_subsets("Inner")
@@ -347,9 +347,9 @@ end
 
 -- ... and wrap the lua-callback
 if dim == 2 then
-LuaPressureStartValue = util.CreateLuaUserNumber("Pressure_StartValue"..dim.."d", dim)
-LuaVelXStartValue = util.CreateLuaUserNumber("VelX_StartValue"..dim.."d", dim)
-LuaVelYStartValue = util.CreateLuaUserNumber("VelY_StartValue"..dim.."d", dim)
+LuaPressureStartValue = LuaUserNumber("Pressure_StartValue"..dim.."d")
+LuaVelXStartValue = LuaUserNumber("VelX_StartValue"..dim.."d")
+LuaVelYStartValue = LuaUserNumber("VelY_StartValue"..dim.."d")
 end
 
 -- Now interpolate the function
