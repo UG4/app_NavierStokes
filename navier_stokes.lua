@@ -205,7 +205,7 @@ elemDisc:set_peclet_blend(false)
 elemDisc:set_exact_jacobian(false)
 
 -- ... and finally we choose a value for the kinematic viscosity.
-ConstKinViscosity = util.CreateConstUserNumber(1.0e-1, dim)
+ConstKinViscosity = ConstUserNumber(1.0e-1)
 elemDisc:set_kinematic_viscosity(ConstKinViscosity);
 
 
@@ -251,7 +251,7 @@ end
 --LuaInletVelX2d = LuaBoundaryNumber("inletVelX" .. dim .. "d")
 --LuaInletVelY2d = LuaBoundaryNumber("inletVelY" .. dim .. "d")
 
-ConstZeroDirichlet = util.CreateConstBoundaryNumber(0.0, dim)
+ConstZeroDirichlet = ConstBoundaryNumber(0.0)
 dirichletBnd = util.CreateDirichletBoundary(approxSpace)
 dirichletBnd:add(ConstZeroDirichlet, "p", "Outlet")
 --dirichletBnd:add(ConstZeroDirichlet, "u", "UpperWall,LowerWall,CylinderWall")
