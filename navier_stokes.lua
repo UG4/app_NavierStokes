@@ -320,7 +320,7 @@ op:init()
 -- to create the vectors. Make sure to create the vector for the same
 -- dofs as set to linOp through linOp:set_dof_distribution.
 -- Note that the vectors automatically have the right size.
-u = approxSpace:create_surface_function()
+u = GridFunction(approxSpace)
 
 -- Init the vector representing the unknowns with 0 to obtain
 -- reproducable results.
