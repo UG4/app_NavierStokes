@@ -131,11 +131,6 @@ if dim >= 3 then approxSpace:add_fct("w", "Lagrange", 1) end
 approxSpace:add_fct("p", "Lagrange", 1)
 approxSpace:set_grouping(true)
 
--- we init the approximation space. This fixes the dof pattern used and afterwards
--- no function can be added or removed. This is needed to have fast access and
--- less checks during the computation phase.
-approxSpace:init()
-
 -- finally we print some statistic on the distributed dofs
 approxSpace:print_statistic()
 
