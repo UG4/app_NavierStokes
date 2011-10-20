@@ -245,7 +245,7 @@ end
 --LuaInletVelY2d = LuaBoundaryNumber("inletVelY" .. dim .. "d")
 
 ConstZeroDirichlet = ConstBoundaryNumber(0.0)
-dirichletBnd = util.CreateDirichletBoundary(approxSpace)
+dirichletBnd = DirichletBoundary()
 dirichletBnd:add(ConstZeroDirichlet, "p", "Outlet")
 --dirichletBnd:add(ConstZeroDirichlet, "u", "UpperWall,LowerWall,CylinderWall")
 --dirichletBnd:add(ConstZeroDirichlet, "v", "UpperWall,LowerWall,CylinderWall")
