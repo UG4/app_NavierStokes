@@ -265,13 +265,10 @@ dirichletBnd:add(ConstZeroDirichlet, "p", "Outlet")
 -- For the dirichlet callback we use utilCreateLuaBoundaryNumber, where
 -- a boolean and a number are returned.
 LuaInletVel2d = LuaUserVector("inletVel" .. dim .. "d")
-LuaInletDisc = NavierStokesInflow()
-LuaInletDisc:set_functions("u,v,p")
-LuaInletDisc:set_subsets("Inner")
+LuaInletDisc = NavierStokesInflow("u,v,p", "Inner")
 LuaInletDisc:add(LuaInletVel2d, "Inlet")
 
-WallDisc = NavierStokesWall()
-WallDisc:set_functions("u,v,p")
+WallDisc = NavierStokesWall("u,v,p")
 WallDisc:add("UpperWall,LowerWall,CylinderWall")
 
 -- Finally we create the discretization object which combines all the
