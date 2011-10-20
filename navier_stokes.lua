@@ -268,12 +268,10 @@ LuaInletVel2d = LuaUserVector("inletVel" .. dim .. "d")
 LuaInletDisc = NavierStokesInflow()
 LuaInletDisc:set_functions("u,v,p")
 LuaInletDisc:set_subsets("Inner")
-LuaInletDisc:set_approximation_space(approxSpace)
 LuaInletDisc:add(LuaInletVel2d, "Inlet")
 
 WallDisc = NavierStokesWall()
 WallDisc:set_functions("u,v,p")
-WallDisc:set_approximation_space(approxSpace)
 WallDisc:add("UpperWall,LowerWall,CylinderWall")
 
 -- Finally we create the discretization object which combines all the
