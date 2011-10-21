@@ -253,7 +253,7 @@ dirichletBnd:add(ConstZeroDirichlet, "p", "Outlet")
 --dirichletBnd:add(LuaInletVelY2d, "v", "Inlet")
 
 --LuaNeumannPressure = LuaBoundaryNumber("inletPressure"..dim.."d")
---neumannDisc = util.CreateNeumannBoundary(approxSpace, "Inner")
+--neumannDisc = FV1NeumannBoundary("Inner")
 --neumannDisc:add(LuaNeumannPressure, "p", "Inlet")
 ----------------------
 -- OLD STYLE (end)
