@@ -298,7 +298,7 @@ op:set_discretization(domainDisc)
 -- since we do not use a multi-grid method here, we want to operate on the
 -- unknowns (degrees of freedom - dofs) of the surface grid. Since we
 -- didn't refine in this example, this of course is the same as the base grid.
-op:set_dof_distribution(approxSpace:get_surface_dof_distribution())
+op:set_dof_distribution(approxSpace:surface_dof_distribution())
 
 -- the operator is now complete. To perform the discretization call init.
 op:init()
