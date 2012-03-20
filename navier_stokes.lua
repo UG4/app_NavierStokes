@@ -129,7 +129,6 @@ if dim >= 3 then approxSpace:add_fct("w", "Lagrange", 1) end
 
 -- we add the pressure as Lagrange Ansatz function of first order
 approxSpace:add_fct("p", "Lagrange", 1)
-approxSpace:set_grouping(true)
 
 -- finally we print some statistic on the distributed dofs
 approxSpace:print_statistic()
@@ -198,7 +197,7 @@ elemDisc:set_peclet_blend(false)
 elemDisc:set_exact_jacobian(false)
 
 -- ... and finally we choose a value for the kinematic viscosity.
-ConstKinViscosity = ConstUserNumber(1.0e-1)
+ConstKinViscosity = ConstUserNumber(1.0e0)
 elemDisc:set_kinematic_viscosity(ConstKinViscosity);
 
 
@@ -236,28 +235,9 @@ function inletVel2d(x, y, t)
 	return 4 * Um * y * (H-y) / (H*H), 0.0
 end
 
-----------------------
--- OLD STYLE (begin)
-----------------------
--- Now we create a Dirichlet Boundary object. At this object all boundary conditions
--- are registered.
---LuaInletVelX2d = LuaBoundaryNumber("inletVelX" .. dim .. "d")
---LuaInletVelY2d = LuaBoundaryNumber("inletVelY" .. dim .. "d")
-
 ConstZeroDirichlet = ConstBoundaryNumber(0.0)
 dirichletBnd = DirichletBoundary()
 dirichletBnd:add(ConstZeroDirichlet, "p", "Outlet")
---dirichletBnd:add(ConstZeroDirichlet, "u", "UpperWall,LowerWall,CylinderWall")
---dirichletBnd:add(ConstZeroDirichlet, "v", "UpperWall,LowerWall,CylinderWall")
---dirichletBnd:add(LuaInletVelX2d, "u", "Inlet")
---dirichletBnd:add(LuaInletVelY2d, "v", "Inlet")
-
---LuaNeumannPressure = LuaBoundaryNumber("inletPressure"..dim.."d")
---neumannDisc = FV1NeumannBoundary("Inner")
---neumannDisc:add(LuaNeumannPressure, "p", "Inlet")
-----------------------
--- OLD STYLE (end)
-----------------------
 
 -- Next, we create objects that encapsulate our callback. Those can then
 -- be registered at the discretization object. Note that we use the .. operator
@@ -278,7 +258,6 @@ domainDisc:add(elemDisc)
 domainDisc:add(LuaInletDisc)
 domainDisc:add(WallDisc)
 domainDisc:add(dirichletBnd)
---domainDisc:add(neumannDisc)
 
 --------------------------------
 --------------------------------
@@ -291,13 +270,7 @@ domainDisc:add(dirichletBnd)
 -- the usage of discretizations, that map a solution (grid function) onto some
 -- right-hand side. We can create an operator that uses the recently created
 -- domainDisc.
-op = AssembledOperator()
-
--- the discretization object from which the operator is assembled
-op:set_discretization(domainDisc)
-
--- the operator is now complete. To perform the discretization call init.
-op:init()
+op = AssembledOperator(domainDisc)
 
 --------------------------------
 --------------------------------
@@ -318,15 +291,9 @@ u:set(0)
 
 -- We could also interpolate some user defined function
 -- setup the lua functions ...
-function Pressure_StartValue2d(x, y, t)
-	return 0.0
-end
-function VelX_StartValue2d(x, y, t)
-	return 0.0
-end
-function VelY_StartValue2d(x, y, t)
-	return 0.0
-end
+function Pressure_StartValue2d(x, y, t) return 0.0 end
+function VelX_StartValue2d(x, y, t) return 0.0 end
+function VelY_StartValue2d(x, y, t)	return 0.0 end
 
 -- ... and wrap the lua-callback
 if dim == 2 then
@@ -343,23 +310,24 @@ InterpolateFunction(LuaVelYStartValue, u, "v", time);
 
 -- we need a linear solver that solves the linearized problem inside of the
 -- newton solver iteration. We create an exact LU solver here and an HLibSolver.
-luSolver = LU()
 
--- please note, that hlib solver only available if compiled with hlib
-if false then
-hlibSolver = HLIBSolver()
-hlibSolver:set_hlib_accuracy_H(1.e-4)  -- default: 1.e-4
-hlibSolver:set_hlib_accuracy_LU(5.e-1) -- default: 1.e-4
--- define construction of cluster tree
---   first  arg: "clustering type" \in [algebraic | geometric (not yet implemented)]; algebraic is default
---   second arg: "clustering mode" \in [nested dissection | empty/everything else]; nested dissection is default 
-hlibSolver:set_clustering_method("algebraic", "nested dissection")
-hlibSolver:set_hlib_verbosity(4) -- '>= 2': create HLIB related postscripts; '>=3' also create plots of matrix entries
-hlibSolver:set_ps_basename("NS")
-end 
+gmg = GeometricMultiGrid(approxSpace)
+gmg:set_discretization(domainDisc)
+gmg:set_base_level(0)
+gmg:set_base_solver(LU())
+gmg:set_smoother(ILU())
+gmg:set_cycle_type(1)
+gmg:set_num_presmooth(2)
+gmg:set_num_postsmooth(2)
+--gmg:set_debug(dbgWriter)
+
+-- create Linear Solver
+linSolver = BiCGStab()
+linSolver:set_preconditioner(gmg)
+linSolver:set_convergence_check(StandardConvergenceCheck(100, 1e-9, 1e-12, true))
 
 -- choose a solver
-linSolver = luSolver
+solver = linSolver
 
 -- Next we need a convergence check, that computes the defect within each
 -- newton step and stops the iteration when a specified creterion is fullfilled.
@@ -390,7 +358,7 @@ dbgWriter:set_vtk_output(false)
 -- as solver for the linearized problem and set the convergence check. If you
 -- want to you can also set the line search.
 newtonSolver = NewtonSolver()
-newtonSolver:set_linear_solver(linSolver)
+newtonSolver:set_linear_solver(solver)
 newtonSolver:set_convergence_check(newtonConvCheck)
 newtonSolver:set_line_search(newtonLineSearch)
 newtonSolver:set_debug(dbgWriter)
