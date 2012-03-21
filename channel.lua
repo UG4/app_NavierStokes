@@ -37,26 +37,18 @@ InitUG(dim, AlgebraType("CPU", dim+1));
 
 -- Next, we decide which grid to use. This can again be passed as a command line
 -- option or a default value is used.
-if 	dim == 2 then gridName = util.GetParam("-grid", "grids/cylinder.ugx")
-else print("Choosen Dimension not supported. Exiting."); exit(); end
+if 	dim == 2 then gridName = util.GetParam("-grid", "grids/channel20Q18x10.ugx")
+else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
 -- We additionally use parameters which allow to specify the number of
 -- pre- and total-refinement steps (wrt domain distribution).
 numPreRefs = util.GetParamNumber("-numPreRefs", 0)
-numTotalRefs = util.GetParamNumber("-numRefs", 0)
-
--- Calculate the number of post-refs and make sure that the result makes sense.
-numPostRefs = numTotalRefs - numPreRefs
-if numPostRefs < 0 then
-	print("WARNING:\tnumPreRefs exceeds the number of total refinements.")
-	print("\t\t\tNo refinement will be preformed after distribution.")
-	numPostRefs = 0
-end
+numRefs = util.GetParamNumber("-numRefs", 0)
 
 -- Lets write some info about the choosen parameter
 print(" Choosen Parater:")
 print("    dim        	= " .. dim)
-print("    numTotalRefs = " .. numTotalRefs)
+print("    numTotalRefs = " .. numRefs)
 print("    numPreRefs 	= " .. numPreRefs)
 print("    grid       	= " .. gridName)
 
@@ -67,57 +59,14 @@ print("    grid       	= " .. gridName)
 --------------------------------------------
 
 -- Create the domain and load a grid
-dom = Domain()
-
-if LoadDomain(dom, gridName) == false then
-	print("Loading of domain " .. gridName .. " failed. Aborting.")
-	exit()
-end
-
--- Now that we're here, the domain was successfully loaded
-print("Loaded domain from " .. gridName)
-
--- We will create a refiner now. This is a tool associated with a domain.
--- UG defines factory methods for refiners, which automatically choose
--- the right refiner for the given context, i.e. different refiners are
--- created depending on whether we are in a parallel or in a serial environment.
--- Note that another factory method is HangingNodeDomainRefiner, which is
--- subject to a later tutorial.
-refiner = GlobalDomainRefiner(dom)
-
--- perform pre-refinement
-for i = 1, numPreRefs do
-	refiner:refine()
-end
-
--- Distribute the refined domain to all involved processes
-if DistributeDomain(dom) == false then
-	print("Error while Distributing Domain. Aborting.")
-	exit()
-end
-
--- perform post-refinement
-for i = 1, numPostRefs do
-	refiner:refine()
-end
-
---------------------------------
---------------------------------
--- Approximation Space
---------------------------------
---------------------------------
+neededSubsets = {"Inner", "Inlet", "Outlet", "UpperWall", "LowerWall"}
+dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, neededSubsets)
 
 -- We succesfully loaded and refined the domain. Now its time to setup an
 -- ApproximationSpace on the domain. First, we check that the domain we use
 -- has suitable subsets. This are parts of the domain, that partition the domain.
 -- We need them, to handle e.g. boundary conditions on different parts of the
 -- domain boundary.
-
--- Lets define a list of all subsets that we need
-neededSubsets = {"Inner", "Inlet", "Outlet", "UpperWall", "LowerWall", "CylinderWall"}
-
--- Now we loop all subsets an search for it in the SubsetHandler of the domain
-if util.CheckSubsets(dom, neededSubsets) == false then print("Wrong subsets detected.") end
 
 -- All subset are ok. So we can create the Approximation Space
 approxSpace = ApproximationSpace(dom)
@@ -131,6 +80,8 @@ if dim >= 3 then approxSpace:add_fct("w", "Lagrange", 1) end
 approxSpace:add_fct("p", "Lagrange", 1)
 
 -- finally we print some statistic on the distributed dofs
+approxSpace:init_levels()
+approxSpace:init_top_surface()
 approxSpace:print_statistic()
 
 --------------------------------
@@ -178,26 +129,33 @@ skewedUpwind = NavierStokesSkewedUpwind();
 LPSUpwind = NavierStokesLinearProfileSkewedUpwind();
 POSUpwind = NavierStokesPositiveUpwind();
 
+-- choose some upwind
+upwind = LPSUpwind
+
 -- Now, we create the stabilization ...
 fieldsStab = NavierStokesFIELDSStabilization()
+flowStab = NavierStokesFLOWStabilization()
+
+--- choose one stabilization
+stab = flowStab;
 
 -- ... and set the upwind
-fieldsStab:set_upwind(fullUpwind)
+stab:set_upwind(upwind)
 
 -- We also can choose, how the diffusion length of the stabilization is computed.
 -- Under the option we pick on:
-fieldsStab:set_diffusion_length("NS_RAW")
---fieldsStab:set_diffusion_length("NS_FIVEPOINT")
---fieldsStab:set_diffusion_length("NS_COR")
+--stab:set_diffusion_length("NS_RAW")
+--stab:set_diffusion_length("NS_FIVEPOINT")
+stab:set_diffusion_length("NS_COR")
 
 -- Next we set the options for the Navier-Stokes elem disc ...
-elemDisc:set_stabilization(fieldsStab)
-elemDisc:set_conv_upwind(fullUpwind)
-elemDisc:set_peclet_blend(false)
-elemDisc:set_exact_jacobian(false)
+elemDisc:set_stabilization(stab)
+elemDisc:set_conv_upwind(stab)
+elemDisc:set_peclet_blend(true)
+elemDisc:set_exact_jacobian(true)
 
 -- ... and finally we choose a value for the kinematic viscosity.
-ConstKinViscosity = ConstUserNumber(1.0e-1)
+ConstKinViscosity = ConstUserNumber(1.0e-2)
 elemDisc:set_kinematic_viscosity(ConstKinViscosity);
 
 
@@ -210,34 +168,14 @@ elemDisc:set_kinematic_viscosity(ConstKinViscosity);
 -- and the boundary value itself.
 -- Note that we use math-functions from luas standard math-library.
 -- (here the . operator is used, since math is not an object but a library)
-function inletVelX2d(x, y, t)
-	local H = 0.41
-	local Um = 0.3
-	return true, 4 * Um * y * (H-y) / (H*H)
-end
-
-function inletVelY2d(x, y, t)
-	local H = 0.41
-	local Um = 0.2
---	return true, Um * math.sin(y/H*2*3.1415)
-	return true, 0.0
-end
-
--- We need neumann boundary for the pressure at Inlet
-function inletPressure2d(x, y, t)
-	local b, vel = inletVelX2d(x,y,t)
-	return true, -1.0 * vel
-end
-
 function inletVel2d(x, y, t)
-	local H = 0.41
-	local Um = 0.3
-	return 4 * Um * y * (H-y) / (H*H), 0.0
+	local Umax = 1.5
+	return (1.0-y*y) * Umax, 0.0
 end
 
 ConstZeroDirichlet = ConstBoundaryNumber(0.0)
-dirichletBnd = DirichletBoundary()
-dirichletBnd:add(ConstZeroDirichlet, "p", "Outlet")
+OutletDisc = DirichletBoundary()
+OutletDisc:add(ConstZeroDirichlet, "p", "Outlet")
 
 -- Next, we create objects that encapsulate our callback. Those can then
 -- be registered at the discretization object. Note that we use the .. operator
@@ -245,23 +183,23 @@ dirichletBnd:add(ConstZeroDirichlet, "p", "Outlet")
 -- For the dirichlet callback we use utilCreateLuaBoundaryNumber, where
 -- a boolean and a number are returned.
 LuaInletVel2d = LuaUserVector("inletVel" .. dim .. "d")
-LuaInletDisc = NavierStokesInflow("u,v,p", "Inner")
-LuaInletDisc:add(LuaInletVel2d, "Inlet")
+InletDisc = NavierStokesInflow("u,v,p", "Inner")
+InletDisc:add(LuaInletVel2d, "Inlet")
 
 WallDisc = NavierStokesWall("u,v,p")
-WallDisc:add("UpperWall,LowerWall,CylinderWall")
+WallDisc:add("UpperWall,LowerWall")
 
 -- Finally we create the discretization object which combines all the
 -- separate discretizations into one domain discretization.
 domainDisc = DomainDiscretization(approxSpace)
 domainDisc:add(elemDisc)
-domainDisc:add(LuaInletDisc)
+domainDisc:add(InletDisc)
 domainDisc:add(WallDisc)
-domainDisc:add(dirichletBnd)
+domainDisc:add(OutletDisc)
 
 --------------------------------
 --------------------------------
--- Operator
+-- Solution of the Problem
 --------------------------------
 --------------------------------
 
@@ -272,11 +210,6 @@ domainDisc:add(dirichletBnd)
 -- domainDisc.
 op = AssembledOperator(domainDisc)
 
---------------------------------
---------------------------------
--- Solution of the Problem
---------------------------------
---------------------------------
 
 -- Now lets solve the problem. Create a vector of unknowns and a vector
 -- which contains the right hand side. We will use the approximation space
@@ -322,9 +255,9 @@ gmg:set_num_postsmooth(2)
 --gmg:set_debug(dbgWriter)
 
 -- create Linear Solver
-linSolver = BiCGStab()
+linSolver = LinearSolver()
 linSolver:set_preconditioner(gmg)
-linSolver:set_convergence_check(StandardConvergenceCheck(100, 1e-9, 1e-12, true))
+linSolver:set_convergence_check(StandardConvergenceCheck(100, 1e-16, 1e-6, true))
 
 -- choose a solver
 solver = linSolver
@@ -335,16 +268,16 @@ solver = linSolver
 -- that this class derives from a general IConvergenceCheck-Interface and
 -- also more specialized or self-coded convergence checks could be used.
 newtonConvCheck = StandardConvergenceCheck()
-newtonConvCheck:set_maximum_steps(20)
-newtonConvCheck:set_minimum_defect(5e-8)
-newtonConvCheck:set_reduction(1e-10)
+newtonConvCheck:set_maximum_steps(15)
+newtonConvCheck:set_minimum_defect(1e-16)
+newtonConvCheck:set_reduction(1e-6)
 newtonConvCheck:set_verbose(true)
 
 -- Within each newton step a line search can be applied. In order to do so an
 -- implementation of the ILineSearch-Interface can be passed to the newton
 -- solver. Here again we use the standard implementation.
 newtonLineSearch = StandardLineSearch()
-newtonLineSearch:set_maximum_steps(20)
+newtonLineSearch:set_maximum_steps(5)
 newtonLineSearch:set_lambda_start(1.0)
 newtonLineSearch:set_reduce_factor(0.5)
 newtonLineSearch:set_accept_best(true)
@@ -366,7 +299,6 @@ newtonSolver:set_debug(dbgWriter)
 -- Finally we set the non-linear operator created above and initiallize the
 -- Newton solver for this operator.
 newtonSolver:init(op)
-
 
 -- In a first step we have to prepare the newton solver for the solution u. This
 -- sets e.g. dirichlet values in u.
