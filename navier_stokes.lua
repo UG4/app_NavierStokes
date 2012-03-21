@@ -197,7 +197,7 @@ elemDisc:set_peclet_blend(false)
 elemDisc:set_exact_jacobian(false)
 
 -- ... and finally we choose a value for the kinematic viscosity.
-ConstKinViscosity = ConstUserNumber(1.0e0)
+ConstKinViscosity = ConstUserNumber(1.0e-1)
 elemDisc:set_kinematic_viscosity(ConstKinViscosity);
 
 
