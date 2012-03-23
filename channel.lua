@@ -133,24 +133,25 @@ upwind = NavierStokesFullUpwind();
 --upwind = NavierStokesPositiveUpwind();
 
 -- Now, we create the stabilization ...
---stab = NavierStokesFIELDSStabilization()
-stab = NavierStokesFLOWStabilization()
+stab = NavierStokesFIELDSStabilization()
+--stab = NavierStokesFLOWStabilization()
 
 -- ... and set the upwind
 stab:set_upwind(upwind)
 
 -- We also can choose, how the diffusion length of the stabilization is computed.
 -- Under the option we pick on:
---stab:set_diffusion_length("NS_RAW")
---stab:set_diffusion_length("NS_FIVEPOINT")
-stab:set_diffusion_length("NS_COR")
+stab:set_diffusion_length("NS_RAW")
+--stab:set_diffusion_length("NS_FIVEPOINT"
+--stab:set_diffusion_length("NS_COR")
 
 -- Next we set the options for the Navier-Stokes elem disc ...
 elemDisc:set_stabilization(stab)
 elemDisc:set_conv_upwind(upwind)
 elemDisc:set_peclet_blend(false)
-elemDisc:set_exact_jacobian(true)
+elemDisc:set_exact_jacobian(false)
 elemDisc:set_stokes(true)
+elemDisc:set_laplace(true)
 
 -- ... and finally we choose a value for the kinematic viscosity.
 ConstKinViscosity = ConstUserNumber(0.01)
@@ -181,6 +182,11 @@ OutletDisc = DirichletBoundary()
 OutletDisc:add(ConstZeroDirichlet, "p", "Outlet")
 OutletDisc:add(ConstZeroDirichlet, "v", "Outlet")
 
+
+--LuaOutletVel2d = LuaUserVector("inletVel" .. dim .. "d")
+--OutletDisc = NavierStokesInflow("u,v,p", "Inner")
+--OutletDisc:add(LuaOutletVel2d, "Outlet")
+
 -- Next, we create objects that encapsulate our callback. Those can then
 -- be registered at the discretization object. Note that we use the .. operator
 -- to concatenate strings and numbers. This saves us from a lot of if dim == 2 ... else ...
@@ -190,12 +196,8 @@ LuaInletVel2d = LuaUserVector("inletVel" .. dim .. "d")
 InletDisc = NavierStokesInflow("u,v,p", "Inner")
 InletDisc:add(LuaInletVel2d, "Inlet")
 
-LuaWallVel2d = LuaUserVector("WallVel" .. dim .. "d")
-WallDisc = NavierStokesInflow("u,v,p", "Inner")
-WallDisc:add(LuaWallVel2d, "UpperWall,LowerWall")
-
---WallDisc = NavierStokesWall("u,v,p")
---WallDisc:add("UpperWall,LowerWall")
+WallDisc = NavierStokesWall("u,v,p")
+WallDisc:add("UpperWall,LowerWall")
 
 -- Finally we create the discretization object which combines all the
 -- separate discretizations into one domain discretization.
@@ -267,7 +269,8 @@ gmg:set_num_postsmooth(2)
 -- create Linear Solver
 linSolver = LinearSolver()
 linSolver:set_preconditioner(gmg)
-linSolver:set_convergence_check(StandardConvergenceCheck(100, 1e-16, 1e-6, true))
+linSolver:set_convergence_check(StandardConvergenceCheck(100, 1e-16, 1e-8, true))
+linSolver:set_compute_fresh_defect_when_finished(true)
 
 -- choose a solver
 solver = linSolver
@@ -278,7 +281,7 @@ solver = linSolver
 -- that this class derives from a general IConvergenceCheck-Interface and
 -- also more specialized or self-coded convergence checks could be used.
 newtonConvCheck = StandardConvergenceCheck()
-newtonConvCheck:set_maximum_steps(10)
+newtonConvCheck:set_maximum_steps(1)
 newtonConvCheck:set_minimum_defect(1e-16)
 newtonConvCheck:set_reduction(1e-6)
 newtonConvCheck:set_verbose(true)
