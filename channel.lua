@@ -84,6 +84,9 @@ approxSpace:init_levels()
 approxSpace:init_top_surface()
 approxSpace:print_statistic()
 
+OrderLex(approxSpace, "lr");
+--OrderCuthillMcKee(approxSpace, true);
+
 --------------------------------
 --------------------------------
 -- Discretization
@@ -123,21 +126,15 @@ elemDisc = FV1NavierStokes(fctUsed, "Inner")
 -- to create the Upwind scheme, that is used inside the stabilization. There are
 -- several possibilities:
 
-noUpwind = NavierStokesNoUpwind();
-fullUpwind = NavierStokesFullUpwind();
-skewedUpwind = NavierStokesSkewedUpwind();
-LPSUpwind = NavierStokesLinearProfileSkewedUpwind();
-POSUpwind = NavierStokesPositiveUpwind();
-
--- choose some upwind
-upwind = LPSUpwind
+--upwind = NavierStokesNoUpwind();
+upwind = NavierStokesFullUpwind();
+--upwind = NavierStokesSkewedUpwind();
+--upwind = NavierStokesLinearProfileSkewedUpwind();
+--upwind = NavierStokesPositiveUpwind();
 
 -- Now, we create the stabilization ...
-fieldsStab = NavierStokesFIELDSStabilization()
-flowStab = NavierStokesFLOWStabilization()
-
---- choose one stabilization
-stab = flowStab;
+--stab = NavierStokesFIELDSStabilization()
+stab = NavierStokesFLOWStabilization()
 
 -- ... and set the upwind
 stab:set_upwind(upwind)
@@ -150,12 +147,13 @@ stab:set_diffusion_length("NS_COR")
 
 -- Next we set the options for the Navier-Stokes elem disc ...
 elemDisc:set_stabilization(stab)
-elemDisc:set_conv_upwind(stab)
-elemDisc:set_peclet_blend(true)
+elemDisc:set_conv_upwind(upwind)
+elemDisc:set_peclet_blend(false)
 elemDisc:set_exact_jacobian(true)
+elemDisc:set_stokes(true)
 
 -- ... and finally we choose a value for the kinematic viscosity.
-ConstKinViscosity = ConstUserNumber(1.0e-2)
+ConstKinViscosity = ConstUserNumber(0.01)
 elemDisc:set_kinematic_viscosity(ConstKinViscosity);
 
 
@@ -170,12 +168,18 @@ elemDisc:set_kinematic_viscosity(ConstKinViscosity);
 -- (here the . operator is used, since math is not an object but a library)
 function inletVel2d(x, y, t)
 	local Umax = 1.5
-	return (1.0-y*y) * Umax, 0.0
+--	return (1.0-y*y) * Umax, 0.0
+	return Umax, 0.0
+end
+
+function WallVel2d(x, y, t)
+	return 0.0, 0.0
 end
 
 ConstZeroDirichlet = ConstBoundaryNumber(0.0)
 OutletDisc = DirichletBoundary()
 OutletDisc:add(ConstZeroDirichlet, "p", "Outlet")
+OutletDisc:add(ConstZeroDirichlet, "v", "Outlet")
 
 -- Next, we create objects that encapsulate our callback. Those can then
 -- be registered at the discretization object. Note that we use the .. operator
@@ -186,8 +190,12 @@ LuaInletVel2d = LuaUserVector("inletVel" .. dim .. "d")
 InletDisc = NavierStokesInflow("u,v,p", "Inner")
 InletDisc:add(LuaInletVel2d, "Inlet")
 
-WallDisc = NavierStokesWall("u,v,p")
-WallDisc:add("UpperWall,LowerWall")
+LuaWallVel2d = LuaUserVector("WallVel" .. dim .. "d")
+WallDisc = NavierStokesInflow("u,v,p", "Inner")
+WallDisc:add(LuaWallVel2d, "UpperWall,LowerWall")
+
+--WallDisc = NavierStokesWall("u,v,p")
+--WallDisc:add("UpperWall,LowerWall")
 
 -- Finally we create the discretization object which combines all the
 -- separate discretizations into one domain discretization.
@@ -241,6 +249,8 @@ InterpolateFunction(LuaPressureStartValue, u, "p", time);
 InterpolateFunction(LuaVelXStartValue, u, "u", time);
 InterpolateFunction(LuaVelYStartValue, u, "v", time);
 
+domainDisc:adjust_solution(u)
+
 -- we need a linear solver that solves the linearized problem inside of the
 -- newton solver iteration. We create an exact LU solver here and an HLibSolver.
 
@@ -268,7 +278,7 @@ solver = linSolver
 -- that this class derives from a general IConvergenceCheck-Interface and
 -- also more specialized or self-coded convergence checks could be used.
 newtonConvCheck = StandardConvergenceCheck()
-newtonConvCheck:set_maximum_steps(15)
+newtonConvCheck:set_maximum_steps(10)
 newtonConvCheck:set_minimum_defect(1e-16)
 newtonConvCheck:set_reduction(1e-6)
 newtonConvCheck:set_verbose(true)
@@ -285,7 +295,7 @@ newtonLineSearch:set_accept_best(true)
 -- Sometimes its helpful to write the defect and jacobian of the newton step
 -- to debug the implementation. For that, we use the debug writer
 dbgWriter = GridFunctionDebugWriter(approxSpace)
-dbgWriter:set_vtk_output(false)
+dbgWriter:set_vtk_output(true)
 
 -- Now we can set up the newton solver. We set the linear solver created above
 -- as solver for the linearized problem and set the convergence check. If you
@@ -293,7 +303,7 @@ dbgWriter:set_vtk_output(false)
 newtonSolver = NewtonSolver()
 newtonSolver:set_linear_solver(solver)
 newtonSolver:set_convergence_check(newtonConvCheck)
-newtonSolver:set_line_search(newtonLineSearch)
+--newtonSolver:set_line_search(newtonLineSearch)
 newtonSolver:set_debug(dbgWriter)
 
 -- Finally we set the non-linear operator created above and initiallize the
