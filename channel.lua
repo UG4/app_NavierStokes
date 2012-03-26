@@ -141,9 +141,9 @@ stab:set_upwind(upwind)
 
 -- We also can choose, how the diffusion length of the stabilization is computed.
 -- Under the option we pick on:
-stab:set_diffusion_length("NS_RAW")
---stab:set_diffusion_length("NS_FIVEPOINT"
---stab:set_diffusion_length("NS_COR")
+stab:set_diffusion_length("RAW")
+--stab:set_diffusion_length("FIVEPOINT"
+--stab:set_diffusion_length("COR")
 
 -- Next we set the options for the Navier-Stokes elem disc ...
 elemDisc:set_stabilization(stab)

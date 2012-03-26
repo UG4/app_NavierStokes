@@ -186,9 +186,9 @@ fieldsStab:set_upwind(fullUpwind)
 
 -- We also can choose, how the diffusion length of the stabilization is computed.
 -- Under the option we pick on:
-fieldsStab:set_diffusion_length("NS_RAW")
---fieldsStab:set_diffusion_length("NS_FIVEPOINT")
---fieldsStab:set_diffusion_length("NS_COR")
+fieldsStab:set_diffusion_length("RAW")
+--fieldsStab:set_diffusion_length("FIVEPOINT")
+--fieldsStab:set_diffusion_length("COR")
 
 -- Next we set the options for the Navier-Stokes elem disc ...
 elemDisc:set_stabilization(fieldsStab)
