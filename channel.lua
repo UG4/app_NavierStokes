@@ -127,10 +127,10 @@ elemDisc = FV1NavierStokes(fctUsed, "Inner")
 -- several possibilities:
 
 --upwind = NavierStokesNoUpwind();
-upwind = NavierStokesFullUpwind();
+--upwind = NavierStokesFullUpwind();
 --upwind = NavierStokesSkewedUpwind();
 --upwind = NavierStokesLinearProfileSkewedUpwind();
---upwind = NavierStokesPositiveUpwind();
+upwind = NavierStokesPositiveUpwind();
 
 -- Now, we create the stabilization ...
 stab = NavierStokesFIELDSStabilization()
@@ -141,8 +141,8 @@ stab:set_upwind(upwind)
 
 -- We also can choose, how the diffusion length of the stabilization is computed.
 -- Under the option we pick on:
-stab:set_diffusion_length("RAW")
---stab:set_diffusion_length("FIVEPOINT"
+--stab:set_diffusion_length("RAW")
+stab:set_diffusion_length("FIVEPOINT")
 --stab:set_diffusion_length("COR")
 
 -- Next we set the options for the Navier-Stokes elem disc ...
@@ -150,7 +150,7 @@ elemDisc:set_stabilization(stab)
 elemDisc:set_conv_upwind(upwind)
 elemDisc:set_peclet_blend(false)
 elemDisc:set_exact_jacobian(false)
-elemDisc:set_stokes(true)
+elemDisc:set_stokes(false)
 elemDisc:set_laplace(true)
 
 -- ... and finally we choose a value for the kinematic viscosity.
@@ -170,7 +170,7 @@ elemDisc:set_kinematic_viscosity(ConstKinViscosity);
 function inletVel2d(x, y, t)
 	local Umax = 1.5
 --	return (1.0-y*y) * Umax, 0.0
-	return Umax, 0.0
+	return 1.0, -1.0
 end
 
 function WallVel2d(x, y, t)
