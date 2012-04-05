@@ -130,11 +130,12 @@ elemDisc = FV1NavierStokes(fctUsed, "Inner")
 --upwind = NavierStokesFullUpwind();
 --upwind = NavierStokesSkewedUpwind();
 upwind = NavierStokesLinearProfileSkewedUpwind();
+--upwind = NavierStokesRegularUpwind();
 --upwind = NavierStokesPositiveUpwind();
 
 -- Now, we create the stabilization ...
---stab = NavierStokesFIELDSStabilization()
-stab = NavierStokesFLOWStabilization()
+stab = NavierStokesFIELDSStabilization()
+--stab = NavierStokesFLOWStabilization()
 
 -- ... and set the upwind
 stab:set_upwind(upwind)
