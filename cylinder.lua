@@ -242,7 +242,7 @@ dirichletBnd:add(ConstZeroDirichlet, "p", "Outlet")
 -- Next, we create objects that encapsulate our callback. Those can then
 -- be registered at the discretization object. Note that we use the .. operator
 -- to concatenate strings and numbers. This saves us from a lot of if dim == 2 ... else ...
--- For the dirichlet callback we use utilCreateLuaBoundaryNumber, where
+-- For the dirichlet callback we use utilCreateLuaCondUserNumber, where
 -- a boolean and a number are returned.
 LuaInletVel2d = LuaUserVector("inletVel" .. dim .. "d")
 LuaInletDisc = NavierStokesInflow("u,v,p", "Inner")
