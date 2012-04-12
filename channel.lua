@@ -157,14 +157,9 @@ elemDisc:set_laplace(true)
 -- ... and finally we choose a value for the kinematic viscosity.
 elemDisc:set_kinematic_viscosity(0.01);
 
-
--- Next, lets create the boundary conditions. We will use lua-callback functions
--- to implement the values of the dirichlet-bnd conditions. So lets define
+-- Next, lets create the boundary conditions. Lets define
 -- some functions in lua: Parameters are the coordinates of the point at which
 -- the value should be evaluated and the time of the current time-step.
--- The dirichlet boundary callback has to return two values: a boolean
--- defining whether the given point really is a dirichlet boundary point
--- and the boundary value itself.
 -- Note that we use math-functions from luas standard math-library.
 -- (here the . operator is used, since math is not an object but a library)
 function inletVel2d(x, y, t)
@@ -177,24 +172,16 @@ function WallVel2d(x, y, t)
 	return 0.0, 0.0
 end
 
+-- setup Outlet
 OutletDisc = DirichletBoundary()
 OutletDisc:add(0.0, "p", "Outlet")
 OutletDisc:add(0.0, "v", "Outlet")
 
-
---LuaOutletVel2d = LuaUserVector("inletVel" .. dim .. "d")
---OutletDisc = NavierStokesInflow("u,v,p", "Inner")
---OutletDisc:add(LuaOutletVel2d, "Outlet")
-
--- Next, we create objects that encapsulate our callback. Those can then
--- be registered at the discretization object. Note that we use the .. operator
--- to concatenate strings and numbers. This saves us from a lot of if dim == 2 ... else ...
--- For the dirichlet callback we use utilCreateLuaCondUserNumber, where
--- a boolean and a number are returned.
-LuaInletVel2d = LuaUserVector("inletVel" .. dim .. "d")
+-- setup Inlet
 InletDisc = NavierStokesInflow("u,v,p", "Inner")
-InletDisc:add(LuaInletVel2d, "Inlet")
+InletDisc:add("inletVel"..dim.."d", "Inlet")
 
+--setup Walles
 WallDisc = NavierStokesWall("u,v,p")
 WallDisc:add("UpperWall,LowerWall")
 
@@ -237,18 +224,11 @@ function Pressure_StartValue2d(x, y, t) return 0.0 end
 function VelX_StartValue2d(x, y, t) return 0.0 end
 function VelY_StartValue2d(x, y, t)	return 0.0 end
 
--- ... and wrap the lua-callback
-if dim == 2 then
-LuaPressureStartValue = LuaUserNumber("Pressure_StartValue"..dim.."d")
-LuaVelXStartValue = LuaUserNumber("VelX_StartValue"..dim.."d")
-LuaVelYStartValue = LuaUserNumber("VelY_StartValue"..dim.."d")
-end
-
 -- Now interpolate the function
 time = 0.0
-InterpolateFunction(LuaPressureStartValue, u, "p", time);
-InterpolateFunction(LuaVelXStartValue, u, "u", time);
-InterpolateFunction(LuaVelYStartValue, u, "v", time);
+InterpolateFunction("Pressure_StartValue"..dim.."d", u, "p", time);
+InterpolateFunction("VelX_StartValue"..dim.."d", u, "u", time);
+InterpolateFunction("VelY_StartValue"..dim.."d", u, "v", time);
 
 domainDisc:adjust_solution(u)
 

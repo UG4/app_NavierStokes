@@ -234,18 +234,15 @@ function inletVel2d(x, y, t)
 	return 4 * Um * y * (H-y) / (H*H), 0.0
 end
 
+-- setup Outlet
 dirichletBnd = DirichletBoundary()
 dirichletBnd:add(0.0, "p", "Outlet")
 
--- Next, we create objects that encapsulate our callback. Those can then
--- be registered at the discretization object. Note that we use the .. operator
--- to concatenate strings and numbers. This saves us from a lot of if dim == 2 ... else ...
--- For the dirichlet callback we use utilCreateLuaCondUserNumber, where
--- a boolean and a number are returned.
-LuaInletVel2d = LuaUserVector("inletVel" .. dim .. "d")
+-- setup Inlet
 LuaInletDisc = NavierStokesInflow("u,v,p", "Inner")
-LuaInletDisc:add(LuaInletVel2d, "Inlet")
+LuaInletDisc:add("inletVel"..dim.."d", "Inlet")
 
+-- setup Wall
 WallDisc = NavierStokesWall("u,v,p")
 WallDisc:add("UpperWall,LowerWall,CylinderWall")
 
@@ -293,18 +290,11 @@ function Pressure_StartValue2d(x, y, t) return 0.0 end
 function VelX_StartValue2d(x, y, t) return 0.0 end
 function VelY_StartValue2d(x, y, t)	return 0.0 end
 
--- ... and wrap the lua-callback
-if dim == 2 then
-LuaPressureStartValue = LuaUserNumber("Pressure_StartValue"..dim.."d")
-LuaVelXStartValue = LuaUserNumber("VelX_StartValue"..dim.."d")
-LuaVelYStartValue = LuaUserNumber("VelY_StartValue"..dim.."d")
-end
-
 -- Now interpolate the function
 time = 0.0
-InterpolateFunction(LuaPressureStartValue, u, "p", time);
-InterpolateFunction(LuaVelXStartValue, u, "u", time);
-InterpolateFunction(LuaVelYStartValue, u, "v", time);
+InterpolateFunction("Pressure_StartValue"..dim.."d", u, "p", time);
+InterpolateFunction("VelX_StartValue"..dim.."d", u, "u", time);
+InterpolateFunction("VelY_StartValue"..dim.."d", u, "v", time);
 
 -- we need a linear solver that solves the linearized problem inside of the
 -- newton solver iteration. We create an exact LU solver here and an HLibSolver.
