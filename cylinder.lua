@@ -235,9 +235,8 @@ function inletVel2d(x, y, t)
 	return 4 * Um * y * (H-y) / (H*H), 0.0
 end
 
-ConstZeroDirichlet = ConstBoundaryNumber(0.0)
 dirichletBnd = DirichletBoundary()
-dirichletBnd:add(ConstZeroDirichlet, "p", "Outlet")
+dirichletBnd:add(0.0, "p", "Outlet")
 
 -- Next, we create objects that encapsulate our callback. Those can then
 -- be registered at the discretization object. Note that we use the .. operator

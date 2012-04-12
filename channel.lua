@@ -178,10 +178,9 @@ function WallVel2d(x, y, t)
 	return 0.0, 0.0
 end
 
-ConstZeroDirichlet = ConstBoundaryNumber(0.0)
 OutletDisc = DirichletBoundary()
-OutletDisc:add(ConstZeroDirichlet, "p", "Outlet")
-OutletDisc:add(ConstZeroDirichlet, "v", "Outlet")
+OutletDisc:add(0.0, "p", "Outlet")
+OutletDisc:add(0.0, "v", "Outlet")
 
 
 --LuaOutletVel2d = LuaUserVector("inletVel" .. dim .. "d")
