@@ -155,8 +155,7 @@ elemDisc:set_stokes(false)
 elemDisc:set_laplace(true)
 
 -- ... and finally we choose a value for the kinematic viscosity.
-ConstKinViscosity = ConstUserNumber(0.01)
-elemDisc:set_kinematic_viscosity(ConstKinViscosity);
+elemDisc:set_kinematic_viscosity(0.01);
 
 
 -- Next, lets create the boundary conditions. We will use lua-callback functions
