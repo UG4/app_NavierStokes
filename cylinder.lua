@@ -289,9 +289,9 @@ function VelY_StartValue2d(x, y, t)	return 0.0 end
 
 -- Now interpolate the function
 time = 0.0
-InterpolateFunction("Pressure_StartValue"..dim.."d", u, "p", time);
-InterpolateFunction("VelX_StartValue"..dim.."d", u, "u", time);
-InterpolateFunction("VelY_StartValue"..dim.."d", u, "v", time);
+Interpolate("Pressure_StartValue"..dim.."d", u, "p", time);
+Interpolate("VelX_StartValue"..dim.."d", u, "u", time);
+Interpolate("VelY_StartValue"..dim.."d", u, "v", time);
 
 -- we need a linear solver that solves the linearized problem inside of the
 -- newton solver iteration. We create an exact LU solver here and an HLibSolver.
