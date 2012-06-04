@@ -312,8 +312,8 @@ end
 -- (Open "Solution.vtu" in paraview to view the complete domain
 vtkWriter = VTKOutput()
 vtkWriter:select_all(false)
-vtkWriter:select_nodal_vector("u,v", "velocity")
-vtkWriter:select_nodal_scalar("p", "pressure")
+vtkWriter:select_nodal("u,v", "velocity")
+vtkWriter:select_nodal("p", "pressure")
 vtkWriter:print("Solution", u)
 
 print("done.")
