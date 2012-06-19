@@ -68,3 +68,12 @@ approxSpace:add_fct("p", "Crouzeix-Raviart", 1) -- TODO: must be Constant Approx
 approxSpace:init_levels()
 approxSpace:init_top_surface()
 approxSpace:print_statistic()
+
+u = GridFunction(approxSpace)
+
+
+function StartValue(x,y,t) 
+	return 1.0
+end
+
+Interpolate("StartValue", u, "u")
