@@ -21,8 +21,8 @@ InitUG(dim, AlgebraType("CPU", 1));
 -- Next, we decide which grid to use. This can again be passed as a command line
 -- option or a default value is used.
 if 	dim == 2 then
--- gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_2x2.ugx")
- gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2.ugx")
+ gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_2x2.ugx")
+-- gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2.ugx")
 else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
 -- We additionally use parameters which allow to specify the number of
@@ -68,12 +68,23 @@ approxSpace:add_fct("p", "Crouzeix-Raviart", 1) -- TODO: must be Constant Approx
 approxSpace:init_levels()
 approxSpace:init_top_surface()
 approxSpace:print_statistic()
+approxSpace:print_local_dof_statistic(2)
 
 u = GridFunction(approxSpace)
 
 
-function StartValue(x,y,t) 
-	return 1.0
-end
+function StartValue_u(x,y,t) return x end
+function StartValue_v(x,y,t) return y end
+function StartValue_p(x,y,t) return x*y end
 
-Interpolate("StartValue", u, "u")
+Interpolate("StartValue_u", u, "u")
+Interpolate("StartValue_v", u, "v")
+Interpolate("StartValue_p", u, "p")
+
+out = VTKOutput()
+out:clear_selection()
+out:select_all(false)
+out:select_element("u", "u")
+out:select_element("v", "v")
+out:select_element("p", "p")
+out:print("StartValue", u)
