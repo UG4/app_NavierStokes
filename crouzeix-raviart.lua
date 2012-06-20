@@ -22,7 +22,7 @@ InitUG(dim, AlgebraType("CPU", 1));
 -- option or a default value is used.
 if 	dim == 2 then
  gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_2x2.ugx")
--- gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2.ugx")
+ --gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2.ugx")
 else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
 -- We additionally use parameters which allow to specify the number of
@@ -57,9 +57,9 @@ dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, neededSubset
 approxSpace = ApproximationSpace(dom)
 
 -- we add the components of the velocity as Lagrange Ansatz functions of first order
-if dim >= 1 then approxSpace:add_fct("u", "Crouzeix-Raviart", 1) end
-if dim >= 2 then approxSpace:add_fct("v", "Crouzeix-Raviart", 1) end
-if dim >= 3 then approxSpace:add_fct("w", "Crouzeix-Raviart", 1) end
+--if dim >= 1 then approxSpace:add_fct("u", "Crouzeix-Raviart", 1) end
+--if dim >= 2 then approxSpace:add_fct("v", "Crouzeix-Raviart", 1) end
+--if dim >= 3 then approxSpace:add_fct("w", "Crouzeix-Raviart", 1) end
 
 -- we add the pressure as Lagrange Ansatz function of first order
 approxSpace:add_fct("p", "Crouzeix-Raviart", 1) -- TODO: must be Constant Approx Space
@@ -72,19 +72,20 @@ approxSpace:print_local_dof_statistic(2)
 
 u = GridFunction(approxSpace)
 
-
 function StartValue_u(x,y,t) return x end
 function StartValue_v(x,y,t) return y end
 function StartValue_p(x,y,t) return x*y end
 
-Interpolate("StartValue_u", u, "u")
-Interpolate("StartValue_v", u, "v")
+--Interpolate("StartValue_u", u, "u")
+--Interpolate("StartValue_v", u, "v")
 Interpolate("StartValue_p", u, "p")
+
+SaveVectorForConnectionViewer(u, "StartSol.vec")
 
 out = VTKOutput()
 out:clear_selection()
 out:select_all(false)
-out:select_element("u", "u")
-out:select_element("v", "v")
+--out:select_element("u", "u")
+--out:select_element("v", "v")
 out:select_element("p", "p")
 out:print("StartValue", u)
