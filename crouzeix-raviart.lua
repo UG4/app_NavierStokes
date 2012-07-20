@@ -115,7 +115,7 @@ fctUsed = fctUsed .. ", p"
 -- separated by ',', (e.g. "Inner1, Inner2, Inner3").
 elemDisc = NavierStokes(fctUsed, "Inner")
 
-elemDisc:set_disc_scheme("staggered");
+elemDisc:set_disc_scheme("staggered")
 
 -- Now, we have to setup the stabilization, that is used for the Continuity Equation.
 -- The stabilization is passed to the Navier-Stokes elem disc as an object.
@@ -123,17 +123,19 @@ elemDisc:set_disc_scheme("staggered");
 -- to create the Upwind scheme, that is used inside the stabilization. There are
 -- several possibilities:
 
-noUpwind = NavierStokesCRNoUpwind();
-fullUpwind = NavierStokesCRFullUpwind();
+noUpwind = NavierStokesCRNoUpwind()
+fullUpwind = NavierStokesCRFullUpwind()
 
 -- ... and set the upwind
-elemDisc:set_conv_upwind(noUpwind)
+elemDisc:set_conv_upwind(fullUpwind)
 
 elemDisc:set_peclet_blend(false)
-elemDisc:set_exact_jacobian(true)
+elemDisc:set_exact_jacobian(false)
+elemDisc:set_stokes(false)
+elemDisc:set_laplace(false)
 
 -- ... and finally we choose a value for the kinematic viscosity.
-elemDisc:set_kinematic_viscosity(1.0e-1);
+elemDisc:set_kinematic_viscosity(1.0e-3)
 
 
 -- Next, lets create the boundary conditions. We will use lua-callback functions
@@ -170,24 +172,36 @@ function inletVel2d(x, y, t)
 	return 4 * Um * y * (H-y) / (H*H), 0.0
 end
 
+function u_inletVel2d(x, y, t)
+	local H = 0.41
+	local Um = 0.3
+	return 4 * Um * y * (H-y) 
+end
+
 -- setup Outlet
 dirichletBnd = DirichletBoundary()
 dirichletBnd:add(0.0, "p", "Outlet")
 
 -- setup Inlet
-LuaInletDisc = NavierStokesInflow("u,v,p", "Inner")
-LuaInletDisc:add("inletVel"..dim.."d", "Inlet")
+-- LuaInletDisc = NavierStokesInflow("u,v,p", "Inner")
+-- LuaInletDisc:add("inletVel"..dim.."d", "Inlet")
 
 -- setup Wall
-WallDisc = NavierStokesWall("u,v,p")
-WallDisc:add("UpperWall,LowerWall,CylinderWall")
+-- WallDisc = NavierStokesWall("u,v,p")
+-- WallDisc:add("UpperWall,LowerWall,CylinderWall")
+dirichletBnd:add(0.0, "u", "UpperWall,LowerWall,CylinderWall")
+dirichletBnd:add(0.0, "v", "UpperWall,LowerWall,CylinderWall")
+
+uInletVel = LuaUserNumber("u_inletVel"..dim.."d")
+dirichletBnd:add(uInletVel, "u", "Inlet")
+dirichletBnd:add(0.0, "v", "Inlet")
 
 -- Finally we create the discretization object which combines all the
 -- separate discretizations into one domain discretization.
 domainDisc = DomainDiscretization(approxSpace)
 domainDisc:add(elemDisc)
-domainDisc:add(LuaInletDisc)
-domainDisc:add(WallDisc)
+-- domainDisc:add(LuaInletDisc)
+-- domainDisc:add(WallDisc)
 domainDisc:add(dirichletBnd)
 
 --------------------------------
@@ -244,7 +258,7 @@ gmg:set_num_postsmooth(2)
 -- create Linear Solver
 linSolver = BiCGStab()
 -- linSolver:set_preconditioner(gmg)
-linSolver:set_convergence_check(StandardConvergenceCheck(100000, 1e-7, 1e-12, true))
+linSolver:set_convergence_check(StandardConvergenceCheck(1000000, 1e-7, 1e-12, true))
 
 -- choose a solver
 solver = linSolver
