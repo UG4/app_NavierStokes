@@ -19,7 +19,8 @@ discType = util.GetParam("-type", "staggered")
 InitUG(dim, AlgebraType("CPU", 1));
 
 if 	dim == 2 then
-gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2.ugx")
+gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_1x1.ugx")
+-- gridName = util.GetParam("-grid", "unit_square/unit_square_unstructured_tris_coarse.ugx")
 else print("Chosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
 numPreRefs = util.GetParamNumber("-numPreRefs", 0)
@@ -125,26 +126,30 @@ elemDisc:set_laplace(true)
 elemDisc:set_kinematic_viscosity(1.0);
 
 
-----------------------------------
+-----------------------------------
 ----------------------------------
 -- Dirichlet boundary conditions
 ----------------------------------
 ----------------------------------
 
 function usol2d(x, y, t)
-	return 2*x*y*(x-1)*(y-1)*(-x*(x-1)*(2*y-1))
---	return y*y		
---	return y
+	  return 0
+--    return x
+--    return 2*x*y*(x-1)*(y-1)*(-x*(x-1)*(2*y-1))
+--    return y*y
+--    return y
 end
 
 function vsol2d(x,y,t)
-	return 2*x*y*(x-1)*(y-1)*(y*(y-1)*(2*x-1))
---	return x*x
---	return x
+--    return -3*x*x
+--    return -3*x*x-y
+--		return 2*x*y*(x-1)*(y-1)*(y*(y-1)*(2*x-1))
+		return x*x
+--    return x
 end
 
 function psol2d(x,y,t)
-	return 0
+    return 0
 end
 
 uSolution = LuaUserNumber("usol"..dim.."d")
@@ -163,9 +168,10 @@ dirichletBnd:add(pSolution, "p", "Boundary")
 ----------------------------------
 
 function source2d(x, y, t)
-	return  4*(2*y-1)*(-6*x*y*y+6*x*x*y*y+y*y+6*x*y-6*x*x*y-y+3*x*x*x*x+3*x*x-6*x*x*x),-4*(2*x-1)*(6*x*x*y*y-6*x*x*y+x*x-6*x*y*y+6*x*y-x-6*y*y*y+3*y*y+3*y*y*y*y)
---	return -2,-2
---	return  0,0
+	  return 0,-2
+--    return 4*(2*y-1)*(-6*x*y*y+6*x*x*y*y+y*y+6*x*y-6*x*x*y-y+3*x*x*x*x+3*x*x-6*x*x*x),-4*(2*x-1)*(6*x*x*y*y-6*x*x*y+x*x-6*x*y*y+6*x*y-x-6*y*y*y+3*y*y+3*y*y*y*y)
+--    return -2,-2
+--    return  0,0
 end
 
 rhs = LuaUserVector("source2d")
@@ -204,20 +210,28 @@ gmg:set_num_presmooth(2)
 gmg:set_num_postsmooth(2)
 --gmg:set_debug(dbgWriter)
 
+vanka = Vanka()
+
+vankaSolver = LinearSolver()
+vankaSolver:set_preconditioner(vanka)
+vankaSolver:set_convergence_check(StandardConvergenceCheck(100, 1e-10, 1e-12, true))
+
 -- create Linear Solver
 linSolver = BiCGStab()
 if type=="stabil" then
 	linSolver:set_preconditioner(gmg)
+else
+	linSolver:set_preconditioner(vanka)
 end
-linSolver:set_convergence_check(StandardConvergenceCheck(100000, 1e-7, 1e-12, true))
+linSolver:set_convergence_check(StandardConvergenceCheck(100000, 1e-10, 1e-12, true))
+
 
 -- choose a solver
-solver = linSolver
--- solver = LU()
+solver = vankaSolver
 
 newtonConvCheck = StandardConvergenceCheck()
 newtonConvCheck:set_maximum_steps(20)
-newtonConvCheck:set_minimum_defect(5e-4)
+newtonConvCheck:set_minimum_defect(5e-10)
 newtonConvCheck:set_reduction(1e-10)
 newtonConvCheck:set_verbose(true)
 
