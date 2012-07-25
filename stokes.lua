@@ -122,7 +122,7 @@ end
 elemDisc:set_peclet_blend(false)
 elemDisc:set_exact_jacobian(false)
 elemDisc:set_stokes(true)
-elemDisc:set_laplace(true)
+elemDisc:set_laplace(false)
 elemDisc:set_kinematic_viscosity(1.0);
 
 
@@ -214,20 +214,23 @@ vanka = Vanka()
 
 vankaSolver = LinearSolver()
 vankaSolver:set_preconditioner(vanka)
-vankaSolver:set_convergence_check(StandardConvergenceCheck(100, 1e-10, 1e-12, true))
+vankaSolver:set_convergence_check(StandardConvergenceCheck(10000, 1e-10, 1e-12, true))
 
 -- create Linear Solver
 linSolver = BiCGStab()
-if type=="stabil" then
+if discType=="stabil" then
 	linSolver:set_preconditioner(gmg)
 else
 	linSolver:set_preconditioner(vanka)
 end
 linSolver:set_convergence_check(StandardConvergenceCheck(100000, 1e-10, 1e-12, true))
 
-
 -- choose a solver
-solver = vankaSolver
+if discType=="stabil" then
+	solver = linSolver
+else
+	solver = vankaSolver
+end
 
 newtonConvCheck = StandardConvergenceCheck()
 newtonConvCheck:set_maximum_steps(20)
