@@ -122,7 +122,7 @@ end
 elemDisc:set_peclet_blend(false)
 elemDisc:set_exact_jacobian(false)
 elemDisc:set_stokes(true)
-elemDisc:set_laplace(false)
+elemDisc:set_laplace(true)
 elemDisc:set_kinematic_viscosity(1.0);
 
 
@@ -211,6 +211,7 @@ gmg:set_num_postsmooth(2)
 --gmg:set_debug(dbgWriter)
 
 vanka = Vanka()
+-- vanka = DiagVanka()
 
 vankaSolver = LinearSolver()
 vankaSolver:set_preconditioner(vanka)
