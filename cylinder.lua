@@ -231,15 +231,20 @@ function inletVel2d(x, y, t)
 	return 4 * Um * y * (H-y) / (H*H), 0.0
 end
 
--- setup Outlet
-dirichletBnd = DirichletBoundary()
-dirichletBnd:add(0.0, "p", "Outlet")
+-- setup outlet
+-- use "no normal stress" outflow condition
+OutletDisc = FVNavierStokesNoNormalStressOutflow(elemDisc)
+OutletDisc:add("Outlet")
 
--- setup Inlet
+-- alternatively use "zero pressure" outflow condition
+-- OutletDisc = DirichletBoundary()
+-- OutletDisc:add(0.0, "p", "Outlet")
+
+-- setup inlet
 LuaInletDisc = NavierStokesInflow("u,v,p", "Inner")
 LuaInletDisc:add("inletVel"..dim.."d", "Inlet")
 
--- setup Wall
+-- setup wall
 WallDisc = NavierStokesWall("u,v,p")
 WallDisc:add("UpperWall,LowerWall,CylinderWall")
 
@@ -249,7 +254,7 @@ domainDisc = DomainDiscretization(approxSpace)
 domainDisc:add(elemDisc)
 domainDisc:add(LuaInletDisc)
 domainDisc:add(WallDisc)
-domainDisc:add(dirichletBnd)
+domainDisc:add(OutletDisc)
 
 --------------------------------
 --------------------------------
@@ -307,12 +312,16 @@ gmg:set_num_postsmooth(2)
 --gmg:set_debug(dbgWriter)
 
 -- create Linear Solver
-linSolver = BiCGStab()
-linSolver:set_preconditioner(gmg)
-linSolver:set_convergence_check(StandardConvergenceCheck(100, 1e-9, 1e-12, true))
+BiCGStabSolver = BiCGStab()
+BiCGStabSolver:set_preconditioner(gmg)
+BiCGStabSolver:set_convergence_check(StandardConvergenceCheck(1000, 1e-7, 1e-3, true))
+
+gmgSolver = LinearSolver()
+gmgSolver:set_preconditioner(gmg)
+gmgSolver:set_convergence_check(StandardConvergenceCheck(1000, 1e-7, 1e-3, true))
 
 -- choose a solver
-solver = linSolver
+solver = gmgSolver
 
 -- Next we need a convergence check, that computes the defect within each
 -- newton step and stops the iteration when a specified creterion is fullfilled.
@@ -321,7 +330,7 @@ solver = linSolver
 -- also more specialized or self-coded convergence checks could be used.
 newtonConvCheck = StandardConvergenceCheck()
 newtonConvCheck:set_maximum_steps(20)
-newtonConvCheck:set_minimum_defect(5e-8)
+newtonConvCheck:set_minimum_defect(1e-6)
 newtonConvCheck:set_reduction(1e-10)
 newtonConvCheck:set_verbose(true)
 
@@ -373,8 +382,9 @@ end
 -- (Open "Solution.vtu" in paraview to view the complete domain
 vtkWriter = VTKOutput()
 vtkWriter:select_all(false)
-vtkWriter:select_nodal("u,v", "velocity")
-vtkWriter:select_nodal("p", "pressure")
+vtkWriter:select_nodal("u", "u")
+vtkWriter:select_nodal("v", "v")
+vtkWriter:select_nodal("p", "p")
 vtkWriter:print("Solution", u)
 
 print("done.")
