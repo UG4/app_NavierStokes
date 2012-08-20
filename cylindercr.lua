@@ -143,7 +143,7 @@ Interpolate("StartValue_p", u, "p")
 
 vanka = Vanka()
 -- vanka = DiagVanka()
-vanka:set_damp(0.75)
+vanka:set_damp(0.85)
 
 
 vankaSolver = LinearSolver()
@@ -157,7 +157,7 @@ baseConvCheck:set_reduction(1e-3)
 baseConvCheck:set_verbose(false)
 
 vankaBase = LinearSolver()
-vankaBase:set_preconditioner(vanka)
+vankaBase:set_preconditioner(DiagVanka())
 vankaBase:set_convergence_check(baseConvCheck)
 
 gmg = GeometricMultiGrid(approxSpace)
@@ -167,8 +167,8 @@ gmg:set_base_solver(vankaBase)
 gmg:set_smoother(vanka)
 gmg:set_cycle_type(1)
 -- gmg:set_damp(MinimalResiduumDamping())
-gmg:set_num_presmooth(5)
-gmg:set_num_postsmooth(5)
+gmg:set_num_presmooth(8*numRefs)
+gmg:set_num_postsmooth(8*numRefs)
 
 --gmg:set_debug(dbgWriter)
 -- create Linear Solver
@@ -182,7 +182,6 @@ gmgSolver:set_convergence_check(StandardConvergenceCheck(10000, 1e-7, 1.5e-1, tr
 
 -- choose a solver
 solver = gmgSolver
-
 
 newtonConvCheck = StandardConvergenceCheck()
 newtonConvCheck:set_maximum_steps(50)
@@ -213,9 +212,14 @@ end
 
 SaveVectorForConnectionViewer(u, "StartSolution.vec")
 
+tBefore = os.clock()
+
 if newtonSolver:apply(u) == false then
 	 print ("Newton solver apply failed."); exit();
 end
+
+tAfter = os.clock()
+print("Computation took " .. tAfter-tBefore .. " seconds.");
 
 out = VTKOutput()
 out:clear_selection()

@@ -45,12 +45,6 @@ print("    stationary  	= " .. boolStat)
 requiredSubsets = {"Inner", "Top", "Bottom", "Right", "Left"}
 dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
 
--- We succesfully loaded and refined the domain. Now its time to setup an
--- ApproximationSpace on the domain. First, we check that the domain we use
--- has suitable subsets. This are parts of the domain, that partition the domain.
--- We need them, to handle e.g. boundary conditions on different parts of the
--- domain boundary.
-
 -- All subset are ok. So we can create the Approximation Space
 approxSpace = ApproximationSpace(dom)
 
@@ -91,7 +85,8 @@ if discType=="staggered" then
 	-- set upwind
 	noUpwind = NavierStokesCRNoUpwind();
 	fullUpwind = NavierStokesCRFullUpwind();
-	elemDisc:set_conv_upwind(fullUpwind)
+	weightedUpwind = NavierStokesCRWeightedUpwind(0.4);
+	elemDisc:set_conv_upwind(weightedUpwind)
 	
 else
 
@@ -214,7 +209,7 @@ Interpolate("StartValue_v", u, "v")
 Interpolate("StartValue_p", u, "p")
 
 vanka = Vanka()
-vanka:set_damp(0.75)
+vanka:set_damp(0.95)
 
 -- vanka = DiagVanka()
 
@@ -238,10 +233,10 @@ gmg:set_base_level(0)
 gmg:set_base_solver(vankaBase)
 gmg:set_smoother(vanka)
 gmg:set_cycle_type(1)
-gmg:set_num_presmooth(2)
-gmg:set_num_postsmooth(2)
+gmg:set_num_presmooth(12)
+gmg:set_num_postsmooth(12)
 -- gmg:set_damp(MinimalResiduumDamping())
-gmg:set_damp(0.8)
+-- gmg:set_damp(0.8)
 -- gmg:set_damp(MinimalEnergyDamping())
 
 --gmg:set_debug(dbgWriter)
@@ -327,6 +322,7 @@ filename = "Sol"
 -- create new grid function for old value
 uOld = u:clone()
 
+tBefore = os.clock()
 if boolStat==1 then
 
 	newtonSolver:init(op)
@@ -393,6 +389,9 @@ else
 	end
 
 end
+
+tAfter = os.clock()
+print("Computation took " .. tAfter-tBefore .. " seconds.");
 
 -- plot solution
 
