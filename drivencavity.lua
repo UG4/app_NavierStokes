@@ -13,12 +13,16 @@ dim = util.GetParamNumber("-dim", 2) -- default dimension is 2.
 -- chose "staggered" or "stabil"
 discType = util.GetParam("-type", "staggered")
 boolStat = util.GetParamNumber("-stat", 1)
+elemType = util.GetParam("-elem", "quad")
 
 InitUG(dim, AlgebraType("CPU", 1));
 
 if 	dim == 2 then
-gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2_four_bnd.ugx")
--- gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_1x1.ugx")
+	if elemType == "tri" then 
+		gridName = util.GetParam("-grid", "grids/dc_tri.ugx")
+	else
+		gridName = util.GetParam("-grid", "grids/dc_quads.ugx")
+	end
 else print("Chosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 dt = util.GetParamNumber("-dt", 0.1)
 numTimeSteps =  util.GetParamNumber("-numTimeSteps", 5)
@@ -30,8 +34,10 @@ print("    dim        	= " .. dim)
 print("    numTotalRefs = " .. numRefs)
 print("    numPreRefs 	= " .. numPreRefs)
 print("    type       = " .. discType)
-print("    dt           = " .. dt)
-print("    numTimeSteps = " .. numTimeSteps)
+if boolStat==false then
+	print("    dt           = " .. dt)
+	print("    numTimeSteps = " .. numTimeSteps)
+end
 print("    grid       	= " .. gridName)
 print("    stationary  	= " .. boolStat)
 
@@ -85,7 +91,7 @@ if discType=="staggered" then
 	-- set upwind
 	noUpwind = NavierStokesCRNoUpwind();
 	fullUpwind = NavierStokesCRFullUpwind();
-	weightedUpwind = NavierStokesCRWeightedUpwind(0.4);
+	weightedUpwind = NavierStokesCRWeightedUpwind(0.5);
 	elemDisc:set_conv_upwind(weightedUpwind)
 	
 else
@@ -116,7 +122,7 @@ else
 
 end
 
-elemDisc:set_peclet_blend(false)
+elemDisc:set_peclet_blend(true)
 elemDisc:set_exact_jacobian(false)
 elemDisc:set_stokes(false)
 elemDisc:set_laplace(true)
@@ -220,7 +226,7 @@ vankaSolver:set_convergence_check(StandardConvergenceCheck(100000, 1e-7, 2.5e-1,
 baseConvCheck = StandardConvergenceCheck()
 baseConvCheck:set_maximum_steps(10000)
 baseConvCheck:set_minimum_defect(1e-7)
-baseConvCheck:set_reduction(1e-3)
+baseConvCheck:set_reduction(1e-2)
 baseConvCheck:set_verbose(false)
 
 vankaBase = LinearSolver()
@@ -233,8 +239,8 @@ gmg:set_base_level(0)
 gmg:set_base_solver(vankaBase)
 gmg:set_smoother(vanka)
 gmg:set_cycle_type(1)
-gmg:set_num_presmooth(12)
-gmg:set_num_postsmooth(12)
+gmg:set_num_presmooth(8*numRefs)
+gmg:set_num_postsmooth(8*numRefs)
 -- gmg:set_damp(MinimalResiduumDamping())
 -- gmg:set_damp(0.8)
 -- gmg:set_damp(MinimalEnergyDamping())
@@ -250,14 +256,8 @@ gmgSolver:set_preconditioner(gmg)
 gmgSolver:set_convergence_check(StandardConvergenceCheck(10000, 1e-7, 2.5e-1, true))
 
 -- choose a solver
-if discType=="stabil" then
-	solver = linSolver
-else
-	solver = vankaSolver
-end
 solver = BiCGStabSolver
 solver = gmgSolver
--- solver = vankaSolver
 
 newtonConvCheck = StandardConvergenceCheck()
 newtonConvCheck:set_maximum_steps(10000)
@@ -269,7 +269,7 @@ newtonLineSearch = StandardLineSearch()
 newtonLineSearch:set_maximum_steps(20)
 newtonLineSearch:set_lambda_start(1.0)
 newtonLineSearch:set_reduce_factor(0.5)
-newtonLineSearch:set_accept_best(false)
+newtonLineSearch:set_accept_best(true)
 
 dbgWriter = GridFunctionDebugWriter(approxSpace)
 dbgWriter:set_vtk_output(false)

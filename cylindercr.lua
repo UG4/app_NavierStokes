@@ -10,15 +10,10 @@ ug_load_script("ug_util.lua")
 
 dim = util.GetParamNumber("-dim", 2) -- default dimension is 2.
 
--- chose "staggered" or "stabil"
-discType = util.GetParam("-type", "staggered")
-
 InitUG(dim, AlgebraType("CPU", 1));
 
 if 	dim == 2 then gridName = util.GetParam("-grid", "grids/cylinder.ugx")
 else print("Choosen Dimension not supported. Exiting."); exit(); end
-dt = util.GetParamNumber("-dt", 0.1)
-numTimeSteps =  util.GetParamNumber("-numTimeSteps", 5)
 
 numPreRefs = util.GetParamNumber("-numPreRefs", 0)
 numRefs = util.GetParamNumber("-numRefs",2)
@@ -27,9 +22,6 @@ print(" Chosen Parameters:")
 print("    dim        	= " .. dim)
 print("    numTotalRefs = " .. numRefs)
 print("    numPreRefs 	= " .. numPreRefs)
-print("    type       = " .. discType)
-print("    dt           = " .. dt)
-print("    numTimeSteps = " .. numTimeSteps)
 print("    grid       	= " .. gridName)
 
 --------------------------------------------
@@ -70,13 +62,14 @@ elemDisc:set_disc_scheme("staggered");
 -- set upwind
 noUpwind = NavierStokesCRNoUpwind();
 fullUpwind = NavierStokesCRFullUpwind();
-elemDisc:set_conv_upwind(noUpwind)
+weightedUpwind = NavierStokesCRWeightedUpwind(0.5);
+elemDisc:set_conv_upwind(weightedUpwind)
 
 elemDisc:set_peclet_blend(false)
 elemDisc:set_exact_jacobian(false)
 elemDisc:set_stokes(false)
 elemDisc:set_laplace(true)
-elemDisc:set_kinematic_viscosity(1.0e-1);
+elemDisc:set_kinematic_viscosity(1.0e-3);
 
 ----------------------------------
 ----------------------------------
