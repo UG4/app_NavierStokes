@@ -44,6 +44,8 @@ approxSpace:init_top_surface()
 approxSpace:print_statistic()
 approxSpace:print_local_dof_statistic(2)
 
+-- OrderLex(approxSpace, "lr");
+
 --------------------------------
 --------------------------------
 -- Discretization
@@ -62,7 +64,7 @@ elemDisc:set_disc_scheme("staggered");
 -- set upwind
 noUpwind = NavierStokesCRNoUpwind();
 fullUpwind = NavierStokesCRFullUpwind();
-weightedUpwind = NavierStokesCRWeightedUpwind(0.5);
+weightedUpwind = NavierStokesCRWeightedUpwind(0.6);
 elemDisc:set_conv_upwind(weightedUpwind)
 
 elemDisc:set_peclet_blend(false)
@@ -136,21 +138,24 @@ Interpolate("StartValue_p", u, "p")
 
 vanka = Vanka()
 -- vanka = DiagVanka()
-vanka:set_damp(0.85)
+vanka:set_damp(1)
+vanka:set_relax(0.9)
 
 
 vankaSolver = LinearSolver()
 vankaSolver:set_preconditioner(vanka)
-vankaSolver:set_convergence_check(StandardConvergenceCheck(100000, 1e-7, 1.5e-1, true))
+vankaSolver:set_convergence_check(StandardConvergenceCheck(100000, 1e-7, 2e-1, true))
 
 baseConvCheck = StandardConvergenceCheck()
 baseConvCheck:set_maximum_steps(10000)
-baseConvCheck:set_minimum_defect(1e-6)
-baseConvCheck:set_reduction(1e-3)
+baseConvCheck:set_minimum_defect(1e-7)
+baseConvCheck:set_reduction(1e-1)
 baseConvCheck:set_verbose(false)
 
+baseVanka = DiagVanka()
+baseVanka:set_relax(1.1)
 vankaBase = LinearSolver()
-vankaBase:set_preconditioner(DiagVanka())
+vankaBase:set_preconditioner(baseVanka)
 vankaBase:set_convergence_check(baseConvCheck)
 
 gmg = GeometricMultiGrid(approxSpace)
@@ -160,18 +165,18 @@ gmg:set_base_solver(vankaBase)
 gmg:set_smoother(vanka)
 gmg:set_cycle_type(1)
 -- gmg:set_damp(MinimalResiduumDamping())
-gmg:set_num_presmooth(8*numRefs)
-gmg:set_num_postsmooth(8*numRefs)
+gmg:set_num_presmooth(2)
+gmg:set_num_postsmooth(12)
 
 --gmg:set_debug(dbgWriter)
 -- create Linear Solver
 BiCGStabSolver = BiCGStab()
 BiCGStabSolver:set_preconditioner(gmg)
-BiCGStabSolver:set_convergence_check(StandardConvergenceCheck(100000, 1e-7, 1.5e-1, true))
+BiCGStabSolver:set_convergence_check(StandardConvergenceCheck(100000, 1e-7, 2e-1, true))
 
 gmgSolver = LinearSolver()
 gmgSolver:set_preconditioner(gmg)
-gmgSolver:set_convergence_check(StandardConvergenceCheck(10000, 1e-7, 1.5e-1, true))
+gmgSolver:set_convergence_check(StandardConvergenceCheck(10000, 1e-7, 2e-1, true))
 
 -- choose a solver
 solver = gmgSolver
