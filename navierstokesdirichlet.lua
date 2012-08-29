@@ -222,7 +222,7 @@ vanka = DiagVanka()
 
 vankaSolver = LinearSolver()
 vankaSolver:set_preconditioner(vanka)
-vankaSolver:set_convergence_check(StandardConvergenceCheck(10000, 1e-10, 1e-12, true))
+vankaSolver:set_convergence_check(ConvCheck(10000, 1e-10, 1e-12, true))
 
 -- create Linear Solver
 linSolver = BiCGStab()
@@ -231,7 +231,7 @@ if type=="stabil" then
 else
 	linSolver:set_preconditioner(vanka)
 end
-linSolver:set_convergence_check(StandardConvergenceCheck(100000, 1e-7, 1e-12, true))
+linSolver:set_convergence_check(ConvCheck(100000, 1e-7, 1e-12, true))
 
 -- choose a solver
 -- solver = linSolver
@@ -239,7 +239,7 @@ solver = vankaSolver
 -- solver = LU()
 -- solver = linSolver
 
-newtonConvCheck = StandardConvergenceCheck()
+newtonConvCheck = ConvCheck()
 newtonConvCheck:set_maximum_steps(20)
 newtonConvCheck:set_minimum_defect(1e-6)
 newtonConvCheck:set_reduction(1e-10)

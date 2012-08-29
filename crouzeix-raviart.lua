@@ -258,7 +258,7 @@ gmg:set_num_postsmooth(2)
 -- create Linear Solver
 linSolver = BiCGStab()
 -- linSolver:set_preconditioner(gmg)
-linSolver:set_convergence_check(StandardConvergenceCheck(1000000, 1e-7, 1e-12, true))
+linSolver:set_convergence_check(ConvCheck(1000000, 1e-7, 1e-12, true))
 
 -- choose a solver
 solver = linSolver
@@ -266,10 +266,10 @@ solver = linSolver
 
 -- Next we need a convergence check, that computes the defect within each
 -- newton step and stops the iteration when a specified creterion is fullfilled.
--- For our purpose is the StandardConvergenceCheck is sufficient. Please note,
+-- For our purpose is the ConvCheck is sufficient. Please note,
 -- that this class derives from a general IConvergenceCheck-Interface and
 -- also more specialized or self-coded convergence checks could be used.
-newtonConvCheck = StandardConvergenceCheck()
+newtonConvCheck = ConvCheck()
 newtonConvCheck:set_maximum_steps(20)
 newtonConvCheck:set_minimum_defect(5e-4)
 newtonConvCheck:set_reduction(1e-10)

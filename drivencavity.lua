@@ -221,9 +221,9 @@ vanka:set_damp(0.95)
 
 vankaSolver = LinearSolver()
 vankaSolver:set_preconditioner(vanka)
-vankaSolver:set_convergence_check(StandardConvergenceCheck(100000, 1e-7, 2.5e-1, true))
+vankaSolver:set_convergence_check(ConvCheck(100000, 1e-7, 2.5e-1, true))
 
-baseConvCheck = StandardConvergenceCheck()
+baseConvCheck = ConvCheck()
 baseConvCheck:set_maximum_steps(10000)
 baseConvCheck:set_minimum_defect(1e-7)
 baseConvCheck:set_reduction(1e-2)
@@ -249,17 +249,17 @@ gmg:set_num_postsmooth(8*numRefs)
 -- create Linear Solver
 BiCGStabSolver = BiCGStab()
 BiCGStabSolver:set_preconditioner(gmg)
-BiCGStabSolver:set_convergence_check(StandardConvergenceCheck(100000, 1e-7, 2.5e-1, true))
+BiCGStabSolver:set_convergence_check(ConvCheck(100000, 1e-7, 2.5e-1, true))
 
 gmgSolver = LinearSolver()
 gmgSolver:set_preconditioner(gmg)
-gmgSolver:set_convergence_check(StandardConvergenceCheck(10000, 1e-7, 2.5e-1, true))
+gmgSolver:set_convergence_check(ConvCheck(10000, 1e-7, 2.5e-1, true))
 
 -- choose a solver
 solver = BiCGStabSolver
 solver = gmgSolver
 
-newtonConvCheck = StandardConvergenceCheck()
+newtonConvCheck = ConvCheck()
 newtonConvCheck:set_maximum_steps(10000)
 newtonConvCheck:set_minimum_defect(1e-6)
 newtonConvCheck:set_reduction(1e-10)
