@@ -151,7 +151,7 @@ elemDisc:set_stabilization(stab)
 elemDisc:set_conv_upwind(upwind)
 elemDisc:set_peclet_blend(false)
 elemDisc:set_exact_jacobian(false)
-elemDisc:set_stokes(false)
+elemDisc:set_stokes(true)
 elemDisc:set_laplace(true)
 
 -- ... and finally we choose a value for the kinematic viscosity.
@@ -260,7 +260,7 @@ solver = linSolver
 -- that this class derives from a general IConvergenceCheck-Interface and
 -- also more specialized or self-coded convergence checks could be used.
 newtonConvCheck = ConvCheck()
-newtonConvCheck:set_maximum_steps(1)
+newtonConvCheck:set_maximum_steps(100)
 newtonConvCheck:set_minimum_defect(1e-16)
 newtonConvCheck:set_reduction(1e-6)
 newtonConvCheck:set_verbose(true)
