@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------------------------------
 --
---  Driven cavity problem
+--  Stationary bubble
 --
 --  Author: Christian Wehner
 --
@@ -21,13 +21,16 @@ if 	dim == 2 then
 		gridName = util.GetParam("-grid", "grids/dc_tri.ugx")
 	else
 		gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2.ugx")
-		gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_2x2.ugx")
+		gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_symtri.ugx")
+--		gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_unstructured_tri_2x2.ugx")
+--		gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_2x2.ugx")
 	end
 else print("Chosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 dt = util.GetParamNumber("-dt", 0.05)
 numTimeSteps =  util.GetParamNumber("-numTimeSteps", 500)
 numPreRefs = util.GetParamNumber("-numPreRefs", 0)
 numRefs = util.GetParamNumber("-numRefs",3)
+La = util.GetParamNumber("-La",120)
 
 print(" Chosen Parameters:")
 print("    dim        	= " .. dim)
@@ -36,6 +39,7 @@ print("    numPreRefs 	= " .. numPreRefs)
 print("    type       = " .. discType)
 print("    dt           = " .. dt)
 print("    numTimeSteps = " .. numTimeSteps)
+print("    Laplace number = " .. La)
 
 print("    grid       	= " .. gridName)
 
@@ -44,9 +48,6 @@ print("    grid       	= " .. gridName)
 -- Problem Parameters
 --------------------------------------------
 --------------------------------------------
-
--- Laplace number
-La = 120
 
 -- bubble radius
 radius = 0.2
@@ -112,7 +113,7 @@ elemDisc:set_disc_scheme("staggered");
 noUpwind = NavierStokesCRNoUpwind();
 fullUpwind = NavierStokesCRFullUpwind();
 weightedUpwind = NavierStokesCRWeightedUpwind(0.5);
-elemDisc:set_conv_upwind(fullUpwind)
+elemDisc:set_conv_upwind(noUpwind)
 	
 elemDisc:set_peclet_blend(true)
 elemDisc:set_exact_jacobian(false)
@@ -139,7 +140,7 @@ WallDisc:add("Boundary")
 ----------------------------------
 
 function phiInit(x, y)
-	return math.sqrt( (x-0.5)*(x-0.5)+(y-0.5)*(y-0.5) )-0.2;
+	return math.sqrt( (x-0.5)*(x-0.5)+(y-0.5)*(y-0.5) )-0.3;
 end
 
 phiNew = GridFunction(approxSpaceLevelSet);
@@ -151,7 +152,7 @@ VecAssign(phiOld,phiNew);
 
 ----------------------------------
 ----------------------------------
--- source
+-- source 
 ----------------------------------
 ----------------------------------
 
@@ -207,6 +208,7 @@ u:set(0)
 velocity = GridFunctionVectorData(u, "u,v");
 lsDisc:set_velocity(velocity)
 lsDisc:set_dt(dt)
+lsDisc:exact_curvature(1.0/radius)
 
 function StartValue_u(x,y,t) return 0 end
 function StartValue_v(x,y,t) return 0 end
@@ -217,7 +219,7 @@ Interpolate("StartValue_v", u, "v")
 Interpolate("StartValue_p", u, "p")
 
 vanka = LineVanka(approxSpace)
-vanka:set_num_steps(4,4,0,0,0,0)
+vanka:set_num_steps(4,4,4,4,0,0)
 -- vanka = CRILU()
 -- vanka = Vanka()
 vanka:set_damp(0.9)
@@ -231,13 +233,13 @@ vanka:set_damp(0.9)
 
 vankaSolver = LinearSolver()
 vankaSolver:set_preconditioner(vanka)
-vankaSolver:set_convergence_check(ConvCheck(100000, 1e-9, 1e-10, true))
+vankaSolver:set_convergence_check(ConvCheck(100000, 1e-13, 1e-14, true))
 
 baseConvCheck = ConvCheck()
 baseConvCheck:set_maximum_steps(10000)
-baseConvCheck:set_minimum_defect(1e-9)
+baseConvCheck:set_minimum_defect(1e-13)
 baseConvCheck:set_reduction(1e-1)
-baseConvCheck:set_verbose(false)
+baseConvCheck:set_verbose(true)
 
 vankaBase = LinearSolver()
 vankaBase:set_preconditioner(Vanka())
@@ -246,7 +248,7 @@ vankaBase:set_convergence_check(baseConvCheck)
 gmg = GeometricMultiGrid(approxSpace)
 gmg:set_discretization(domainDisc)
 gmg:set_base_level(0)
-gmg:set_base_solver(vankaBase)
+gmg:set_base_solver(LU())
 gmg:set_smoother(vanka)
 gmg:set_cycle_type(1)
 gmg:set_num_presmooth(1)
@@ -260,21 +262,21 @@ gmg:set_damp(MinimalResiduumDamping())
 BiCGStabSolver = BiCGStab()
 BiCGStabSolver:set_preconditioner(vanka)
 -- BiCGStabSolver:set_preconditioner(gmg)
-BiCGStabSolver:set_convergence_check(ConvCheck(100000, 1e-9, 1e-10, true))
+BiCGStabSolver:set_convergence_check(ConvCheck(100000, 1e-13, 1e-14, true))
 
 gmgSolver = LinearSolver()
 gmgSolver:set_preconditioner(gmg)
-gmgSolver:set_convergence_check(ConvCheck(10000, 1e-9, 1e-10, true))
+gmgSolver:set_convergence_check(ConvCheck(10000, 1e-13, 1e-14, true))
 
 -- choose a solver
 solver = BiCGStabSolver
 solver = vankaSolver
-solver = gmgSolver
+-- solver = gmgSolver
 
 newtonConvCheck = ConvCheck()
 newtonConvCheck:set_maximum_steps(10000)
-newtonConvCheck:set_minimum_defect(1e-9)
-newtonConvCheck:set_reduction(1e-10)
+newtonConvCheck:set_minimum_defect(1e-13)
+newtonConvCheck:set_reduction(1e-14)
 newtonConvCheck:set_verbose(true)
 
 newtonLineSearch = StandardLineSearch()
