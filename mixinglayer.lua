@@ -32,7 +32,6 @@ print(" Chosen Parameters:")
 print("    dim        	= " .. dim)
 print("    numTotalRefs = " .. numRefs)
 print("    numPreRefs 	= " .. numPreRefs)
-print("    type       = " .. discType)
 print("    dt           = " .. dt)
 print("    numTimeSteps = " .. numTimeSteps)
 print("    grid       	= " .. gridName)
@@ -51,23 +50,21 @@ IdentifySubsets(dom,"Left","Right");
 -- All subset are ok. So we can create the Approximation Space
 approxSpace = ApproximationSpace(dom)
 
-if discType=="staggered" then
-	if dim >= 1 then approxSpace:add_fct("u", "Crouzeix-Raviart") end
-	if dim >= 2 then approxSpace:add_fct("v", "Crouzeix-Raviart") end
-	if dim >= 3 then approxSpace:add_fct("w", "Crouzeix-Raviart") end
-	approxSpace:add_fct("p", "piecewise-constant") 
-else
-	if dim >= 1 then approxSpace:add_fct("u", "Lagrange", 1) end
-	if dim >= 2 then approxSpace:add_fct("v", "Lagrange", 1) end
-	if dim >= 3 then approxSpace:add_fct("w", "Lagrange", 1) end
-	approxSpace:add_fct("p", "Lagrange", 1)
-end
+if dim >= 1 then approxSpace:add_fct("u", "Crouzeix-Raviart") end
+if dim >= 2 then approxSpace:add_fct("v", "Crouzeix-Raviart") end
+if dim >= 3 then approxSpace:add_fct("w", "Crouzeix-Raviart") end
+approxSpace:add_fct("p", "piecewise-constant") 
 
 -- finally we print some statistic on the distributed dofs
 approxSpace:init_levels()
 approxSpace:init_top_surface()
 approxSpace:print_statistic()
 approxSpace:print_local_dof_statistic(2)
+
+approxSpaceVorticity = ApproximationSpace(dom)
+approxSpaceVorticity:add_fct("c", "Crouzeix-Raviart", 1)
+
+vort = GridFunction(approxSpaceVorticity);
 
 u = GridFunction(approxSpace);
 -- OrderCRCuthillMcKee(approxSpace,u,true);
@@ -77,7 +74,7 @@ u = GridFunction(approxSpace);
 -- Setup from John LES book computation on [-1 1] square
 sigma0=1.0/14.0
 winf=1
-cnoise=0.001
+cnoise=0.01
 viscosity=140000
 
 --------------------------------
@@ -92,43 +89,13 @@ if dim >= 3 then fctUsed = fctUsed .. ", w" end
 fctUsed = fctUsed .. ", p"
 
 elemDisc = NavierStokes(fctUsed, "Inner")
+elemDisc:set_disc_scheme("staggered");
 
-if discType=="staggered" then
-	
-	elemDisc:set_disc_scheme("staggered");
-	-- set upwind
-	noUpwind = NavierStokesCRNoUpwind();
-	fullUpwind = NavierStokesCRFullUpwind();
-	weightedUpwind = NavierStokesCRWeightedUpwind(0.5);
-	elemDisc:set_conv_upwind(fullUpwind)
-	
-else
-
-    -- stabilization scheme
-	elemDisc:set_disc_scheme("stab");
-	
-	--upwind = NavierStokesNoUpwind();
-	upwind = NavierStokesFullUpwind();
-	--upwind = NavierStokesSkewedUpwind();
-	--upwind = NavierStokesLinearProfileSkewedUpwind();
-	--upwind = NavierStokesRegularUpwind();
-	--upwind = NavierStokesPositiveUpwind();
-	-- chose stabilization 
-	stab = NavierStokesFIELDSStabilization()
-	--stab = NavierStokesFLOWStabilization()
-	-- ... and set the upwind
-	stab:set_upwind(upwind)
-	--stab:set_diffusion_length("RAW")
-	stab:set_diffusion_length("FIVEPOINT")
-	--stab:set_diffusion_length("COR")
-	
-	-- set stabilization
-	elemDisc:set_stabilization(stab)
-	
-	-- set upwind
-	elemDisc:set_conv_upwind(noUpwind)
-
-end
+-- set upwind
+noUpwind = NavierStokesCRNoUpwind();
+fullUpwind = NavierStokesCRFullUpwind();
+weightedUpwind = NavierStokesCRWeightedUpwind(0.5);
+elemDisc:set_conv_upwind(fullUpwind)	
 
 elemDisc:set_peclet_blend(true)
 elemDisc:set_exact_jacobian(false)
@@ -152,22 +119,6 @@ elemDisc:set_laplace(false);
 -- Boundary conditions
 ----------------------------------
 ----------------------------------
-
-function usoltop(x, y, t)
-	return winf		
-end
-
-function vsoltop(x,y,t)
-	return 0
-end
-
-function usolbottom(x,y,t)
-	return -winf
-end
-
-function vsolbottom(x,y,t)
-	return 0
-end
 
 -- OutletDiscTop = CRNavierStokesNoNormalStressOutflow(elemDisc)
 OutletDiscTop = CRNavierStokesSymBC(elemDisc)
@@ -341,6 +292,9 @@ time = 0.0
 -- filename
 filename = "Sol"
 
+-- compute initial vorticity
+vorticity(vort,u)
+
 -- write start solution
 print("Writing start values")
 out = VTKOutput()
@@ -351,6 +305,10 @@ out:select_element("u", "u")
 out:select_element("v", "v")
 out:select_element("p", "p")
 out:print("MixingLayer", u,0,0)
+
+outv = VTKOutput()
+outv:select_element("c","c")
+outv:print("vorticity", vort,0,0)
 
 -- create new grid function for old value
 uOld = u:clone()
@@ -394,6 +352,10 @@ for step = 1, numTimeSteps do
 
 	print("++++++ TIMESTEP " .. step .. "  END ++++++");
 	
+	-- compute vorticity
+	vort:set(0)
+	vorticity(vort,u)
+	
 	-- plot solution
 
 	out = VTKOutput()
@@ -404,6 +366,9 @@ for step = 1, numTimeSteps do
 	out:select_element("v", "v")
 	out:select_element("p", "p")
 	out:print("MixingLayer", u,step,time)
+	outv = VTKOutput()
+	outv:select_element("c","c")
+	outv:print("vorticity", vort,step,time)
 
 end
 
