@@ -268,11 +268,6 @@ newtonLineSearch:set_lambda_start(1.0)
 newtonLineSearch:set_reduce_factor(0.5)
 newtonLineSearch:set_accept_best(true)
 
--- Sometimes its helpful to write the defect and jacobian of the newton step
--- to debug the implementation. For that, we use the debug writer
-dbgWriter = GridFunctionDebugWriter(approxSpace)
-dbgWriter:set_vtk_output(true)
-
 -- Now we can set up the newton solver. We set the linear solver created above
 -- as solver for the linearized problem and set the convergence check. If you
 -- want to you can also set the line search.
@@ -280,7 +275,7 @@ newtonSolver = NewtonSolver()
 newtonSolver:set_linear_solver(solver)
 newtonSolver:set_convergence_check(newtonConvCheck)
 --newtonSolver:set_line_search(newtonLineSearch)
-newtonSolver:set_debug(dbgWriter)
+newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 
 -- Finally we set the non-linear operator created above and initiallize the
 -- Newton solver for this operator.
@@ -309,6 +304,3 @@ vtkWriter:select_all(false)
 vtkWriter:select_nodal("u,v", "velocity")
 vtkWriter:select_nodal("p", "pressure")
 vtkWriter:print("Solution", u)
-
-print("done.")
-

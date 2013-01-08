@@ -9,12 +9,6 @@
 --
 -------------------------------------------------------------------
 
---------------------------------
---------------------------------
--- Parameter setup
---------------------------------
---------------------------------
-
 -- Right at the beginning we load a lot of util functions, that help us basically
 -- to programm a domain independent lua-script and provide some basic helper
 -- functions. Most the util functions are in the namespace util, i.e. they
@@ -60,15 +54,12 @@ print("    numTotalRefs = " .. numTotalRefs)
 print("    numPreRefs 	= " .. numPreRefs)
 print("    grid       	= " .. gridName)
 
---------------------------------------------
---------------------------------------------
+--------------------------------------------------------------------------------
 -- Loading Domain and Domain Refinement
---------------------------------------------
---------------------------------------------
+--------------------------------------------------------------------------------
 
 -- Create the domain and load a grid
 dom = Domain()
-
 LoadDomain(dom, gridName)
 
 -- Now that we're here, the domain was successfully loaded
@@ -98,11 +89,9 @@ for i = 1, numPostRefs do
 	refiner:refine()
 end
 
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 -- Approximation Space
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 
 -- We succesfully loaded and refined the domain. Now its time to setup an
 -- ApproximationSpace on the domain. First, we check that the domain we use
@@ -130,11 +119,9 @@ approxSpace:add_fct("p", "Lagrange", 1)
 -- finally we print some statistic on the distributed dofs
 approxSpace:print_statistic()
 
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 -- Discretization
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 
 -- We set up the discretization. The basic idea is to first create the single
 -- components of the discretization (e.g. element discretization, boundary
@@ -256,11 +243,9 @@ domainDisc:add(LuaInletDisc)
 domainDisc:add(WallDisc)
 domainDisc:add(OutletDisc)
 
---------------------------------
---------------------------------
--- Operator
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
+-- Solution of the Problem
+--------------------------------------------------------------------------------
 
 -- In ug4 we use Operator interfaces. An operator is simply a mapping from in
 -- space into the other. A frequently used implementation of such a mapping is
@@ -268,12 +253,6 @@ domainDisc:add(OutletDisc)
 -- right-hand side. We can create an operator that uses the recently created
 -- domainDisc.
 op = AssembledOperator(domainDisc)
-
---------------------------------
---------------------------------
--- Solution of the Problem
---------------------------------
---------------------------------
 
 -- Now lets solve the problem. Create a vector of unknowns and a vector
 -- which contains the right hand side. We will use the approximation space
@@ -285,22 +264,10 @@ u = GridFunction(approxSpace)
 -- Init the vector representing the unknowns with 0 to obtain
 -- reproducable results.
 u:set(0)
-
--- We could also interpolate some user defined function
--- setup the lua functions ...
-function Pressure_StartValue2d(x, y, t) return 0.0 end
-function VelX_StartValue2d(x, y, t) return 0.0 end
-function VelY_StartValue2d(x, y, t)	return 0.0 end
-
--- Now interpolate the function
 time = 0.0
-Interpolate("Pressure_StartValue"..dim.."d", u, "p", time);
-Interpolate("VelX_StartValue"..dim.."d", u, "u", time);
-Interpolate("VelY_StartValue"..dim.."d", u, "v", time);
 
 -- we need a linear solver that solves the linearized problem inside of the
 -- newton solver iteration. We create an exact LU solver here and an HLibSolver.
-
 gmg = GeometricMultiGrid(approxSpace)
 gmg:set_discretization(domainDisc)
 gmg:set_base_level(0)
@@ -328,25 +295,12 @@ solver = gmgSolver
 -- For our purpose is the ConvCheck is sufficient. Please note,
 -- that this class derives from a general IConvergenceCheck-Interface and
 -- also more specialized or self-coded convergence checks could be used.
-newtonConvCheck = ConvCheck()
-newtonConvCheck:set_maximum_steps(20)
-newtonConvCheck:set_minimum_defect(1e-6)
-newtonConvCheck:set_reduction(1e-10)
-newtonConvCheck:set_verbose(true)
+newtonConvCheck = ConvCheck(20, 1e-6, 1e-10, true)
 
 -- Within each newton step a line search can be applied. In order to do so an
 -- implementation of the ILineSearch-Interface can be passed to the newton
 -- solver. Here again we use the standard implementation.
-newtonLineSearch = StandardLineSearch()
-newtonLineSearch:set_maximum_steps(20)
-newtonLineSearch:set_lambda_start(1.0)
-newtonLineSearch:set_reduce_factor(0.5)
-newtonLineSearch:set_accept_best(true)
-
--- Sometimes its helpful to write the defect and jacobian of the newton step
--- to debug the implementation. For that, we use the debug writer
-dbgWriter = GridFunctionDebugWriter(approxSpace)
-dbgWriter:set_vtk_output(false)
+newtonLineSearch = StandardLineSearch(20, 1.0, 0.5, true)
 
 -- Now we can set up the newton solver. We set the linear solver created above
 -- as solver for the linearized problem and set the convergence check. If you
@@ -355,19 +309,17 @@ newtonSolver = NewtonSolver()
 newtonSolver:set_linear_solver(solver)
 newtonSolver:set_convergence_check(newtonConvCheck)
 newtonSolver:set_line_search(newtonLineSearch)
-newtonSolver:set_debug(dbgWriter)
+newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 
 -- Finally we set the non-linear operator created above and initiallize the
 -- Newton solver for this operator.
 newtonSolver:init(op)
-
 
 -- In a first step we have to prepare the newton solver for the solution u. This
 -- sets e.g. dirichlet values in u.
 if newtonSolver:prepare(u) == false then
 	print ("Newton solver prepare failed."); exit();
 end
-
 
 SaveVectorForConnectionViewer(u, "StartSolution.vec")
 
@@ -386,6 +338,3 @@ vtkWriter:select_nodal("u", "u")
 vtkWriter:select_nodal("v", "v")
 vtkWriter:select_nodal("p", "p")
 vtkWriter:print("Solution", u)
-
-print("done.")
-
