@@ -1,13 +1,13 @@
-------------------------------------------------------------------
+--------------------------------------------------------------------------------
 --
---   Lua - Script to test the Navier-Stokes implementation
+--   Lua - Script to compute the cylinder problem
 --
 --	This script sets up a problem for the Navier-Stokes discretization
---	and is intended to test the implementation.
+--	and solves the cylinder problem
 --
 --   Author: Josef Dubsky, Andreas Vogel
 --
--------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 -- Right at the beginning we load a lot of util functions, that help us basically
 -- to programm a domain independent lua-script and provide some basic helper
