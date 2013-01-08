@@ -108,13 +108,14 @@ if util.CheckSubsets(dom, neededSubsets) == false then print("Wrong subsets dete
 -- All subset are ok. So we can create the Approximation Space
 approxSpace = ApproximationSpace(dom)
 
--- we add the components of the velocity as Lagrange Ansatz functions of first order
-if dim >= 1 then approxSpace:add_fct("u", "Lagrange", 1) end
-if dim >= 2 then approxSpace:add_fct("v", "Lagrange", 1) end
-if dim >= 3 then approxSpace:add_fct("w", "Lagrange", 1) end
+-- we destinguish the components of the velocity 
+if 		dim == 1 then VelCmp = {"u"}; FctCmp = {"u", "p"};
+elseif  dim == 2 then VelCmp = {"u", "v"}; FctCmp = {"u", "v", "p"};
+elseif  dim == 3 then VelCmp = {"u", "v", "w"}; FctCmp = {"u", "v", "w", "p"};
+else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
--- we add the pressure as Lagrange Ansatz function of first order
-approxSpace:add_fct("p", "Lagrange", 1)
+-- we add the velocity and pressure as Lagrange Ansatz function of first order
+approxSpace:add_fct(FctCmp, "Lagrange", 1) 
 
 -- finally we print some statistic on the distributed dofs
 approxSpace:print_statistic()
@@ -130,17 +131,6 @@ approxSpace:print_statistic()
 -- comes to assembling this object runs all scheduled discretization component
 -- one after the other.
 
--- Lets begin with the element discretization. This is the core part for the
--- Navier-Stokes equation and provides the local stiffness- and mass matrices,
--- that are then added to the global matrices. First we concatenate a string
--- that holds all function we use. This string must be passed to the navier
--- stokes elem disc to indicate which function is used for velocity and which
--- one for pressure. E.g. for dim==2 this gives: "u, v, p".
-fctUsed = "u"
-if dim >= 2 then fctUsed = fctUsed .. ", v" end
-if dim >= 3 then fctUsed = fctUsed .. ", w" end
-fctUsed = fctUsed .. ", p"
-
 -- Now we create the Navier-Stokes disc. Here we use a util function, that
 -- creates the disc for the right world dimension according to the loaded domain
 -- (this is handled internally, since the approxSpace knows the domain and the
@@ -148,7 +138,7 @@ fctUsed = fctUsed .. ", p"
 -- that are in the subset "Inner". If we would have several domains, where we
 -- would like to do the same, this could be done by passing a list of subsets
 -- separated by ',', (e.g. "Inner1, Inner2, Inner3").
-elemDisc = NavierStokes(fctUsed, "Inner")
+elemDisc = NavierStokes(FctCmp, {"Inner"})
 
 -- Now, we have to setup the stabilization, that is used for the Continuity Equation.
 -- The stabilization is passed to the Navier-Stokes elem disc as an object.
@@ -276,7 +266,6 @@ gmg:set_smoother(ILU())
 gmg:set_cycle_type(1)
 gmg:set_num_presmooth(2)
 gmg:set_num_postsmooth(2)
---gmg:set_debug(dbgWriter)
 
 -- create Linear Solver
 BiCGStabSolver = BiCGStab()
@@ -334,7 +323,6 @@ end
 -- (Open "Solution.vtu" in paraview to view the complete domain
 vtkWriter = VTKOutput()
 vtkWriter:select_all(false)
-vtkWriter:select_nodal("u", "u")
-vtkWriter:select_nodal("v", "v")
+vtkWriter:select_nodal(VelCmp, "velocity")
 vtkWriter:select_nodal("p", "p")
 vtkWriter:print("Solution", u)
