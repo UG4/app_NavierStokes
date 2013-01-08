@@ -187,14 +187,6 @@ domainDisc:add(OutletDisc)
 -- Solution of the Problem
 --------------------------------------------------------------------------------
 
--- In ug4 we use Operator interfaces. An operator is simply a mapping from in
--- space into the other. A frequently used implementation of such a mapping is
--- the usage of discretizations, that map a solution (grid function) onto some
--- right-hand side. We can create an operator that uses the recently created
--- domainDisc.
-op = AssembledOperator(domainDisc)
-
-
 -- Now lets solve the problem. Create a vector of unknowns and a vector
 -- which contains the right hand side. We will use the approximation space
 -- to create the vectors. Make sure to create the vector for the same
@@ -225,7 +217,6 @@ gmg:set_num_postsmooth(2)
 linSolver = LinearSolver()
 linSolver:set_preconditioner(gmg)
 linSolver:set_convergence_check(ConvCheck(100, 1e-16, 1e-8, true))
-linSolver:set_compute_fresh_defect_when_finished(true)
 
 -- choose a solver
 solver = linSolver
@@ -250,27 +241,21 @@ newtonLineSearch:set_lambda_start(1.0)
 newtonLineSearch:set_reduce_factor(0.5)
 newtonLineSearch:set_accept_best(true)
 
+-- In ug4 we use Operator interfaces. An operator is simply a mapping from in
+-- space into the other. A frequently used implementation of such a mapping is
+-- the usage of discretizations, that map a solution (grid function) onto some
+-- right-hand side. We can create an operator that uses the recently created
+-- domainDisc.
+op = AssembledOperator(domainDisc)
+
 -- Now we can set up the newton solver. We set the linear solver created above
 -- as solver for the linearized problem and set the convergence check. If you
 -- want to you can also set the line search.
-newtonSolver = NewtonSolver()
+newtonSolver = NewtonSolver(op)
 newtonSolver:set_linear_solver(solver)
 newtonSolver:set_convergence_check(newtonConvCheck)
 --newtonSolver:set_line_search(newtonLineSearch)
 newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
-
--- Finally we set the non-linear operator created above and initiallize the
--- Newton solver for this operator.
-newtonSolver:init(op)
-
--- In a first step we have to prepare the newton solver for the solution u. This
--- sets e.g. dirichlet values in u.
-if newtonSolver:prepare(u) == false then
-	print ("Newton solver prepare failed."); exit();
-end
-
-
-SaveVectorForConnectionViewer(u, "StartSolution.vec")
 
 -- Now we can apply the newton solver. A newton itertation is performed to find
 -- the solution.

@@ -237,13 +237,6 @@ domainDisc:add(OutletDisc)
 -- Solution of the Problem
 --------------------------------------------------------------------------------
 
--- In ug4 we use Operator interfaces. An operator is simply a mapping from in
--- space into the other. A frequently used implementation of such a mapping is
--- the usage of discretizations, that map a solution (grid function) onto some
--- right-hand side. We can create an operator that uses the recently created
--- domainDisc.
-op = AssembledOperator(domainDisc)
-
 -- Now lets solve the problem. Create a vector of unknowns and a vector
 -- which contains the right hand side. We will use the approximation space
 -- to create the vectors. Make sure to create the vector for the same
@@ -279,38 +272,14 @@ gmgSolver:set_convergence_check(ConvCheck(1000, 1e-7, 1e-3, true))
 -- choose a solver
 solver = gmgSolver
 
--- Next we need a convergence check, that computes the defect within each
--- newton step and stops the iteration when a specified creterion is fullfilled.
--- For our purpose is the ConvCheck is sufficient. Please note,
--- that this class derives from a general IConvergenceCheck-Interface and
--- also more specialized or self-coded convergence checks could be used.
-newtonConvCheck = ConvCheck(20, 1e-6, 1e-10, true)
-
--- Within each newton step a line search can be applied. In order to do so an
--- implementation of the ILineSearch-Interface can be passed to the newton
--- solver. Here again we use the standard implementation.
-newtonLineSearch = StandardLineSearch(20, 1.0, 0.5, true)
-
 -- Now we can set up the newton solver. We set the linear solver created above
 -- as solver for the linearized problem and set the convergence check. If you
 -- want to you can also set the line search.
-newtonSolver = NewtonSolver()
+newtonSolver = NewtonSolver(domainDisc)
 newtonSolver:set_linear_solver(solver)
-newtonSolver:set_convergence_check(newtonConvCheck)
-newtonSolver:set_line_search(newtonLineSearch)
+newtonSolver:set_convergence_check(ConvCheck(20, 1e-6, 1e-10, true))
+newtonSolver:set_line_search(StandardLineSearch(20, 1.0, 0.5, true))
 newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
-
--- Finally we set the non-linear operator created above and initiallize the
--- Newton solver for this operator.
-newtonSolver:init(op)
-
--- In a first step we have to prepare the newton solver for the solution u. This
--- sets e.g. dirichlet values in u.
-if newtonSolver:prepare(u) == false then
-	print ("Newton solver prepare failed."); exit();
-end
-
-SaveVectorForConnectionViewer(u, "StartSolution.vec")
 
 -- Now we can apply the newton solver. A newton itertation is performed to find
 -- the solution.
