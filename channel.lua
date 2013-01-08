@@ -283,6 +283,6 @@ end
 -- (Open "Solution.vtu" in paraview to view the complete domain
 vtkWriter = VTKOutput()
 vtkWriter:select_all(false)
-vtkWriter:select_nodal("u,v", "velocity")
+vtkWriter:select_nodal(VelCmp, "velocity")
 vtkWriter:select_nodal("p", "pressure")
 vtkWriter:print("Solution", u)
