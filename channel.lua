@@ -211,19 +211,7 @@ u = GridFunction(approxSpace)
 -- Init the vector representing the unknowns with 0 to obtain
 -- reproducable results.
 u:set(0)
-
--- We could also interpolate some user defined function
--- setup the lua functions ...
-function Pressure_StartValue2d(x, y, t) return 0.0 end
-function VelX_StartValue2d(x, y, t) return 0.0 end
-function VelY_StartValue2d(x, y, t)	return 0.0 end
-
--- Now interpolate the function
 time = 0.0
-Interpolate("Pressure_StartValue"..dim.."d", u, "p", time);
-Interpolate("VelX_StartValue"..dim.."d", u, "u", time);
-Interpolate("VelY_StartValue"..dim.."d", u, "v", time);
-
 domainDisc:adjust_solution(u)
 
 -- we need a linear solver that solves the linearized problem inside of the
