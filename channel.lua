@@ -27,7 +27,7 @@ dim = util.GetParamNumber("-dim", 2) -- default dimension is 2.
 -- there are block structured matrices or simple double-valued matrices. We
 -- decide to use the double-valued CSR Matrix. This is the default case for the
 -- Algebra chooser and so we leave the intiallizer of the AlgebraChooser empty.
-InitUG(dim, AlgebraType("CPU", 1));
+InitUG(dim, AlgebraType("CPU", dim+1));
 
 -- Next, we decide which grid to use. This can again be passed as a command line
 -- option or a default value is used.
@@ -154,12 +154,18 @@ elemDisc:set_kinematic_viscosity(0.01);
 -- (here the . operator is used, since math is not an object but a library)
 function inletVel2d(x, y, t)
 	local Umax = 1.5
---	return (1.0-y*y) * Umax, 0.0
-	return 1.0, -1.0
+	return (1.0-y*y) * Umax, 0.0
+--	return 1.0, -1.0
+--	return 0.0, 0.0
 end
 
 function WallVel2d(x, y, t)
 	return 0.0, 0.0
+end
+
+function outletVel2d(x, y, t)
+	local Umax = 1.5
+	return (1.0-y*y) * Umax
 end
 
 -- setup Outlet
