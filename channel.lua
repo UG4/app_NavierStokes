@@ -9,12 +9,6 @@
 --
 -------------------------------------------------------------------
 
---------------------------------
---------------------------------
--- Parameter setup
---------------------------------
---------------------------------
-
 -- Right at the beginning we load a lot of util functions, that help us basically
 -- to programm a domain independent lua-script and provide some basic helper
 -- functions. Most the util functions are in the namespace util, i.e. they
@@ -33,7 +27,7 @@ dim = util.GetParamNumber("-dim", 2) -- default dimension is 2.
 -- there are block structured matrices or simple double-valued matrices. We
 -- decide to use the double-valued CSR Matrix. This is the default case for the
 -- Algebra chooser and so we leave the intiallizer of the AlgebraChooser empty.
-InitUG(dim, AlgebraType("CPU", dim+1));
+InitUG(dim, AlgebraType("CPU", 1));
 
 -- Next, we decide which grid to use. This can again be passed as a command line
 -- option or a default value is used.
@@ -52,11 +46,9 @@ print("    numTotalRefs = " .. numRefs)
 print("    numPreRefs 	= " .. numPreRefs)
 print("    grid       	= " .. gridName)
 
---------------------------------------------
---------------------------------------------
+--------------------------------------------------------------------------------
 -- Loading Domain and Domain Refinement
---------------------------------------------
---------------------------------------------
+--------------------------------------------------------------------------------
 
 -- Create the domain and load a grid
 neededSubsets = {"Inner", "Inlet", "Outlet", "UpperWall", "LowerWall"}
@@ -87,11 +79,9 @@ approxSpace:print_statistic()
 OrderLex(approxSpace, "lr");
 --OrderCuthillMcKee(approxSpace, true);
 
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 -- Discretization
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 
 -- We set up the discretization. The basic idea is to first create the single
 -- components of the discretization (e.g. element discretization, boundary
@@ -193,11 +183,9 @@ domainDisc:add(InletDisc)
 domainDisc:add(WallDisc)
 domainDisc:add(OutletDisc)
 
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 -- Solution of the Problem
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 
 -- In ug4 we use Operator interfaces. An operator is simply a mapping from in
 -- space into the other. A frequently used implementation of such a mapping is
