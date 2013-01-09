@@ -83,7 +83,7 @@ if dim >= 2 then fctUsed = fctUsed .. ", v" end
 if dim >= 3 then fctUsed = fctUsed .. ", w" end
 fctUsed = fctUsed .. ", p"
 
-elemDisc = NavierStokes(fctUsed, "Inner", discType)
+NavierStokesDisc = NavierStokes(fctUsed, "Inner", discType)
 
 if discType=="staggered" then
 	
@@ -91,7 +91,7 @@ if discType=="staggered" then
 	noUpwind = NavierStokesCRNoUpwind();
 	fullUpwind = NavierStokesCRFullUpwind();
 	weightedUpwind = NavierStokesCRWeightedUpwind(0.5);
-	elemDisc:set_conv_upwind(weightedUpwind)
+	NavierStokesDisc:set_conv_upwind(weightedUpwind)
 	
 else
 	
@@ -111,18 +111,18 @@ else
 	--stab:set_diffusion_length("COR")
 	
 	-- set stabilization
-	elemDisc:set_stabilization(stab)
+	NavierStokesDisc:set_stabilization(stab)
 	
 	-- set upwind
-	elemDisc:set_conv_upwind(upwind)
+	NavierStokesDisc:set_conv_upwind(upwind)
 
 end
 
-elemDisc:set_peclet_blend(true)
-elemDisc:set_exact_jacobian(false)
-elemDisc:set_stokes(false)
-elemDisc:set_laplace(true)
-elemDisc:set_kinematic_viscosity(1.0/3200.0);
+NavierStokesDisc:set_peclet_blend(true)
+NavierStokesDisc:set_exact_jacobian(false)
+NavierStokesDisc:set_stokes(false)
+NavierStokesDisc:set_laplace(true)
+NavierStokesDisc:set_kinematic_viscosity(1.0/3200.0);
 
 
 ----------------------------------
@@ -152,13 +152,13 @@ vSolution = LuaUserNumber("vsol"..dim.."d")
 pSolution = LuaUserNumber("psol"..dim.."d")
 
 if discType=="stabil" then
-	LuaInletDisc = NavierStokesInflow("u,v,p", "Inner")
-	WallDisc = NavierStokesWall("u,v,p")
+	InletDisc = NavierStokesInflow(NavierStokesDisc)
+	WallDisc = NavierStokesWall(NavierStokesDisc)
 else
-	LuaInletDisc = CRNavierStokesInflow("u,v", "Inner")
-	WallDisc = CRNavierStokesWall("u,v,p")
+	InletDisc = NavierStokesInflow(NavierStokesDisc)
+	WallDisc = NavierStokesWall(NavierStokesDisc)
 end
-LuaInletDisc:add("inletVel"..dim.."d", "Top")
+InletDisc:add("inletVel"..dim.."d", "Top")
 WallDisc:add("Left,Right,Bottom")
 
 
@@ -174,7 +174,7 @@ end
 
 rhs = LuaUserVector("source2d")
 
-elemDisc:set_source(rhs)
+NavierStokesDisc:set_source(rhs)
 
 --------------------------------
 --------------------------------
@@ -182,8 +182,8 @@ elemDisc:set_source(rhs)
 --------------------------------
 --------------------------------
 domainDisc = DomainDiscretization(approxSpace)
-domainDisc:add(elemDisc)
-domainDisc:add(LuaInletDisc)
+domainDisc:add(NavierStokesDisc)
+domainDisc:add(InletDisc)
 domainDisc:add(WallDisc)
 
 -- create operator from discretization

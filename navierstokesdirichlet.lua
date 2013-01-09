@@ -93,13 +93,13 @@ if dim >= 2 then fctUsed = fctUsed .. ", v" end
 if dim >= 3 then fctUsed = fctUsed .. ", w" end
 fctUsed = fctUsed .. ", p"
 
-elemDisc = NavierStokes(fctUsed, "Inner", discType)
+NavierStokesDisc = NavierStokes(fctUsed, "Inner", discType)
 
 if discType=="staggered" then
 	-- set upwind
 	noUpwind = NavierStokesCRNoUpwind();
 	fullUpwind = NavierStokesCRFullUpwind();
-	elemDisc:set_conv_upwind(noUpwind)
+	NavierStokesDisc:set_conv_upwind(noUpwind)
 	
 else
 	--upwind = NavierStokesNoUpwind();
@@ -118,18 +118,18 @@ else
 	--stab:set_diffusion_length("COR")
 	
 	-- set stabilization
-	elemDisc:set_stabilization(stab)
+	NavierStokesDisc:set_stabilization(stab)
 	
 	-- set upwind
-	elemDisc:set_conv_upwind(upwind)
+	NavierStokesDisc:set_conv_upwind(upwind)
 
 end
 
-elemDisc:set_peclet_blend(false)
-elemDisc:set_exact_jacobian(false)
-elemDisc:set_stokes(false)
-elemDisc:set_laplace(true)
-elemDisc:set_kinematic_viscosity(1.0);
+NavierStokesDisc:set_peclet_blend(false)
+NavierStokesDisc:set_exact_jacobian(false)
+NavierStokesDisc:set_stokes(false)
+NavierStokesDisc:set_laplace(true)
+NavierStokesDisc:set_kinematic_viscosity(1.0);
 
 
 ----------------------------------
@@ -159,11 +159,11 @@ vSolution = LuaUserNumber("vsol"..dim.."d")
 pSolution = LuaUserNumber("psol"..dim.."d")
 
 if discType=="stabil" then
-	LuaInletDisc = NavierStokesInflow("u,v,p", "Inner")
+	InletDisc = NavierStokesInflow(NavierStokesDisc)
 else
-	LuaInletDisc = CRNavierStokesInflow("u,v", "Inner")
+	InletDisc = NavierStokesInflow(NavierStokesDisc)
 end
-LuaInletDisc:add("inletVel"..dim.."d", "Boundary")
+InletDisc:add("inletVel"..dim.."d", "Boundary")
 
 ----------------------------------
 ----------------------------------
@@ -177,7 +177,7 @@ end
 
 rhs = LuaUserVector("source2d")
 
-elemDisc:set_source(rhs)
+NavierStokesDisc:set_source(rhs)
 
 --------------------------------
 --------------------------------
@@ -185,8 +185,8 @@ elemDisc:set_source(rhs)
 --------------------------------
 --------------------------------
 domainDisc = DomainDiscretization(approxSpace)
-domainDisc:add(elemDisc)
-domainDisc:add(LuaInletDisc)
+domainDisc:add(NavierStokesDisc)
+domainDisc:add(InletDisc)
 
 op = AssembledOperator(domainDisc)
 

@@ -113,7 +113,7 @@ fctUsed = fctUsed .. ", p"
 -- that are in the subset "Inner". If we would have several domains, where we
 -- would like to do the same, this could be done by passing a list of subsets
 -- separated by ',', (e.g. "Inner1, Inner2, Inner3").
-elemDisc = NavierStokes(fctUsed, "Inner", "staggered")
+NavierStokesDisc = NavierStokes(fctUsed, "Inner", "staggered")
 
 -- Now, we have to setup the stabilization, that is used for the Continuity Equation.
 -- The stabilization is passed to the Navier-Stokes elem disc as an object.
@@ -125,15 +125,15 @@ noUpwind = NavierStokesCRNoUpwind()
 fullUpwind = NavierStokesCRFullUpwind()
 
 -- ... and set the upwind
-elemDisc:set_conv_upwind(fullUpwind)
+NavierStokesDisc:set_conv_upwind(fullUpwind)
 
-elemDisc:set_peclet_blend(false)
-elemDisc:set_exact_jacobian(false)
-elemDisc:set_stokes(false)
-elemDisc:set_laplace(false)
+NavierStokesDisc:set_peclet_blend(false)
+NavierStokesDisc:set_exact_jacobian(false)
+NavierStokesDisc:set_stokes(false)
+NavierStokesDisc:set_laplace(false)
 
 -- ... and finally we choose a value for the kinematic viscosity.
-elemDisc:set_kinematic_viscosity(1.0e-3)
+NavierStokesDisc:set_kinematic_viscosity(1.0e-3)
 
 
 -- Next, lets create the boundary conditions. We will use lua-callback functions
@@ -181,11 +181,11 @@ dirichletBnd = DirichletBoundary()
 dirichletBnd:add(0.0, "p", "Outlet")
 
 -- setup Inlet
--- LuaInletDisc = NavierStokesInflow("u,v,p", "Inner")
--- LuaInletDisc:add("inletVel"..dim.."d", "Inlet")
+-- InletDisc = NavierStokesInflow(NavierStokesDisc)
+-- InletDisc:add("inletVel"..dim.."d", "Inlet")
 
 -- setup Wall
--- WallDisc = NavierStokesWall("u,v,p")
+-- WallDisc = NavierStokesWall(NavierStokesDisc)
 -- WallDisc:add("UpperWall,LowerWall,CylinderWall")
 dirichletBnd:add(0.0, "u", "UpperWall,LowerWall,CylinderWall")
 dirichletBnd:add(0.0, "v", "UpperWall,LowerWall,CylinderWall")
@@ -197,8 +197,8 @@ dirichletBnd:add(0.0, "v", "Inlet")
 -- Finally we create the discretization object which combines all the
 -- separate discretizations into one domain discretization.
 domainDisc = DomainDiscretization(approxSpace)
-domainDisc:add(elemDisc)
--- domainDisc:add(LuaInletDisc)
+domainDisc:add(NavierStokesDisc)
+-- domainDisc:add(InletDisc)
 -- domainDisc:add(WallDisc)
 domainDisc:add(dirichletBnd)
 

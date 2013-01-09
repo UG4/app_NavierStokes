@@ -88,18 +88,18 @@ if dim >= 2 then fctUsed = fctUsed .. ", v" end
 if dim >= 3 then fctUsed = fctUsed .. ", w" end
 fctUsed = fctUsed .. ", p"
 
-elemDisc = NavierStokes(fctUsed, "Inner", "staggered")
+NavierStokesDisc = NavierStokes(fctUsed, "Inner", "staggered")
 
 -- set upwind
 noUpwind = NavierStokesCRNoUpwind();
 fullUpwind = NavierStokesCRFullUpwind();
 weightedUpwind = NavierStokesCRWeightedUpwind(0.5);
-elemDisc:set_conv_upwind(fullUpwind)	
+NavierStokesDisc:set_conv_upwind(fullUpwind)	
 
-elemDisc:set_peclet_blend(true)
-elemDisc:set_exact_jacobian(false)
-elemDisc:set_stokes(false)
-elemDisc:set_laplace(false)
+NavierStokesDisc:set_peclet_blend(true)
+NavierStokesDisc:set_exact_jacobian(false)
+NavierStokesDisc:set_stokes(false)
+NavierStokesDisc:set_laplace(false)
 
 ----------------------------------
 ----------------------------------
@@ -109,8 +109,8 @@ elemDisc:set_laplace(false)
 
 viscosityData = CRSmagorinskyTurbViscData(approxSpace,u,0.1)
 viscosityData:set_kinematic_viscosity(1/140000);
-elemDisc:set_kinematic_viscosity(viscosityData);
-elemDisc:set_laplace(false);
+NavierStokesDisc:set_kinematic_viscosity(viscosityData);
+NavierStokesDisc:set_laplace(false);
 
 
 ----------------------------------
@@ -119,11 +119,11 @@ elemDisc:set_laplace(false);
 ----------------------------------
 ----------------------------------
 
--- OutletDiscTop = CRNavierStokesNoNormalStressOutflow(elemDisc)
-OutletDiscTop = CRNavierStokesSymBC(elemDisc)
+-- OutletDiscTop = CRNavierStokesNoNormalStressOutflow(NavierStokesDisc)
+OutletDiscTop = CRNavierStokesSymBC(NavierStokesDisc)
 OutletDiscTop:add("Top")
--- OutletDiscBottom = CRNavierStokesNoNormalStressOutflow(elemDisc)
-OutletDiscBottom = CRNavierStokesSymBC(elemDisc)
+-- OutletDiscBottom = CRNavierStokesNoNormalStressOutflow(NavierStokesDisc)
+OutletDiscBottom = CRNavierStokesSymBC(NavierStokesDisc)
 OutletDiscBottom:add("Bottom")
 
 ----------------------------------
@@ -138,7 +138,7 @@ end
 
 rhs = LuaUserVector("source2d")
 
-elemDisc:set_source(rhs)
+NavierStokesDisc:set_source(rhs)
 
 --------------------------------
 --------------------------------
@@ -146,7 +146,7 @@ elemDisc:set_source(rhs)
 --------------------------------
 --------------------------------
 domainDisc = DomainDiscretization(approxSpace)
-domainDisc:add(elemDisc)
+domainDisc:add(NavierStokesDisc)
 domainDisc:add(OutletDiscTop)
 domainDisc:add(OutletDiscBottom)
 

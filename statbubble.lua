@@ -105,18 +105,18 @@ if dim >= 2 then fctUsed = fctUsed .. ", v" end
 if dim >= 3 then fctUsed = fctUsed .. ", w" end
 fctUsed = fctUsed .. ", p"
 
-elemDisc = NavierStokes(fctUsed, "Inner", "staggered")
+NavierStokesDisc = NavierStokes(fctUsed, "Inner", "staggered")
 
 -- set upwind
 noUpwind = NavierStokesCRNoUpwind();
 fullUpwind = NavierStokesCRFullUpwind();
 weightedUpwind = NavierStokesCRWeightedUpwind(0.5);
-elemDisc:set_conv_upwind(noUpwind)
+NavierStokesDisc:set_conv_upwind(noUpwind)
 	
-elemDisc:set_peclet_blend(true)
-elemDisc:set_exact_jacobian(false)
-elemDisc:set_laplace(true)
-elemDisc:set_stokes(true)
+NavierStokesDisc:set_peclet_blend(true)
+NavierStokesDisc:set_exact_jacobian(false)
+NavierStokesDisc:set_laplace(true)
+NavierStokesDisc:set_stokes(true)
 
 -- Level set class
 
@@ -128,7 +128,7 @@ lsDisc = FV1LevelSetDisc();
 ----------------------------------
 ----------------------------------
 
-WallDisc = CRNavierStokesWall("u,v,p")
+WallDisc = NavierStokesWall(NavierStokesDisc)
 WallDisc:add("Boundary")
 
 ----------------------------------
@@ -160,7 +160,7 @@ end
 
 rhs = LuaUserVector("source2d")
 
-elemDisc:set_source(rhs)
+NavierStokesDisc:set_source(rhs)
 
 density = LevelSetUserData(approxSpaceLevelSet,phiNew)
 density:set_inside(rho)
@@ -176,9 +176,9 @@ source:set_sigma(sigma)
 source:set_density(density)
 source:set_gravitation(gravitation)
 
-elemDisc:set_source(source)
-elemDisc:set_density(density)
-elemDisc:set_kinematic_viscosity(viscosity)
+NavierStokesDisc:set_source(source)
+NavierStokesDisc:set_density(density)
+NavierStokesDisc:set_kinematic_viscosity(viscosity)
 
 --------------------------------
 --------------------------------
@@ -187,7 +187,7 @@ elemDisc:set_kinematic_viscosity(viscosity)
 --------------------------------
 
 domainDisc = DomainDiscretization(approxSpace)
-domainDisc:add(elemDisc)
+domainDisc:add(NavierStokesDisc)
 domainDisc:add(WallDisc)
 
 -- create operator from discretization

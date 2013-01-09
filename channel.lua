@@ -102,7 +102,7 @@ OrderLex(approxSpace, "lr");
 -- that are in the subset "Inner". If we would have several domains, where we
 -- would like to do the same, this could be done by passing a list of subsets
 -- separated by ',', (e.g. "Inner1, Inner2, Inner3").
-elemDisc = NavierStokes(FctCmp, {"Inner"})
+NavierStokesDisc = NavierStokes(FctCmp, {"Inner"})
 
 -- Now, we have to setup the stabilization, that is used for the Continuity Equation.
 -- The stabilization is passed to the Navier-Stokes elem disc as an object.
@@ -131,15 +131,15 @@ stab:set_diffusion_length("FIVEPOINT")
 --stab:set_diffusion_length("COR")
 
 -- Next we set the options for the Navier-Stokes elem disc ...
-elemDisc:set_stabilization(stab)
-elemDisc:set_conv_upwind(upwind)
-elemDisc:set_peclet_blend(false)
-elemDisc:set_exact_jacobian(false)
-elemDisc:set_stokes(true)
-elemDisc:set_laplace(true)
+NavierStokesDisc:set_stabilization(stab)
+NavierStokesDisc:set_conv_upwind(upwind)
+NavierStokesDisc:set_peclet_blend(false)
+NavierStokesDisc:set_exact_jacobian(false)
+NavierStokesDisc:set_stokes(true)
+NavierStokesDisc:set_laplace(true)
 
 -- ... and finally we choose a value for the kinematic viscosity.
-elemDisc:set_kinematic_viscosity(0.01);
+NavierStokesDisc:set_kinematic_viscosity(0.01);
 
 -- Next, lets create the boundary conditions. Lets define
 -- some functions in lua: Parameters are the coordinates of the point at which
@@ -168,17 +168,17 @@ OutletDisc:add(0.0, "p", "Outlet")
 OutletDisc:add(0.0, "v", "Outlet")
 
 -- setup Inlet
-InletDisc = NavierStokesInflow("u,v,p", "Inner")
+InletDisc = NavierStokesInflow(NavierStokesDisc)
 InletDisc:add("inletVel"..dim.."d", "Inlet")
 
 --setup Walles
-WallDisc = NavierStokesWall("u,v,p")
+WallDisc = NavierStokesWall(NavierStokesDisc)
 WallDisc:add("UpperWall,LowerWall")
 
 -- Finally we create the discretization object which combines all the
 -- separate discretizations into one domain discretization.
 domainDisc = DomainDiscretization(approxSpace)
-domainDisc:add(elemDisc)
+domainDisc:add(NavierStokesDisc)
 domainDisc:add(InletDisc)
 domainDisc:add(WallDisc)
 domainDisc:add(OutletDisc)

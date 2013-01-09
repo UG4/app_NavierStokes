@@ -57,19 +57,19 @@ if dim >= 2 then fctUsed = fctUsed .. ", v" end
 if dim >= 3 then fctUsed = fctUsed .. ", w" end
 fctUsed = fctUsed .. ", p"
 
-elemDisc = NavierStokes(fctUsed, "Inner", "staggered")
+NavierStokesDisc = NavierStokes(fctUsed, "Inner", "staggered")
 	
 -- set upwind
 noUpwind = NavierStokesCRNoUpwind();
 fullUpwind = NavierStokesCRFullUpwind();
 weightedUpwind = NavierStokesCRWeightedUpwind(0.6);
-elemDisc:set_conv_upwind(weightedUpwind)
+NavierStokesDisc:set_conv_upwind(weightedUpwind)
 
-elemDisc:set_peclet_blend(false)
-elemDisc:set_exact_jacobian(false)
-elemDisc:set_stokes(false)
-elemDisc:set_laplace(true)
-elemDisc:set_kinematic_viscosity(1.0e-3);
+NavierStokesDisc:set_peclet_blend(false)
+NavierStokesDisc:set_exact_jacobian(false)
+NavierStokesDisc:set_stokes(false)
+NavierStokesDisc:set_laplace(true)
+NavierStokesDisc:set_kinematic_viscosity(1.0e-3);
 
 ----------------------------------
 ----------------------------------
@@ -83,14 +83,14 @@ function inletVel2d(x, y, t)
 	return 4 * Um * y * (H-y) / (H*H), 0.0
 end
 
-OutletDisc = CRNavierStokesNoNormalStressOutflow(elemDisc)
+OutletDisc = CRNavierStokesNoNormalStressOutflow(NavierStokesDisc)
 OutletDisc:add("Outlet")
 
 -- setup inlet
-InletDisc = CRNavierStokesInflow("u,v", "Inner")
+InletDisc = NavierStokesInflow(NavierStokesDisc)
 InletDisc:add("inletVel"..dim.."d", "Inlet")
 
-WallDisc = CRNavierStokesWall("u,v,p")
+WallDisc = NavierStokesWall(NavierStokesDisc)
 WallDisc:add("UpperWall,LowerWall,CylinderWall")
 
 ----------------------------------
@@ -105,10 +105,10 @@ end
 
 rhs = LuaUserVector("source2d")
 
-elemDisc:set_source(rhs)
+NavierStokesDisc:set_source(rhs)
 
 domainDisc = DomainDiscretization(approxSpace)
-domainDisc:add(elemDisc)
+domainDisc:add(NavierStokesDisc)
 domainDisc:add(InletDisc)
 domainDisc:add(WallDisc)
 domainDisc:add(OutletDisc)

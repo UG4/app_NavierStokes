@@ -138,7 +138,7 @@ approxSpace:print_statistic()
 -- that are in the subset "Inner". If we would have several domains, where we
 -- would like to do the same, this could be done by passing a list of subsets
 -- separated by ',', (e.g. "Inner1, Inner2, Inner3").
-elemDisc = NavierStokes(FctCmp, {"Inner"})
+NavierStokesDisc = NavierStokes(FctCmp, {"Inner"})
 
 -- Now, we have to setup the stabilization, that is used for the Continuity Equation.
 -- The stabilization is passed to the Navier-Stokes elem disc as an object.
@@ -165,13 +165,13 @@ fieldsStab:set_diffusion_length("RAW")
 --fieldsStab:set_diffusion_length("COR")
 
 -- Next we set the options for the Navier-Stokes elem disc ...
-elemDisc:set_stabilization(fieldsStab)
-elemDisc:set_conv_upwind(fullUpwind)
-elemDisc:set_peclet_blend(false)
-elemDisc:set_exact_jacobian(false)
+NavierStokesDisc:set_stabilization(fieldsStab)
+NavierStokesDisc:set_conv_upwind(fullUpwind)
+NavierStokesDisc:set_peclet_blend(false)
+NavierStokesDisc:set_exact_jacobian(false)
 
 -- ... and finally we choose a value for the kinematic viscosity.
-elemDisc:set_kinematic_viscosity(1.0e-1);
+NavierStokesDisc:set_kinematic_viscosity(1.0e-1);
 
 
 -- Next, lets create the boundary conditions. We will use lua-callback functions
@@ -210,7 +210,7 @@ end
 
 -- setup outlet
 -- use "no normal stress" outflow condition
-OutletDisc = FVNavierStokesNoNormalStressOutflow(elemDisc)
+OutletDisc = FVNavierStokesNoNormalStressOutflow(NavierStokesDisc)
 OutletDisc:add("Outlet")
 
 -- alternatively use "zero pressure" outflow condition
@@ -218,18 +218,18 @@ OutletDisc:add("Outlet")
 -- OutletDisc:add(0.0, "p", "Outlet")
 
 -- setup inlet
-LuaInletDisc = NavierStokesInflow("u,v,p", "Inner")
-LuaInletDisc:add("inletVel"..dim.."d", "Inlet")
+InletDisc = NavierStokesInflow(NavierStokesDisc)
+InletDisc:add("inletVel"..dim.."d", "Inlet")
 
 -- setup wall
-WallDisc = NavierStokesWall("u,v,p")
+WallDisc = NavierStokesWall(NavierStokesDisc)
 WallDisc:add("UpperWall,LowerWall,CylinderWall")
 
 -- Finally we create the discretization object which combines all the
 -- separate discretizations into one domain discretization.
 domainDisc = DomainDiscretization(approxSpace)
-domainDisc:add(elemDisc)
-domainDisc:add(LuaInletDisc)
+domainDisc:add(NavierStokesDisc)
+domainDisc:add(InletDisc)
 domainDisc:add(WallDisc)
 domainDisc:add(OutletDisc)
 
