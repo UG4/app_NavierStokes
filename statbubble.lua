@@ -105,9 +105,8 @@ if dim >= 2 then fctUsed = fctUsed .. ", v" end
 if dim >= 3 then fctUsed = fctUsed .. ", w" end
 fctUsed = fctUsed .. ", p"
 
-elemDisc = NavierStokes(fctUsed, "Inner")
-	
-elemDisc:set_disc_scheme("staggered");
+elemDisc = NavierStokes(fctUsed, "Inner", "staggered")
+
 -- set upwind
 noUpwind = NavierStokesCRNoUpwind();
 fullUpwind = NavierStokesCRFullUpwind();

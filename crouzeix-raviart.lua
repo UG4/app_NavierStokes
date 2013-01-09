@@ -113,9 +113,7 @@ fctUsed = fctUsed .. ", p"
 -- that are in the subset "Inner". If we would have several domains, where we
 -- would like to do the same, this could be done by passing a list of subsets
 -- separated by ',', (e.g. "Inner1, Inner2, Inner3").
-elemDisc = NavierStokes(fctUsed, "Inner")
-
-elemDisc:set_disc_scheme("staggered")
+elemDisc = NavierStokes(fctUsed, "Inner", "staggered")
 
 -- Now, we have to setup the stabilization, that is used for the Continuity Equation.
 -- The stabilization is passed to the Navier-Stokes elem disc as an object.

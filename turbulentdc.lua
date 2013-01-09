@@ -86,11 +86,9 @@ if dim >= 2 then fctUsed = fctUsed .. ", v" end
 if dim >= 3 then fctUsed = fctUsed .. ", w" end
 fctUsed = fctUsed .. ", p"
 
-elemDisc = NavierStokes(fctUsed, "Inner")
+elemDisc = NavierStokes(fctUsed, "Inner", discType)
 
 if discType=="staggered" then
-	
-	elemDisc:set_disc_scheme("staggered");
 	-- set upwind
 	noUpwind = NavierStokesCRNoUpwind();
 	fullUpwind = NavierStokesCRFullUpwind();
@@ -98,10 +96,6 @@ if discType=="staggered" then
 	elemDisc:set_conv_upwind(fullUpwind)
 	
 else
-
-    -- stabilization scheme
-	elemDisc:set_disc_scheme("stab");
-	
 	--upwind = NavierStokesNoUpwind();
 	upwind = NavierStokesFullUpwind();
 	--upwind = NavierStokesSkewedUpwind();
