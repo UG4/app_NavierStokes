@@ -119,10 +119,10 @@ NavierStokesDisc:set_laplace(false);
 ----------------------------------
 ----------------------------------
 
--- OutletDiscTop = CRNavierStokesNoNormalStressOutflow(NavierStokesDisc)
+-- OutletDiscTop = NavierStokesNoNormalStressOutflow(NavierStokesDisc)
 OutletDiscTop = CRNavierStokesSymBC(NavierStokesDisc)
 OutletDiscTop:add("Top")
--- OutletDiscBottom = CRNavierStokesNoNormalStressOutflow(NavierStokesDisc)
+-- OutletDiscBottom = NavierStokesNoNormalStressOutflow(NavierStokesDisc)
 OutletDiscBottom = CRNavierStokesSymBC(NavierStokesDisc)
 OutletDiscBottom:add("Bottom")
 

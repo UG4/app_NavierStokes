@@ -176,7 +176,7 @@ wall:add("Sides")
 inflow = NavierStokesInflow(NavierStokesDisc)
 inflow:add("inletVel"..dim.."d", "Bottom")
 
-outflow = CRNavierStokesNoNormalStressOutflow(NavierStokesDisc)
+outflow = NavierStokesNoNormalStressOutflow(NavierStokesDisc)
 outflow:add("Top")
 
 --------------------------------

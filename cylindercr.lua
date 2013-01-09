@@ -83,7 +83,7 @@ function inletVel2d(x, y, t)
 	return 4 * Um * y * (H-y) / (H*H), 0.0
 end
 
-OutletDisc = CRNavierStokesNoNormalStressOutflow(NavierStokesDisc)
+OutletDisc = NavierStokesNoNormalStressOutflow(NavierStokesDisc)
 OutletDisc:add("Outlet")
 
 -- setup inlet
