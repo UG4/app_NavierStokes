@@ -210,7 +210,7 @@ end
 
 -- setup outlet
 -- use "no normal stress" outflow condition
-OutletDisc = FVNavierStokesNoNormalStressOutflow(NavierStokesDisc)
+OutletDisc = NavierStokesNoNormalStressOutflow(NavierStokesDisc)
 OutletDisc:add("Outlet")
 
 -- alternatively use "zero pressure" outflow condition
