@@ -1,10 +1,10 @@
--------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 --
 --  Driven cavity problem
 --
 --  Author: Christian Wehner
 --
-------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 ug_load_script("ug_util.lua")
 
@@ -18,16 +18,14 @@ elemType = util.GetParam("-elem", "quad")
 InitUG(dim, AlgebraType("CPU", 1));
 
 if 	dim == 2 then
-	if elemType == "tri" then 
-		gridName = util.GetParam("-grid", "grids/dc_tri.ugx")
-	else
-		gridName = util.GetParam("-grid", "grids/dc_quads.ugx")
-	end
+	if elemType == "tri" then gridName = util.GetParam("-grid", "grids/dc_tri.ugx")
+	else gridName = util.GetParam("-grid", "grids/dc_quads.ugx") end
 else print("Chosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
+
 dt = util.GetParamNumber("-dt", 0.1)
 numTimeSteps =  util.GetParamNumber("-numTimeSteps", 5)
 numPreRefs = util.GetParamNumber("-numPreRefs", 0)
-numRefs = util.GetParamNumber("-numRefs",3)
+numRefs = util.GetParamNumber("-numRefs",2)
 
 print(" Chosen Parameters:")
 print("    dim        	= " .. dim)
@@ -35,17 +33,15 @@ print("    numTotalRefs = " .. numRefs)
 print("    numPreRefs 	= " .. numPreRefs)
 print("    type       = " .. discType)
 if boolStat==false then
-	print("    dt           = " .. dt)
-	print("    numTimeSteps = " .. numTimeSteps)
+print("    dt           = " .. dt)
+print("    numTimeSteps = " .. numTimeSteps)
 end
 print("    grid       	= " .. gridName)
 print("    stationary  	= " .. boolStat)
 
---------------------------------------------
---------------------------------------------
+--------------------------------------------------------------------------------
 -- Loading Domain and Domain Refinement
---------------------------------------------
---------------------------------------------
+--------------------------------------------------------------------------------
 
 -- Lets define a list of all subsets that we need
 requiredSubsets = {"Inner", "Top", "Bottom", "Right", "Left"}
@@ -54,16 +50,17 @@ dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubs
 -- All subset are ok. So we can create the Approximation Space
 approxSpace = ApproximationSpace(dom)
 
+-- we destinguish the components of the velocity 
+if 		dim == 1 then VelCmp = {"u"}; FctCmp = {"u", "p"};
+elseif  dim == 2 then VelCmp = {"u", "v"}; FctCmp = {"u", "v", "p"};
+elseif  dim == 3 then VelCmp = {"u", "v", "w"}; FctCmp = {"u", "v", "w", "p"};
+else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
+
 if discType=="staggered" then
-	if dim >= 1 then approxSpace:add_fct("u", "Crouzeix-Raviart") end
-	if dim >= 2 then approxSpace:add_fct("v", "Crouzeix-Raviart") end
-	if dim >= 3 then approxSpace:add_fct("w", "Crouzeix-Raviart") end
+	approxSpace:add_fct(VelCmp, "Crouzeix-Raviart")
 	approxSpace:add_fct("p", "piecewise-constant") 
 else
-	if dim >= 1 then approxSpace:add_fct("u", "Lagrange", 1) end
-	if dim >= 2 then approxSpace:add_fct("v", "Lagrange", 1) end
-	if dim >= 3 then approxSpace:add_fct("w", "Lagrange", 1) end
-	approxSpace:add_fct("p", "Lagrange", 1)
+	approxSpace:add_fct(FctCmp, "Lagrange", 1)
 end
 
 -- finally we print some statistic on the distributed dofs
@@ -72,29 +69,18 @@ approxSpace:init_top_surface()
 approxSpace:print_statistic()
 approxSpace:print_local_dof_statistic(2)
 
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 -- Discretization
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 
-fctUsed = "u"
-if dim >= 2 then fctUsed = fctUsed .. ", v" end
-if dim >= 3 then fctUsed = fctUsed .. ", w" end
-fctUsed = fctUsed .. ", p"
-
-NavierStokesDisc = NavierStokes(fctUsed, "Inner", discType)
+NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discType)
 
 if discType=="staggered" then
-	
-	-- set upwind
 	noUpwind = NavierStokesCRNoUpwind();
 	fullUpwind = NavierStokesCRFullUpwind();
 	weightedUpwind = NavierStokesCRWeightedUpwind(0.5);
 	NavierStokesDisc:set_conv_upwind(weightedUpwind)
-	
-else
-	
+else	
 	--upwind = NavierStokesNoUpwind();
 	upwind = NavierStokesFullUpwind();
 	--upwind = NavierStokesSkewedUpwind();
@@ -123,71 +109,24 @@ NavierStokesDisc:set_exact_jacobian(false)
 NavierStokesDisc:set_stokes(false)
 NavierStokesDisc:set_laplace(true)
 NavierStokesDisc:set_kinematic_viscosity(1.0/3200.0);
+NavierStokesDisc:set_source({0,0})
 
+InletDisc = NavierStokesInflow(NavierStokesDisc)
+InletDisc:add({1,0}, "Top")
 
-----------------------------------
-----------------------------------
--- Boundary conditions
-----------------------------------
-----------------------------------
-
-function usol2d(x, y, t)
-	return 1		
-end
-
-function vsol2d(x,y,t)
-	return 0
-end
-
-function psol2d(x,y,t)
-	return 0
-end
-
-function inletVel2d(x, y, t)
-	return usol2d(x, y, t),vsol2d(x, y, t)
-end
-
-uSolution = LuaUserNumber("usol"..dim.."d")
-vSolution = LuaUserNumber("vsol"..dim.."d")
-pSolution = LuaUserNumber("psol"..dim.."d")
-
-if discType=="stabil" then
-	InletDisc = NavierStokesInflow(NavierStokesDisc)
-	WallDisc = NavierStokesWall(NavierStokesDisc)
-else
-	InletDisc = NavierStokesInflow(NavierStokesDisc)
-	WallDisc = NavierStokesWall(NavierStokesDisc)
-end
-InletDisc:add("inletVel"..dim.."d", "Top")
+WallDisc = NavierStokesWall(NavierStokesDisc)
 WallDisc:add("Left,Right,Bottom")
 
-
-----------------------------------
-----------------------------------
--- Source
-----------------------------------
-----------------------------------
-
-function source2d(x, y, t)
-	return 0,0
-end
-
-rhs = LuaUserVector("source2d")
-
-NavierStokesDisc:set_source(rhs)
-
---------------------------------
---------------------------------
--- Solution of the Problem
---------------------------------
---------------------------------
 domainDisc = DomainDiscretization(approxSpace)
 domainDisc:add(NavierStokesDisc)
 domainDisc:add(InletDisc)
 domainDisc:add(WallDisc)
 
--- create operator from discretization
+--------------------------------------------------------------------------------
+-- Solution of the Problem
+--------------------------------------------------------------------------------
 
+-- create operator from discretization
 if boolStat==1 then
 	-- operator is stationary
 	op = AssembledOperator(domainDisc)
@@ -202,14 +141,6 @@ op:init()
 u = GridFunction(approxSpace)
 u:set(0)
 
-function StartValue_u(x,y,t) return 0 end
-function StartValue_v(x,y,t) return 0 end
-function StartValue_p(x,y,t) return 0 end
-
-Interpolate("StartValue_u", u, "u")
-Interpolate("StartValue_v", u, "v")
-Interpolate("StartValue_p", u, "p")
-
 vanka = Vanka()
 vanka:set_damp(0.95)
 
@@ -219,15 +150,9 @@ vankaSolver = LinearSolver()
 vankaSolver:set_preconditioner(vanka)
 vankaSolver:set_convergence_check(ConvCheck(100000, 1e-7, 2.5e-1, true))
 
-baseConvCheck = ConvCheck()
-baseConvCheck:set_maximum_steps(10000)
-baseConvCheck:set_minimum_defect(1e-7)
-baseConvCheck:set_reduction(1e-2)
-baseConvCheck:set_verbose(false)
-
 vankaBase = LinearSolver()
 vankaBase:set_preconditioner(Vanka())
-vankaBase:set_convergence_check(baseConvCheck)
+vankaBase:set_convergence_check(ConvCheck(10000, 1e-7, 1e-2, false))
 
 gmg = GeometricMultiGrid(approxSpace)
 gmg:set_discretization(domainDisc)
@@ -255,38 +180,13 @@ gmgSolver:set_convergence_check(ConvCheck(10000, 1e-7, 2.5e-1, true))
 solver = BiCGStabSolver
 solver = gmgSolver
 
-newtonConvCheck = ConvCheck()
-newtonConvCheck:set_maximum_steps(10000)
-newtonConvCheck:set_minimum_defect(1e-6)
-newtonConvCheck:set_reduction(1e-10)
-newtonConvCheck:set_verbose(true)
-
-newtonLineSearch = StandardLineSearch()
-newtonLineSearch:set_maximum_steps(20)
-newtonLineSearch:set_lambda_start(1.0)
-newtonLineSearch:set_reduce_factor(0.5)
-newtonLineSearch:set_accept_best(true)
-
-dbgWriter = GridFunctionDebugWriter(approxSpace)
-dbgWriter:set_vtk_output(false)
-
-newtonSolver = NewtonSolver()
+newtonSolver = NewtonSolver(op)
 newtonSolver:set_linear_solver(solver)
-newtonSolver:set_convergence_check(newtonConvCheck)
-newtonSolver:set_line_search(newtonLineSearch)
--- newtonSolver:set_debug(dbgWriter)
-
-newtonSolver:init(op)
-
-if newtonSolver:prepare(u) == false then
-	print ("Newton solver prepare failed."); exit();
-end
+newtonSolver:set_convergence_check(ConvCheck(10000, 1e-6, 1e-10, true))
+newtonSolver:set_line_search(StandardLineSearch(20, 1.0, 0.5, true))
+-- newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 
 SaveVectorForConnectionViewer(u, "StartSolution.vec")
-
--- if newtonSolver:apply(u) == false then
---	 print ("Newton solver apply failed."); exit();
--- end
 
 --------------------------------------------------------------------------------
 --  Apply Solver
@@ -296,24 +196,11 @@ SaveVectorForConnectionViewer(u, "StartSolution.vec")
 time = 0.0
 step = 0
 
--- setup the lua functions ...
-function Pressure_StartValue2d(x, y, t) return 0.0 end
-function VelX_StartValue2d(x, y, t) return 0.0 end
-function VelY_StartValue2d(x, y, t)	return 0.0 end
-
--- Now interpolate the function
-time = 0.0
-Interpolate("Pressure_StartValue"..dim.."d", u, "p", time);
-Interpolate("VelX_StartValue"..dim.."d", u, "u", time);
-Interpolate("VelY_StartValue"..dim.."d", u, "v", time);
-
--- filename
-filename = "Sol"
-
--- write start solution
--- print("Writing start values")
--- out = VTKOutput()
--- out:print(filename, u, step, time)
+out = VTKOutput()
+out:clear_selection()
+out:select_all(false)
+out:select_element(VelCmp, "velocity")
+out:select_element("p", "p")
 
 -- create new grid function for old value
 uOld = u:clone()
@@ -332,6 +219,7 @@ if boolStat==1 then
 		print ("Newton solver apply failed."); exit();
 	end
 
+	out:print("DCSolution", u)
 else
 
 	-- store grid function in vector of  old solutions
@@ -372,32 +260,9 @@ else
 		print("++++++ TIMESTEP " .. step .. "  END ++++++");
 		
 		-- plot solution
-
-		out = VTKOutput()
-		out:clear_selection()
-		out:select_all(false)
-		out:select_element("u,v", "velocity")
-		out:select_element("u", "u")
-		out:select_element("v", "v")
-		out:select_element("p", "p")
 		out:print("timeDCSolution", u)
-
 	end
-
 end
 
 tAfter = os.clock()
 print("Computation took " .. tAfter-tBefore .. " seconds.");
-
--- plot solution
-
-out = VTKOutput()
-out:clear_selection()
-out:select_all(false)
-out:select_element("u,v", "velocity")
-out:select_element("u", "u")
-out:select_element("v", "v")
-out:select_element("p", "p")
-out:print("DCSolution", u)
-
-print("done.")
