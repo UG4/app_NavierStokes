@@ -121,8 +121,8 @@ NavierStokesDisc = NavierStokes(fctUsed, "Inner", "staggered")
 -- to create the Upwind scheme, that is used inside the stabilization. There are
 -- several possibilities:
 
-noUpwind = NavierStokesCRNoUpwind()
-fullUpwind = NavierStokesCRFullUpwind()
+noUpwind = NavierStokesNoUpwind()
+fullUpwind = NavierStokesFullUpwind()
 
 -- ... and set the upwind
 NavierStokesDisc:set_conv_upwind(fullUpwind)

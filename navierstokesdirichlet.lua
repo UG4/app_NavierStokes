@@ -97,8 +97,8 @@ NavierStokesDisc = NavierStokes(fctUsed, "Inner", discType)
 
 if discType=="staggered" then
 	-- set upwind
-	noUpwind = NavierStokesCRNoUpwind();
-	fullUpwind = NavierStokesCRFullUpwind();
+	noUpwind = NavierStokesNoUpwind();
+	fullUpwind = NavierStokesFullUpwind();
 	NavierStokesDisc:set_conv_upwind(noUpwind)
 	
 else

@@ -60,9 +60,9 @@ fctUsed = fctUsed .. ", p"
 NavierStokesDisc = NavierStokes(fctUsed, "Inner", "staggered")
 	
 -- set upwind
-noUpwind = NavierStokesCRNoUpwind();
-fullUpwind = NavierStokesCRFullUpwind();
-weightedUpwind = NavierStokesCRWeightedUpwind(0.6);
+noUpwind = NavierStokesNoUpwind();
+fullUpwind = NavierStokesFullUpwind();
+weightedUpwind = NavierStokesWeightedUpwind(0.6);
 NavierStokesDisc:set_conv_upwind(weightedUpwind)
 
 NavierStokesDisc:set_peclet_blend(false)

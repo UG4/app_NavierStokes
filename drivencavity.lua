@@ -76,9 +76,9 @@ approxSpace:print_local_dof_statistic(2)
 NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discType)
 
 if discType=="staggered" then
-	noUpwind = NavierStokesCRNoUpwind();
-	fullUpwind = NavierStokesCRFullUpwind();
-	weightedUpwind = NavierStokesCRWeightedUpwind(0.5);
+	noUpwind = NavierStokesNoUpwind();
+	fullUpwind = NavierStokesFullUpwind();
+	weightedUpwind = NavierStokesWeightedUpwind(0.5);
 	NavierStokesDisc:set_conv_upwind(weightedUpwind)
 else	
 	--upwind = NavierStokesNoUpwind();
