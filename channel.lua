@@ -16,7 +16,7 @@
 ug_load_script("ug_util.lua")
 
 order = util.GetParamNumber("-order", 1)
-discType   = util.GetParam("-type", "stab")
+discType   = util.GetParam("-type", "fv1")
 
 -- Depending on the dimension we will choose our domain object
 -- (either 1d, 2d or 3d) and associated discretization objects. Note that
@@ -75,7 +75,7 @@ elseif  dim == 3 then VelCmp = {"u", "v", "w"}; FctCmp = {"u", "v", "w", "p"};
 else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
 -- we add the velocity and pressure as Lagrange Ansatz function of first order
-if discType == "stab" then
+if discType == "fv1" then
 	approxSpace:add_fct(FctCmp, "Lagrange", 1) 
 elseif discType == "fv" then
 	approxSpace:add_fct(VelCmp, "Lagrange", order) 
@@ -262,7 +262,7 @@ op = AssembledOperator(domainDisc)
 -- as solver for the linearized problem and set the convergence check. If you
 -- want to you can also set the line search.
 newtonSolver = NewtonSolver(op)
-newtonSolver:set_linear_solver(LU())
+newtonSolver:set_linear_solver(solver)
 newtonSolver:set_convergence_check(newtonConvCheck)
 --newtonSolver:set_line_search(newtonLineSearch)
 newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
