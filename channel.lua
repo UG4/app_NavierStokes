@@ -15,6 +15,9 @@
 -- are used by 'util.SomeFunction'
 ug_load_script("ug_util.lua")
 
+order = util.GetParamNumber("-order", 1)
+discType   = util.GetParam("-type", "stab")
+
 -- Depending on the dimension we will choose our domain object
 -- (either 1d, 2d or 3d) and associated discretization objects. Note that
 -- we're using some methods defined in "ug_util.lua" here. The dimesion is
@@ -27,7 +30,7 @@ dim = util.GetParamNumber("-dim", 2) -- default dimension is 2.
 -- there are block structured matrices or simple double-valued matrices. We
 -- decide to use the double-valued CSR Matrix. This is the default case for the
 -- Algebra chooser and so we leave the intiallizer of the AlgebraChooser empty.
-InitUG(dim, AlgebraType("CPU", dim+1));
+InitUG(dim, AlgebraType("CPU", 1));
 
 -- Next, we decide which grid to use. This can again be passed as a command line
 -- option or a default value is used.
@@ -45,6 +48,8 @@ print("    dim        	= " .. dim)
 print("    numTotalRefs = " .. numRefs)
 print("    numPreRefs 	= " .. numPreRefs)
 print("    grid       	= " .. gridName)
+print("    order        = " .. order)
+print("    type         = " .. discType)
 
 --------------------------------------------------------------------------------
 -- Loading Domain and Domain Refinement
@@ -70,14 +75,19 @@ elseif  dim == 3 then VelCmp = {"u", "v", "w"}; FctCmp = {"u", "v", "w", "p"};
 else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
 -- we add the velocity and pressure as Lagrange Ansatz function of first order
-approxSpace:add_fct(FctCmp, "Lagrange", 1) 
+if discType == "stab" then
+	approxSpace:add_fct(FctCmp, "Lagrange", 1) 
+elseif discType == "fv" then
+	approxSpace:add_fct(VelCmp, "Lagrange", order) 
+	approxSpace:add_fct("p", "Lagrange", order-1) 
+else print("Disc Type '"..discType.."' not supported."); exit(); end
 
 -- finally we print some statistic on the distributed dofs
 approxSpace:init_levels()
 approxSpace:init_top_surface()
 approxSpace:print_statistic()
 
-OrderLex(approxSpace, "lr");
+--OrderLex(approxSpace, "lr");
 --OrderCuthillMcKee(approxSpace, true);
 
 --------------------------------------------------------------------------------
@@ -102,7 +112,7 @@ OrderLex(approxSpace, "lr");
 -- that are in the subset "Inner". If we would have several domains, where we
 -- would like to do the same, this could be done by passing a list of subsets
 -- separated by ',', (e.g. "Inner1, Inner2, Inner3").
-NavierStokesDisc = NavierStokes(FctCmp, {"Inner"})
+NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discType)
 
 -- Now, we have to setup the stabilization, that is used for the Continuity Equation.
 -- The stabilization is passed to the Navier-Stokes elem disc as an object.
@@ -207,7 +217,7 @@ gmg = GeometricMultiGrid(approxSpace)
 gmg:set_discretization(domainDisc)
 gmg:set_base_level(0)
 gmg:set_base_solver(LU())
-gmg:set_smoother(ILU())
+gmg:set_smoother(ILUT())
 gmg:set_cycle_type(1)
 gmg:set_num_presmooth(2)
 gmg:set_num_postsmooth(2)
@@ -252,7 +262,7 @@ op = AssembledOperator(domainDisc)
 -- as solver for the linearized problem and set the convergence check. If you
 -- want to you can also set the line search.
 newtonSolver = NewtonSolver(op)
-newtonSolver:set_linear_solver(solver)
+newtonSolver:set_linear_solver(LU())
 newtonSolver:set_convergence_check(newtonConvCheck)
 --newtonSolver:set_line_search(newtonLineSearch)
 newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
