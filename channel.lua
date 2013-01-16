@@ -77,7 +77,7 @@ else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); en
 -- we add the velocity and pressure as Lagrange Ansatz function of first order
 if discType == "fv1" then
 	approxSpace:add_fct(FctCmp, "Lagrange", 1) 
-elseif discType == "fv" then
+elseif discType == "fv" or discType == "fe" then
 	approxSpace:add_fct(VelCmp, "Lagrange", order) 
 	approxSpace:add_fct("p", "Lagrange", order-1) 
 else print("Disc Type '"..discType.."' not supported."); exit(); end
@@ -265,7 +265,7 @@ newtonSolver = NewtonSolver(op)
 newtonSolver:set_linear_solver(solver)
 newtonSolver:set_convergence_check(newtonConvCheck)
 --newtonSolver:set_line_search(newtonLineSearch)
-newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
+--newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 
 -- Now we can apply the newton solver. A newton itertation is performed to find
 -- the solution.
