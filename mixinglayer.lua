@@ -16,17 +16,30 @@ elemType = util.GetParam("-elem", "quads")
 
 InitUG(dim, AlgebraType("CPU", 1));
 
+-- Setup from John LES book (p. 200) computation on [-1 1] square
+sigma0=1.0/14.0
+winf=1
+cnoise=0.01
+viscosity=1/140000
+timeUnit=sigma0/winf
+
 if 	dim == 2 then
 	if elemType == "tri" then 
---		gridName = util.GetParam("-grid", "grids/dc_tri.ugx")
+		gridName = util.GetParam("-grid", "unit_square/unit_square_tri_4bnd.ugx")
 	else
 		gridName = util.GetParam("-grid", "unit_square/unit_square_quads_2x2_4bnd.ugx")
 	end
 else print("Chosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
-dt = util.GetParamNumber("-dt", 0.1)
+dt = util.GetParamNumber("-dt", -0.1)
+dtTimeUnit = util.GetParamNumber("-dtScale", 0.1)*timeUnit
+timeMethod = util.GetParam("-timeMethod","CN");
 numTimeSteps =  util.GetParamNumber("-numTimeSteps", 100)
 numPreRefs = util.GetParamNumber("-numPreRefs", 0)
 numRefs = util.GetParamNumber("-numRefs",3)
+
+if dt < 0 then
+	dt = dtTimeUnit
+end
 
 print(" Chosen Parameters:")
 print("    dim        	= " .. dim)
@@ -34,6 +47,7 @@ print("    numTotalRefs = " .. numRefs)
 print("    numPreRefs 	= " .. numPreRefs)
 print("    dt           = " .. dt)
 print("    numTimeSteps = " .. numTimeSteps)
+print("    time stepping method = " .. timeMethod)
 print("    grid       	= " .. gridName)
 
 --------------------------------------------
@@ -70,13 +84,6 @@ u = GridFunction(approxSpace);
 -- OrderCRCuthillMcKee(approxSpace,u,true);
 -- OrderLex(approxSpace, "lr");
 
-
--- Setup from John LES book computation on [-1 1] square
-sigma0=1.0/14.0
-winf=1
-cnoise=0.01
-viscosity=140000
-
 --------------------------------
 --------------------------------
 -- Discretization
@@ -108,7 +115,7 @@ NavierStokesDisc:set_laplace(false)
 ----------------------------------
 
 viscosityData = CRSmagorinskyTurbViscData(approxSpace,u,0.1)
-viscosityData:set_kinematic_viscosity(1/140000);
+viscosityData:set_kinematic_viscosity(viscosity);
 NavierStokesDisc:set_kinematic_viscosity(viscosityData);
 NavierStokesDisc:set_laplace(false);
 
@@ -153,8 +160,21 @@ domainDisc:add(OutletDiscBottom)
 -- create operator from discretization
 
 -- create time discretization
-timeDisc = ThetaTimeStep(domainDisc)
-timeDisc:set_theta(0.5) -- 1.0 is implicit euler
+if timeMethod=="CN" then
+	timeDisc = ThetaTimeStep(domainDisc)
+	timeDisc:set_theta(0.5) -- Crank-Nicolson method
+end
+if timeMethod=="Euler" then
+	timeDisc = ThetaTimeStep(domainDisc)
+	timeDisc:set_theta(1) -- implicit Euler
+end	
+if timeMethod=="FracStep" then
+	timeDisc = ThetaTimeStep(domainDisc,"FracStep")
+end
+if timeMethod=="Alexander" then
+	timeDisc = ThetaTimeStep(domainDisc, "Alexander")
+end
+
 op = AssembledOperator(timeDisc)
 
 op:init()
@@ -191,7 +211,7 @@ vanka:set_damp(0.9)
 
 vankaSolver = LinearSolver()
 vankaSolver:set_preconditioner(vanka)
-vankaSolver:set_convergence_check(ConvCheck(100000, 1e-5, 1e-1, true))
+vankaSolver:set_convergence_check(ConvCheck(100000, 1e-5, 1e-1, false))
 
 baseConvCheck = ConvCheck()
 baseConvCheck:set_maximum_steps(10000)
@@ -217,7 +237,7 @@ vankaBase:set_convergence_check(baseConvCheck)
 gmg = GeometricMultiGrid(approxSpace)
 gmg:set_discretization(domainDisc)
 gmg:set_base_level(0)
-gmg:set_base_solver(ilutSolver)
+gmg:set_base_solver(vankaSolver)
 gmg:set_smoother(vanka)
 gmg:set_cycle_type(1)
 gmg:set_num_presmooth(2)
@@ -240,8 +260,8 @@ gmgSolver:set_convergence_check(ConvCheck(10000, 1e-5, 1e-1, true))
 -- choose a solver
 solver = BiCGStabSolver
 solver = vankaSolver
--- solver = gmgSolver
-solver = ilutSolver
+solver = gmgSolver
+-- solver = ilutSolver
 
 newtonConvCheck = ConvCheck()
 newtonConvCheck:set_maximum_steps(10000)
@@ -324,36 +344,51 @@ for step = 1, numTimeSteps do
 	-- choose time step
 	do_dt = dt
 	
-	-- setup time Disc for old solutions and timestep
-	timeDisc:prepare_step(solTimeSeries, do_dt)
+	for stage = 1, timeDisc:num_stages() do
 	
-	-- prepare newton solver
-	if newtonSolver:prepare(u) == false then 
-		print ("Newton solver failed at step "..step.."."); exit(); 
-	end 
+		if timeDisc:num_stages() > 1 then
+			timeDisc:set_stage(stage)
+			print("      +++ STAGE " .. stage .. " BEGIN ++++++")
+		end
 	
-	-- apply newton solver
-	if newtonSolver:apply(u) == false then 
-		print ("Newton solver failed at step "..step.."."); exit(); 
-	end 
+		-- setup time Disc for old solutions and timestep
+		timeDisc:prepare_step(solTimeSeries, do_dt)
+	
+		-- prepare newton solver
+		if newtonSolver:prepare(u) == false then 
+			print ("Newton solver failed at step "..step.."."); exit(); 
+		end 
+	
+		-- apply newton solver
+		if newtonSolver:apply(u) == false then 
+			print ("Newton solver failed at step "..step.."."); exit(); 
+		end 
 
-	-- update new time
-	time = solTimeSeries:time(0) + do_dt
+		-- update new time
+		time = solTimeSeries:time(0) + do_dt
 	
-	-- get oldest solution
-	oldestSol = solTimeSeries:oldest()
+		-- get oldest solution
+		oldestSol = solTimeSeries:oldest()
 
-	-- copy values into oldest solution (we reuse the memory here)
-	VecScaleAssign(oldestSol, 1.0, u)
+		-- copy values into oldest solution (we reuse the memory here)
+		VecScaleAssign(oldestSol, 1.0, u)
 	
-	-- push oldest solutions with new values to front, oldest sol pointer is poped from end
-	solTimeSeries:push_discard_oldest(oldestSol, time)
+		-- push oldest solutions with new values to front, oldest sol pointer is poped from end
+		solTimeSeries:push_discard_oldest(oldestSol, time)
+	
+	end
 
 	print("++++++ TIMESTEP " .. step .. "  END ++++++");
 	
 	-- compute vorticity
 	vort:set(0)
 	vorticity(vort,u)
+	
+	-- compute CFL number 
+	cflNumber(u,do_dt)
+	
+	-- compute kinetic energy
+	kineticEnergy(u)
 	
 	-- plot solution
 
