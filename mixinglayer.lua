@@ -36,9 +36,41 @@ timeMethod = util.GetParam("-timeMethod","CN");
 numTimeSteps =  util.GetParamNumber("-numTimeSteps", 100)
 numPreRefs = util.GetParamNumber("-numPreRefs", 0)
 numRefs = util.GetParamNumber("-numRefs",3)
+turbViscMethod = util.GetParam("-turbulenceModel","Dyn")
+pressureSeparation = util.GetParamNumber("-pSeparation",1)
 
 if dt < 0 then
 	dt = dtTimeUnit
+end
+
+---------------------------------------------
+---------------------------------------------
+-- check for alternative writing from user
+-- and print user parameters
+---------------------------------------------
+---------------------------------------------
+
+if turbViscMethod=="dyn" or turbViscMethod=="dynamic" or turbViscMethod=="Dynamic" 
+	or turbViscMethod=="d" or turbViscMethod=="D"  then
+	turbViscMethod="Dyn"
+end
+if turbViscMethod=="sma" or turbViscMethod=="smagorinsky" or turbViscMethod=="Smagorinsky" 
+	or turbViscMethod=="S" or turbViscMethod=="s"  then
+	turbViscMethod="Sma"
+end
+if timeMethod=="cn" or timeMethod=="cranknicolson" 
+	or timeMethod=="Crank-Nicolson" or timeMethod=="CrankNicolson" then
+	timeMethod="CN"
+end
+if timeMethod=="euler" or timeMethod=="e" or timeMethod=="eul" 
+	or timeMethod=="Eul" then
+	timeMethod="Euler"
+end
+if timeMethod=="frac" or timeMethod=="fracstep" or timeMethod=="fracStep" or timeMethod=="f" then
+	timeMethod="FracStep"
+end
+if timeMethod=="alex" or timeMethod=="alexander" or timeMethod=="a" then
+	timeMethod="Alexander"
 end
 
 print(" Chosen Parameters:")
@@ -48,6 +80,7 @@ print("    numPreRefs 	= " .. numPreRefs)
 print("    dt           = " .. dt)
 print("    numTimeSteps = " .. numTimeSteps)
 print("    time stepping method = " .. timeMethod)
+print("    turbulence model = " .. turbViscMethod)
 print("    grid       	= " .. gridName)
 
 --------------------------------------------
@@ -114,7 +147,13 @@ NavierStokesDisc:set_laplace(false)
 ----------------------------------
 ----------------------------------
 
-viscosityData = CRSmagorinskyTurbViscData(approxSpace,u,0.1)
+if turbViscMethod=="Dyn" then
+	viscosityData = CRDynamicTurbViscData(approxSpace,u)
+end
+if turbViscMethod=="Sma" then
+	viscosityData = CRSmagorinskyTurbViscData(approxSpace,u,0.1)
+end	
+
 viscosityData:set_kinematic_viscosity(viscosity);
 NavierStokesDisc:set_kinematic_viscosity(viscosityData);
 NavierStokesDisc:set_laplace(false);
@@ -146,6 +185,12 @@ end
 rhs = LuaUserVector("source2d")
 
 NavierStokesDisc:set_source(rhs)
+
+if pressureSeparation==1 then
+	source = SeparatedPressureSource(approxSpace,u);
+	source:set_source(rhs)
+	NavierStokesDisc:set_source(source)
+end
 
 --------------------------------
 --------------------------------
@@ -195,16 +240,7 @@ Interpolate("StartValue_u2d", u, "u")
 Interpolate("StartValue_v2d", u, "v")
 Interpolate("StartValue_p2d", u, "p")
 
--- vanka = LineVanka(approxSpace)
--- vanka:set_num_steps(4,4,0,0,0,0)
--- vanka = CRILU()
---vanka = Vanka()
--- vanka:set_damp(0.9)
 vanka = Vanka()
--- vanka = BlockVanka(approxSpace)
--- vanka:set_blocksize(0.333334/2/2,0.333334/2/2,0.1)
--- vanka:update()
--- vanka:set_relax(0.9);
 vanka:set_damp(0.9)
 
 -- vanka = DiagVanka()
@@ -338,6 +374,8 @@ tBefore = os.clock()
 solTimeSeries = SolutionTimeSeries()
 solTimeSeries:push(uOld, time)
 
+function zero(x,y,t) return 0 end
+
 for step = 1, numTimeSteps do
 	print("++++++ TIMESTEP " .. step .. " BEGIN ++++++")
 
@@ -363,6 +401,22 @@ for step = 1, numTimeSteps do
 		if newtonSolver:apply(u) == false then 
 			print ("Newton solver failed at step "..step.."."); exit(); 
 		end 
+		
+		
+		if pressureSeparation==1 then
+			source:update()
+			Interpolate("zero", u, "p")
+			
+			-- prepare newton solver
+			if newtonSolver:prepare(u) == false then 
+				print ("Newton solver failed at step "..step.."."); exit(); 
+			end 
+		
+			-- apply newton solver
+			if newtonSolver:apply(u) == false then 
+				print ("Newton solver failed at step "..step.."."); exit(); 
+			end 
+		end
 
 		-- update new time
 		time = solTimeSeries:time(0) + do_dt
@@ -377,8 +431,9 @@ for step = 1, numTimeSteps do
 		solTimeSeries:push_discard_oldest(oldestSol, time)
 	
 	end
-
-	print("++++++ TIMESTEP " .. step .. "  END ++++++");
+	
+		
+	print ("Time units = ".. time/timeUnit);
 	
 	-- compute vorticity
 	vort:set(0)
@@ -403,7 +458,8 @@ for step = 1, numTimeSteps do
 	outv = VTKOutput()
 	outv:select_element("c","c")
 	outv:print("vorticity", vort,step,time)
-
+	print(" ")
+	print("++++++ TIMESTEP " .. step .. "  END ++++++");
 end
 
 tAfter = os.clock()
