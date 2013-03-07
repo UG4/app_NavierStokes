@@ -16,8 +16,8 @@
 --  # chose p
 --  p:=x;
 --  # rhs is chosen so that Navier-Stokes system is fulfilled
---  rhsu:=factor(simplify(-diff(diff(u,x),x)-diff(diff(u,y),y))+u*diff(u,x)+v*diff(u,y)+diff(p,x));
---  rhsv:=factor(simplify(-diff(diff(v,x),x)-diff(diff(v,y),y))+u*diff(v,x)+v*diff(v,y)+diff(p,y));
+--  rhsu:=factor(simplify(-1/R*diff(diff(u,x),x)-1/R*diff(diff(u,y),y)+u*diff(u,x)+v*diff(u,y)+diff(p,x)));
+--  rhsv:=factor(simplify(-1/R*diff(diff(v,x),x)-1/R*diff(diff(v,y),y)+u*diff(v,x)+v*diff(v,y)+diff(p,y)));
 --
 ------------------------------------------------------------------------------------------------------
 
@@ -30,9 +30,12 @@ discType = util.GetParam("-type", "staggered")
 
 InitUG(dim, AlgebraType("CPU", 1));
 
+R=1000
+
 if 	dim == 2 then
 gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2.ugx")
--- gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_1x1.ugx")
+gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_1x1.ugx")
+-- gridName = util.GetParam("-grid", "grids/stretched_quads.ugx") 
 else print("Chosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
 numPreRefs = util.GetParamNumber("-numPreRefs", 0)
@@ -99,7 +102,7 @@ if discType=="staggered" then
 	-- set upwind
 	noUpwind = NavierStokesNoUpwind();
 	fullUpwind = NavierStokesFullUpwind();
-	NavierStokesDisc:set_conv_upwind(noUpwind)
+	NavierStokesDisc:set_conv_upwind(fullUpwind)
 	
 else
 	--upwind = NavierStokesNoUpwind();
@@ -129,7 +132,9 @@ NavierStokesDisc:set_peclet_blend(false)
 NavierStokesDisc:set_exact_jacobian(false)
 NavierStokesDisc:set_stokes(false)
 NavierStokesDisc:set_laplace(true)
-NavierStokesDisc:set_kinematic_viscosity(1.0);
+NavierStokesDisc:set_kinematic_viscosity(1.0/R);
+NavierStokesDisc:set_defect_upwind(false);
+NavierStokesDisc:set_defect_upwind(true);
 
 
 ----------------------------------
@@ -139,15 +144,19 @@ NavierStokesDisc:set_kinematic_viscosity(1.0);
 ----------------------------------
 
 function usol2d(x, y, t)
-	return x+2*y		
+	return 2*x^2*(1-x)^2*(y*(1-y)^2-y^2*(1-y))		
+--	return y;
 end
 
 function vsol2d(x,y,t)
-	return -4*x*x*x-y
+	return -2*y^2*(1-y)^2*(x*(1-x)^2-x^2*(1-x))
+--	return -x
 end
 
 function psol2d(x,y,t)
-	return x*y
+--	return x^3+y^3+0.5
+	return 0
+--	return x+y
 end
 
 function inletVel2d(x, y, t)
@@ -172,7 +181,12 @@ InletDisc:add("inletVel"..dim.."d", "Boundary")
 ----------------------------------
 
 function source2d(x, y, t)
-	return x+y-8*x*x*x,25*x-8*x*x*x-24*x*x*y+y
+	return 
+	3*x*x+
+(-4*y+12*x^2+12*y^2-24*x^3-8*y^3+24*x*y-72*x*y^2+48*x*y^3-48*x^2*y+72*x^2*y^2-48*x^2*y^3+48*x^3*y-24*x^4*y+12*x^4-16*x^3*y^3*R-20*x^4*y^2*R+36*x^5*y^2*R+28*x^3*y^4*R-28*x^6*y^2*R-24*x^3*y^5*R+80*x^4*y^3*R-140*x^4*y^4*R+120*x^4*y^5*R-144*x^5*y^3*R+252*x^5*y^4*R-216*x^5*y^5*R+112*x^6*y^3*R-32*x^7*y^3*R+8*x^7*y^2*R-196*x^6*y^4*R+168*x^6*y^5*R-40*x^4*y^6*R+72*x^5*y^6*R-56*x^6*y^6*R+56*x^7*y^4*R-48*x^7*y^5*R+16*x^7*y^6*R+8*x^3*y^6*R+4*x^3*y^2*R)/R
+	,
+	3*y*y+
+(4*x-12*x^2-12*y^2+8*x^3+24*y^3-24*x*y+48*x*y^2-48*x*y^3+72*x^2*y-72*x^2*y^2-48*x^3*y+48*x^3*y^2+24*x*y^4-12*y^4-16*x^3*y^3*R+80*x^3*y^4*R-144*x^3*y^5*R+28*x^4*y^3*R-140*x^4*y^4*R+252*x^4*y^5*R-24*x^5*y^3*R+120*x^5*y^4*R-216*x^5*y^5*R+8*x^6*y^3*R-40*x^6*y^4*R+72*x^6*y^5*R-196*x^4*y^6*R+168*x^5*y^6*R-56*x^6*y^6*R+112*x^3*y^6*R-20*x^2*y^4*R+36*x^2*y^5*R-28*x^2*y^6*R-32*x^3*y^7*R+56*x^4*y^7*R-48*x^5*y^7*R+16*x^6*y^7*R+8*x^2*y^7*R+4*x^2*y^3*R)/R
 end
 
 rhs = LuaUserVector("source2d")
@@ -195,54 +209,88 @@ u:set(0)
 
 function StartValue_u(x,y,t) return 0 end
 function StartValue_v(x,y,t) return 0 end
-function StartValue_p(x,y,t) return 0 end
+function StartValue_p(x,y,t) return 1 end
 
 Interpolate("StartValue_u", u, "u")
 Interpolate("StartValue_v", u, "v")
 Interpolate("StartValue_p", u, "p")
 
-gmg = GeometricMultiGrid(approxSpace)
-gmg:set_discretization(domainDisc)
-gmg:set_base_level(0)
-gmg:set_base_solver(LU())
-gmg:set_smoother(ILU())
-gmg:set_cycle_type(1)
-gmg:set_num_presmooth(2)
-gmg:set_num_postsmooth(2)
---gmg:set_debug(dbgWriter)
-
 vanka = Vanka()
-vanka = DiagVanka()
+vanka:set_damp(1)
+
+-- vanka = DiagVanka()
 
 vankaSolver = LinearSolver()
 vankaSolver:set_preconditioner(vanka)
-vankaSolver:set_convergence_check(ConvCheck(10000, 1e-10, 1e-12, true))
+vankaSolver:set_convergence_check(ConvCheck(10000, 1e-9, 1e-12, true))
 
+baseConvCheck = ConvCheck()
+baseConvCheck:set_maximum_steps(10000)
+baseConvCheck:set_minimum_defect(1e-7)
+baseConvCheck:set_reduction(1e-3)
+baseConvCheck:set_verbose(false)
+
+vankaBase = LinearSolver()
+vankaBase:set_preconditioner(DiagVanka())
+vankaBase:set_convergence_check(baseConvCheck)
+
+crilut = CRILUT()
+crilut:set_threshold(1e-1,1e-4,1e-4,1e-4)
+crilut:set_damp(1)
+-- CRILUT:set_info(true)
+ilutBase = ILUT()
+ilutBase:set_threshold(0)
+ilutBase:set_info(false)
+ilutSolver = LinearSolver()
+ilutSolver:set_preconditioner(crilut)
+ilutSolver:set_convergence_check(ConvCheck(100000, 5e-8, 1e-1, false))
+
+
+gmg = GeometricMultiGrid(approxSpace)
+gmg:set_discretization(domainDisc)
+gmg:set_base_level(0)
+gmg:set_base_solver(ilutSolver)
+gmg:set_smoother(crilut)
+gmg:set_cycle_type(1)
+gmg:set_num_presmooth(1)
+gmg:set_num_postsmooth(1)
+gmg:set_damp(MinimalResiduumDamping())
+gmg:add_prolongation_post_process(AverageComponent(approxSpace,"p"))
+-- gmg:set_damp(MinimalEnergyDamping())
+
+--gmg:set_debug(dbgWriter)
 -- create Linear Solver
-linSolver = BiCGStab()
-if type=="stabil" then
-	linSolver:set_preconditioner(gmg)
-else
-	linSolver:set_preconditioner(vanka)
-end
-linSolver:set_convergence_check(ConvCheck(100000, 1e-7, 1e-12, true))
+BiCGStabSolver = BiCGStab()
+BiCGStabSolver:set_preconditioner(gmg)
+BiCGStabSolver:set_convergence_check(ConvCheck(100000, 1e-7, 1e-3, true))
+
+gmgSolver = LinearSolver()
+gmgSolver:set_preconditioner(gmg)
+gmgSolver:set_convergence_check(ConvCheck(10000, 1e-7, 1e-2, true))
+
 
 -- choose a solver
--- solver = linSolver
-solver = vankaSolver
--- solver = LU()
--- solver = linSolver
+if discType=="stabil" then
+--	solver = linSolver
+else
+	solver = vankaSolver
+end
+solver = gmgSolver
+-- solver = ilutSolver
+-- solver = BiCGStabSolver
+-- solver = vankaSolver
 
 newtonConvCheck = ConvCheck()
-newtonConvCheck:set_maximum_steps(20)
-newtonConvCheck:set_minimum_defect(1e-6)
+newtonConvCheck:set_maximum_steps(100)
+newtonConvCheck:set_minimum_defect(1e-7)
 newtonConvCheck:set_reduction(1e-10)
+-- newtonConvCheck:set_reduction(0.9999999)
 newtonConvCheck:set_verbose(true)
 
 newtonLineSearch = StandardLineSearch()
 newtonLineSearch:set_maximum_steps(20)
 newtonLineSearch:set_lambda_start(1.0)
-newtonLineSearch:set_reduce_factor(0.5)
+newtonLineSearch:set_reduce_factor(0.85)
 newtonLineSearch:set_accept_best(true)
 
 dbgWriter = GridFunctionDebugWriter(approxSpace)
@@ -253,6 +301,10 @@ newtonSolver:set_linear_solver(solver)
 newtonSolver:set_convergence_check(newtonConvCheck)
 newtonSolver:set_line_search(newtonLineSearch)
 newtonSolver:set_debug(dbgWriter)
+
+tBefore = os.clock()
+
+NavierStokesDisc:set_conv_upwind(noUpwind)
 
 newtonSolver:init(op)
 
@@ -273,6 +325,55 @@ write("L2Error in v component is "..l2error .."\n");
 l2error = L2Error(pSolution, u, "p", 0.0, 1, "Inner")
 write("L2Error in p component is "..l2error .."\n");
 
+NavierStokesDisc:set_conv_upwind(noUpwind);
+
+source = SeparatedPressureSource(approxSpace,u)
+source:set_source(rhs)
+NavierStokesDisc:set_source(source)
+source:update()
+Interpolate("StartValue_p", u, "p")
+
+if newtonSolver:prepare(u) == false then
+	print ("Newton solver prepare failed."); exit();
+end
+
+if newtonSolver:apply(u) == false then
+	 print ("Newton solver apply failed."); exit();
+end
+
+l2error = L2Error(uSolution, u, "u", 0.0, 1, "Inner")
+write("L2Error in u component is "..l2error .."\n");
+l2error = L2Error(vSolution, u, "v", 0.0, 1, "Inner")
+write("L2Error in v component is "..l2error .."\n");
+l2error = L2Error(pSolution, u, "p", 0.0, 1, "Inner")
+write("L2Error in p component is "..l2error .."\n");
+
+
+-- Interpolate("StartValue_u", u, "u")
+-- Interpolate("StartValue_v", u, "v")
+-- Interpolate("StartValue_p", u, "p")
+	
+source = SeparatedPressureSource(approxSpace,u);
+source:set_source(rhs)
+NavierStokesDisc:set_source(source)
+-- Interpolate("StartValue_p", u, "p")
+	
+	for i=1,0 do
+
+		source:update()
+		Interpolate("StartValue_p", u, "p")
+		if newtonSolver:apply(u) == false then
+			print ("Newton solver apply failed."); exit();
+		end	
+	end
+
+-- l2error = L2Error(uSolution, u, "u", 0.0, 1, "Inner")
+-- write("L2Error in u component is "..l2error .."\n");
+-- l2error = L2Error(vSolution, u, "v", 0.0, 1, "Inner")
+-- write("L2Error in v component is "..l2error .."\n");
+-- l2error = L2Error(pSolution, u, "p", 0.0, 1, "Inner")
+-- write("L2Error in p component is "..l2error .."\n");
+
 
 out = VTKOutput()
 out:clear_selection()
@@ -283,4 +384,5 @@ out:select_element("v", "v")
 out:select_element("p", "p")
 out:print("NavierStokesSolution", u)
 
-print("done.")
+tAfter = os.clock()
+print("Computation took " .. tAfter-tBefore .. " seconds.");

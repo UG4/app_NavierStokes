@@ -7,6 +7,16 @@
 --
 --   Author: Christian Wehner
 --
+--  # construct u and v solution so that velocity is divergence-free
+--  g:=x*x*x+x*y+y*y;
+--  u:=diff(g,y);
+--  v:=-diff(g,x); 
+--  # chose p
+--  p:=x;
+--  # rhs is chosen so that Stokes system is fulfilled
+--  rhsu:=factor(simplify(-diff(diff(u,x),x)-diff(diff(u,y),y))+diff(p,x));
+--  rhsv:=factor(simplify(-diff(diff(v,x),x)-diff(diff(v,y),y))+diff(p,y));
+--
 -------------------------------------------------------------------
 
 ug_load_script("ug_util.lua")
@@ -21,6 +31,7 @@ InitUG(dim, AlgebraType("CPU", 1));
 if 	dim == 2 then
 gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_1x1.ugx")
 -- gridName = util.GetParam("-grid", "unit_square/unit_square_unstructured_tris_coarse.ugx")
+gridName = util.GetParam("-grid", "unit_square/unit_square_quads_2x2.ugx")
 else print("Chosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
 numPreRefs = util.GetParamNumber("-numPreRefs", 0)
@@ -69,6 +80,18 @@ approxSpace:init_levels()
 approxSpace:init_top_surface()
 approxSpace:print_statistic()
 approxSpace:print_local_dof_statistic(2)
+
+u = GridFunction(approxSpace)
+
+tBefore = os.clock()
+-- OrderCRCuthillMcKee(approxSpace,u,true)
+-- CROrderCuthillMcKee(approxSpace,u,true,false,false,true)
+-- CROrderSloan(approxSpace,u,false,true,false)
+-- CROrderKing(approxSpace,u,true,false,true,false)
+CROrderMinimumDegree(approxSpace,u,false,true,false)
+-- OrderLex(approxSpace, "lr");
+tAfter = os.clock()
+print("Ordering took " .. tAfter-tBefore .. " seconds.");
 
 --------------------------------
 --------------------------------
@@ -127,7 +150,7 @@ NavierStokesDisc:set_kinematic_viscosity(1.0);
 ----------------------------------
 
 function usol2d(x, y, t)
-	  return 0
+	  return y^3
 --    return x
 --    return 2*x*y*(x-1)*(y-1)*(-x*(x-1)*(2*y-1))
 --    return y*y
@@ -138,8 +161,9 @@ function vsol2d(x,y,t)
 --    return -3*x*x
 --    return -3*x*x-y
 --		return 2*x*y*(x-1)*(y-1)*(y*(y-1)*(2*x-1))
-		return x*x
+--		return -x
 --    return x
+	return 0
 end
 
 function psol2d(x,y,t)
@@ -162,15 +186,15 @@ dirichletBnd:add(pSolution, "p", "Boundary")
 ----------------------------------
 
 function source2d(x, y, t)
-	  return 0,-2
+--	  return 1,0
 --    return 4*(2*y-1)*(-6*x*y*y+6*x*x*y*y+y*y+6*x*y-6*x*x*y-y+3*x*x*x*x+3*x*x-6*x*x*x),-4*(2*x-1)*(6*x*x*y*y-6*x*x*y+x*x-6*x*y*y+6*x*y-x-6*y*y*y+3*y*y+3*y*y*y*y)
 --    return -2,-2
---    return  0,0
+	  return  0,0
 end
 
-rhs = LuaUserVector("source2d")
+-- rhs = LuaUserVector("source2d")
 
-NavierStokesDisc:set_source(rhs)
+-- NavierStokesDisc:set_source(rhs)
 
 --------------------------------
 --------------------------------
@@ -183,7 +207,6 @@ domainDisc:add(dirichletBnd)
 
 op = AssembledOperator(domainDisc)
 
-u = GridFunction(approxSpace)
 u:set(0)
 
 function StartValue_u(x,y,t) return 0 end
@@ -194,22 +217,45 @@ Interpolate("StartValue_u", u, "u")
 Interpolate("StartValue_v", u, "v")
 Interpolate("StartValue_p", u, "p")
 
+vanka = Vanka()
+vanka = DiagVanka()
+vanka:set_damp(0.9)
+
+vankaSolver = LinearSolver()
+vankaSolver:set_preconditioner(vanka)
+vankaSolver:set_convergence_check(ConvCheck(10000, 1e-10, 1e-12, false))
+
+ILUT = ILUT()
+ILUT:set_threshold(1e-0)
+ILUT:set_damp(1)
+ILUT:set_info(true)
+ilutSolver = LinearSolver()
+-- ilutSolver:set_preconditioner(ILU())
+ilutSolver:set_preconditioner(ILUT)
+ilutSolver:set_convergence_check(ConvCheck(100000, 1e-10, 1e-12, false))
+
+CRILUT = CRILUT()
+CRILUT:set_threshold(1e-0,1e-4,1e-4,1e-4)
+CRILUT:set_threshold(0)
+CRILUT:set_damp(1)
+CRILUT:set_info(true)
+crilutSolver = LinearSolver()
+-- crilutSolver:set_preconditioner(ILU())
+crilutSolver:set_preconditioner(CRILUT)
+crilutSolver:set_convergence_check(ConvCheck(100000, 1e-10, 1e-12, false))
+
 gmg = GeometricMultiGrid(approxSpace)
 gmg:set_discretization(domainDisc)
 gmg:set_base_level(0)
-gmg:set_base_solver(LU())
+gmg:set_base_solver(vankaSolver)
 gmg:set_smoother(ILU())
 gmg:set_cycle_type(1)
 gmg:set_num_presmooth(2)
 gmg:set_num_postsmooth(2)
+gmg:set_damp(MinimalResiduumDamping())
+-- gmg:add_restriction_post_process(AverageComponent(approxSpace,"p"))
+gmg:add_prolongation_post_process(AverageComponent(approxSpace,"p"))
 --gmg:set_debug(dbgWriter)
-
-vanka = Vanka()
--- vanka = DiagVanka()
-
-vankaSolver = LinearSolver()
-vankaSolver:set_preconditioner(vanka)
-vankaSolver:set_convergence_check(ConvCheck(10000, 1e-10, 1e-12, true))
 
 -- create Linear Solver
 linSolver = BiCGStab()
@@ -220,12 +266,19 @@ else
 end
 linSolver:set_convergence_check(ConvCheck(100000, 1e-10, 1e-12, true))
 
+gmgSolver = LinearSolver()
+gmgSolver:set_preconditioner(gmg)
+gmgSolver:set_convergence_check(ConvCheck(100000, 1e-10, 1e-12, true))
+
 -- choose a solver
 if discType=="stabil" then
 	solver = linSolver
 else
-	solver = vankaSolver
+	solver = gmgSolver
 end
+solver = gmgSolver
+solver = LU()
+-- solver = ilutSolver
 
 newtonConvCheck = ConvCheck()
 newtonConvCheck:set_maximum_steps(20)
@@ -256,9 +309,13 @@ end
 
 SaveVectorForConnectionViewer(u, "StartSolution.vec")
 
+tBefore = os.clock()
 if newtonSolver:apply(u) == false then
 	 print ("Newton solver apply failed."); exit();
 end
+tAfter = os.clock()
+print("Computation took " .. tAfter-tBefore .. " seconds.");
+
 
 l2error = L2Error(uSolution, u, "u", 0.0, 1, "Inner")
 write("L2Error in u component is "..l2error .."\n");

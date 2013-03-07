@@ -44,7 +44,17 @@ approxSpace:init_top_surface()
 approxSpace:print_statistic()
 approxSpace:print_local_dof_statistic(2)
 
+u = GridFunction(approxSpace)
+
+tBefore = os.clock()
+-- OrderCRCuthillMcKee(approxSpace,u,true)
+-- CROrderCuthillMcKee(approxSpace,u,true,false,false,true)
+-- CROrderSloan(approxSpace,u,false,false,true)
+-- CROrderKing(approxSpace,u,true,false,false,true)
+CROrderMinimumDegree(approxSpace,u,true,false,true)
 -- OrderLex(approxSpace, "lr");
+tAfter = os.clock()
+print("Ordering took " .. tAfter-tBefore .. " seconds.");
 
 --------------------------------
 --------------------------------
@@ -123,7 +133,6 @@ domainDisc:add(OutletDisc)
 op = AssembledOperator(domainDisc)
 op:init()
 
-u = GridFunction(approxSpace)
 u:set(0)
 
 function StartValue_u(x,y,t) return 0 end
@@ -134,7 +143,7 @@ Interpolate("StartValue_u", u, "u")
 Interpolate("StartValue_v", u, "v")
 Interpolate("StartValue_p", u, "p")
 
-OrderLex(approxSpace, "lr");
+-- OrderLex(approxSpace, "lr");
 
 vanka = LineVanka(approxSpace)
 vanka:set_num_steps(2,2,2,2)
@@ -142,7 +151,16 @@ vanka:set_damp(0.9)
 
 vankaSolver = LinearSolver()
 vankaSolver:set_preconditioner(vanka)
-vankaSolver:set_convergence_check(ConvCheck(100000, 1e-7, 2e-1, true))
+vankaSolver:set_convergence_check(ConvCheck(100000, 1e-7, 1e-1, true))
+
+CRILUT = CRILUT()
+CRILUT:set_threshold(1e-0,1e-1,1e-1,1e-1)
+-- CRILUT:set_threshold(1e-0)
+CRILUT:set_damp(0.9)
+CRILUT:set_info(true)
+ilutSolver = LinearSolver()
+ilutSolver:set_preconditioner(CRILUT)
+ilutSolver:set_convergence_check(ConvCheck(10000, 1e-7, 1e-1, true))
 
 baseConvCheck = ConvCheck()
 baseConvCheck:set_maximum_steps(10000)
@@ -160,11 +178,11 @@ gmg = GeometricMultiGrid(approxSpace)
 gmg:set_discretization(domainDisc)
 gmg:set_base_level(0)
 gmg:set_base_solver(vankaBase)
-gmg:set_smoother(vanka)
+gmg:set_smoother(CRILUT)
 gmg:set_cycle_type(1)
 gmg:set_damp(MinimalResiduumDamping())
-gmg:set_num_presmooth(1)
-gmg:set_num_postsmooth(1)
+gmg:set_num_presmooth(2)
+gmg:set_num_postsmooth(2)
 -- gmg:add_restriction_post_process(AverageComponent(approxSpace,"p"))
 -- gmg:add_prolongation_post_process(AverageComponent(approxSpace,"p"))
 
@@ -172,14 +190,16 @@ gmg:set_num_postsmooth(1)
 -- create Linear Solver
 BiCGStabSolver = BiCGStab()
 BiCGStabSolver:set_preconditioner(gmg)
-BiCGStabSolver:set_convergence_check(ConvCheck(100000, 1e-7, 2e-1, true))
+BiCGStabSolver:set_convergence_check(ConvCheck(100000, 1e-7, 1e-1, true))
 
 gmgSolver = LinearSolver()
 gmgSolver:set_preconditioner(gmg)
-gmgSolver:set_convergence_check(ConvCheck(10000, 1e-7, 2e-1, true))
+gmgSolver:set_convergence_check(ConvCheck(10000, 1e-7, 1e-1, true))
 
 -- choose a solver
 solver = gmgSolver
+-- solver = ilutSolver
+-- solver = vankaSolver
 
 newtonConvCheck = ConvCheck()
 newtonConvCheck:set_maximum_steps(50)
