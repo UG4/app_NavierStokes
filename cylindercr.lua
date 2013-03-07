@@ -1,6 +1,6 @@
 -------------------------------------------------------------------------------------------------------
 --
---  Cylinder Problem using staggered grid discretization on Crouzeix-Raviart type elements
+--  Cylinder Problem using fvcr grid discretization on Crouzeix-Raviart type elements
 --
 --  Author: Christian Wehner
 --
@@ -67,7 +67,7 @@ if dim >= 2 then fctUsed = fctUsed .. ", v" end
 if dim >= 3 then fctUsed = fctUsed .. ", w" end
 fctUsed = fctUsed .. ", p"
 
-NavierStokesDisc = NavierStokes(fctUsed, "Inner", "staggered")
+NavierStokesDisc = NavierStokes(fctUsed, "Inner", "fvcr")
 	
 -- set upwind
 noUpwind = NavierStokesNoUpwind();

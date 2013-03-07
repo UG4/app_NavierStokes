@@ -3,7 +3,7 @@
 --   Lua - Script to test the Navier-Stokes implementation
 --
 --	This script sets up a problem for the Navier-Stokes discretization
---	on staggered grid using Crouzeix-Raviart type elements
+--	on fvcr grid using Crouzeix-Raviart type elements
 --  (see cylinder.lua for collocated grid stabilization method)
 --
 --   Author: Christian Wehner
@@ -113,7 +113,7 @@ fctUsed = fctUsed .. ", p"
 -- that are in the subset "Inner". If we would have several domains, where we
 -- would like to do the same, this could be done by passing a list of subsets
 -- separated by ',', (e.g. "Inner1, Inner2, Inner3").
-NavierStokesDisc = NavierStokes(fctUsed, "Inner", "staggered")
+NavierStokesDisc = NavierStokes(fctUsed, "Inner", "fvcr")
 
 -- Now, we have to setup the stabilization, that is used for the Continuity Equation.
 -- The stabilization is passed to the Navier-Stokes elem disc as an object.

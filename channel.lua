@@ -141,8 +141,10 @@ stab:set_diffusion_length("FIVEPOINT")
 --stab:set_diffusion_length("COR")
 
 -- Next we set the options for the Navier-Stokes elem disc ...
+if discType == "fv1" then
 NavierStokesDisc:set_stabilization(stab)
 NavierStokesDisc:set_conv_upwind(upwind)
+end
 NavierStokesDisc:set_peclet_blend(false)
 NavierStokesDisc:set_exact_jacobian(false)
 NavierStokesDisc:set_stokes(true)

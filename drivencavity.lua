@@ -10,8 +10,8 @@ ug_load_script("ug_util.lua")
 
 dim = util.GetParamNumber("-dim", 2) -- default dimension is 2.
 
--- chose "staggered" or "fv1"
-discType = util.GetParam("-type", "staggered")
+-- chose "fvcr" or "fv1"
+discType = util.GetParam("-type", "fvcr")
 boolStat = util.GetParamNumber("-stat", 1)
 elemType = util.GetParam("-elem", "quad")
 
@@ -61,7 +61,7 @@ elseif  dim == 2 then VelCmp = {"u", "v"}; FctCmp = {"u", "v", "p"};
 elseif  dim == 3 then VelCmp = {"u", "v", "w"}; FctCmp = {"u", "v", "w", "p"};
 else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
-if discType=="staggered" then
+if discType=="fvcr" then
 	approxSpace:add_fct(VelCmp, "Crouzeix-Raviart")
 	approxSpace:add_fct("p", "piecewise-constant") 
 else
@@ -80,7 +80,7 @@ approxSpace:print_local_dof_statistic(2)
 
 NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discType)
 
-if discType=="staggered" then
+if discType=="fvcr" then
 	noUpwind = NavierStokesNoUpwind();
 	fullUpwind = NavierStokesFullUpwind();
 	weightedUpwind = NavierStokesWeightedUpwind(0.5);
@@ -145,7 +145,7 @@ end
 op:init()
 
 u = GridFunction(approxSpace)
-if discType=="staggered" then
+if discType=="fvcr" then
 	tBefore = os.clock()
 	-- OrderCRCuthillMcKee(approxSpace,u,true)
 	CROrderCuthillMcKee(approxSpace,u,true,false,false,true)

@@ -25,8 +25,8 @@ ug_load_script("ug_util.lua")
 
 dim = util.GetParamNumber("-dim", 2) -- default dimension is 2.
 
--- chose "staggered" or "stabil"
-discType = util.GetParam("-type", "staggered")
+-- chose "fvcr" or "stabil"
+discType = util.GetParam("-type", "fvcr")
 
 InitUG(dim, AlgebraType("CPU", 1));
 
@@ -67,7 +67,7 @@ dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubs
 -- All subset are ok. So we can create the Approximation Space
 approxSpace = ApproximationSpace(dom)
 
-if discType=="staggered" then
+if discType=="fvcr" then
 	if dim >= 1 then approxSpace:add_fct("u", "Crouzeix-Raviart") end
 	if dim >= 2 then approxSpace:add_fct("v", "Crouzeix-Raviart") end
 	if dim >= 3 then approxSpace:add_fct("w", "Crouzeix-Raviart") end
@@ -98,7 +98,7 @@ fctUsed = fctUsed .. ", p"
 
 NavierStokesDisc = NavierStokes(fctUsed, "Inner", discType)
 
-if discType=="staggered" then
+if discType=="fvcr" then
 	-- set upwind
 	noUpwind = NavierStokesNoUpwind();
 	fullUpwind = NavierStokesFullUpwind();

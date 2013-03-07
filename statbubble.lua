@@ -10,8 +10,8 @@ ug_load_script("ug_util.lua")
 
 dim = util.GetParamNumber("-dim", 2) -- default dimension is 2.
 
--- chose "staggered" or "stabil"
-discType = util.GetParam("-type", "staggered")
+-- chose "fvcr" or "stabil"
+discType = util.GetParam("-type", "fvcr")
 elemType = util.GetParam("-elem", "quads")
 
 InitUG(dim, AlgebraType("CPU", 1));
@@ -105,7 +105,7 @@ if dim >= 2 then fctUsed = fctUsed .. ", v" end
 if dim >= 3 then fctUsed = fctUsed .. ", w" end
 fctUsed = fctUsed .. ", p"
 
-NavierStokesDisc = NavierStokes(fctUsed, "Inner", "staggered")
+NavierStokesDisc = NavierStokes(fctUsed, "Inner", "fvcr")
 
 -- set upwind
 noUpwind = NavierStokesNoUpwind();
