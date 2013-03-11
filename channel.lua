@@ -16,6 +16,8 @@
 ug_load_script("ug_util.lua")
 
 order = util.GetParamNumber("-order", 1)
+vorder = util.GetParamNumber("-vorder", order)
+porder = util.GetParamNumber("-porder", order-1)
 discType   = util.GetParam("-type", "fv1")
 
 -- Depending on the dimension we will choose our domain object
@@ -78,8 +80,8 @@ else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); en
 if discType == "fv1" then
 	approxSpace:add_fct(FctCmp, "Lagrange", 1) 
 elseif discType == "fv" or discType == "fe" then
-	approxSpace:add_fct(VelCmp, "Lagrange", order) 
-	approxSpace:add_fct("p", "Lagrange", order-1) 
+	approxSpace:add_fct(VelCmp, "Lagrange", vorder) 
+	approxSpace:add_fct("p", "Lagrange", porder) 
 else print("Disc Type '"..discType.."' not supported."); exit(); end
 
 -- finally we print some statistic on the distributed dofs
@@ -239,7 +241,7 @@ solver = linSolver
 -- that this class derives from a general IConvergenceCheck-Interface and
 -- also more specialized or self-coded convergence checks could be used.
 newtonConvCheck = ConvCheck()
-newtonConvCheck:set_maximum_steps(100)
+newtonConvCheck:set_maximum_steps(10)
 newtonConvCheck:set_minimum_defect(1e-16)
 newtonConvCheck:set_reduction(1e-6)
 newtonConvCheck:set_verbose(true)
