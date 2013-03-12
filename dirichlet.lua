@@ -88,7 +88,11 @@ if discType=="fv1" then
 	approxSpace:add_fct(FctCmp, "Lagrange", 1) 
 end
 if discType=="fv" or discType=="fe" then
-	approxSpace:add_fct(VelCmp, "Lagrange", vorder)
+	if porder==0 and vorder==1 then
+		approxSpace:add_fct(VelCmp, "Crouzeix-Raviart",1)
+	else
+		approxSpace:add_fct(VelCmp, "Lagrange",vorder)
+	end
 	if porder==0 then
 		approxSpace:add_fct("p", "piecewise-constant") 
     else 
