@@ -147,6 +147,11 @@ if discType == "fv1" then
 NavierStokesDisc:set_stabilization(stab)
 NavierStokesDisc:set_conv_upwind(upwind)
 end
+if discType == "fe" then
+	if porder == vorder then
+		NavierStokesDisc:set_stabilization(3)
+	end
+end
 NavierStokesDisc:set_peclet_blend(false)
 NavierStokesDisc:set_exact_jacobian(false)
 NavierStokesDisc:set_stokes(true)
