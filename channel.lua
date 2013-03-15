@@ -71,9 +71,20 @@ else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); en
 -- we add the velocity and pressure as Lagrange Ansatz function of first order
 if discType == "fv1" then
 	approxSpace:add_fct(FctCmp, "Lagrange", 1) 
-elseif discType == "fv" or discType == "fe" then
+elseif discType == "fv" then
 	approxSpace:add_fct(VelCmp, "Lagrange", vorder) 
 	approxSpace:add_fct("p", "Lagrange", porder) 
+elseif discType == "fe" then
+	if porder==0 then
+		approxSpace:add_fct(VelCmp, "Crouzeix-Raviart",1)
+		approxSpace:add_fct("p", "piecewise-constant") 
+	else
+		approxSpace:add_fct(VelCmp, "Lagrange", vorder) 
+		approxSpace:add_fct("p", "Lagrange", porder) 
+	end
+elseif discType=="fvcr" then
+	approxSpace:add_fct(VelCmp, "Crouzeix-Raviart")
+	approxSpace:add_fct("p", "piecewise-constant") 
 else print("Disc Type '"..discType.."' not supported."); exit(); end
 
 -- finally we print some statistic on the distributed dofs
