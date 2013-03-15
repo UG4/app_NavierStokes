@@ -158,27 +158,21 @@ NavierStokesDisc:set_stokes(true)
 NavierStokesDisc:set_laplace(true)
 
 -- ... and finally we choose a value for the kinematic viscosity.
-NavierStokesDisc:set_kinematic_viscosity(0.01);
+Viscosity = 0.01
+NavierStokesDisc:set_kinematic_viscosity(Viscosity);
 
 -- Next, lets create the boundary conditions. Lets define
 -- some functions in lua: Parameters are the coordinates of the point at which
 -- the value should be evaluated and the time of the current time-step.
 -- Note that we use math-functions from luas standard math-library.
 -- (here the . operator is used, since math is not an object but a library)
-function inletVel2d(x, y, t)
-	local Umax = 1.5
+Umax = 1.5
+function exactSolVel2d(x, y, t)
 	return (1.0-y*y) * Umax, 0.0
---	return 1.0, -1.0
---	return 0.0, 0.0
 end
 
-function WallVel2d(x, y, t)
-	return 0.0, 0.0
-end
-
-function outletVel2d(x, y, t)
-	local Umax = 1.5
-	return (1.0-y*y) * Umax
+function exactSolPress2d(x, y, t)
+	return -2 * Umax * Viscosity * x -- +/- arbitrary constant
 end
 
 -- setup Outlet
@@ -188,7 +182,7 @@ OutletDisc:add(0.0, "v", "Outlet")
 
 -- setup Inlet
 InletDisc = NavierStokesInflow(NavierStokesDisc)
-InletDisc:add("inletVel"..dim.."d", "Inlet")
+InletDisc:add("exactSolVel"..dim.."d", "Inlet")
 
 --setup Walles
 WallDisc = NavierStokesWall(NavierStokesDisc)
