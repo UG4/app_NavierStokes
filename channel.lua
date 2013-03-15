@@ -9,63 +9,55 @@
 --
 --------------------------------------------------------------------------------
 
--- Right at the beginning we load a lot of util functions, that help us basically
--- to programm a domain independent lua-script and provide some basic helper
--- functions. Most the util functions are in the namespace util, i.e. they
--- are used by 'util.SomeFunction'
 ug_load_script("ug_util.lua")
 
-order = util.GetParamNumber("-order", 1)
-vorder = util.GetParamNumber("-vorder", order)
-porder = util.GetParamNumber("-porder", order-1)
-discType   = util.GetParam("-type", "fv1")
+dim 		= util.GetParamNumber("-dim", 2)
+numRefs 	= util.GetParamNumber("-numRefs", 0)
+numPreRefs 	= util.GetParamNumber("-numPreRefs", 0)
 
--- Depending on the dimension we will choose our domain object
--- (either 1d, 2d or 3d) and associated discretization objects. Note that
--- we're using some methods defined in "ug_util.lua" here. The dimesion is
--- read in from the bash command line passing e.g. the option "-dim 2". If no
--- dim-option is specified the default value in the second argument of
--- GetParamNumber is used.
-dim = util.GetParamNumber("-dim", 2) -- default dimension is 2.
+order 		= util.GetParamNumber("-order", 1)
+vorder 		= util.GetParamNumber("-vorder", order)
+porder 		= util.GetParamNumber("-porder", order-1)
 
--- Next, we have to choose some algebra. ug4 provides several algebra, e.g.
--- there are block structured matrices or simple double-valued matrices. We
--- decide to use the double-valued CSR Matrix. This is the default case for the
--- Algebra chooser and so we leave the intiallizer of the AlgebraChooser empty.
-InitUG(dim, AlgebraType("CPU", 1));
+discType   	= util.GetParam("-type", "fv1")
+bStokes 	= util.HasParamOption("-stokes", "If defined, only Stokes Eq. computed")
+bNoLaplace 	= util.HasParamOption("-nolaplace", "If defined, only laplace term used")
+bExactJac 	= util.HasParamOption("-exactjac", "If defined, exact jacobian used")
+bPecletBlend= util.HasParamOption("-pecletblend", "If defined, Peclet Blend used")
 
--- Next, we decide which grid to use. This can again be passed as a command line
--- option or a default value is used.
+Umax 		= util.GetParamNumber("-umax", 1.5)
+Viscosity   = util.GetParamNumber("-visco", 0.01)
+
+-- Channel sizes as in grid file: [0,20] x [-1,1]
 if 	dim == 2 then gridName = util.GetParam("-grid", "grids/channel20Q18x10.ugx")
 else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
--- We additionally use parameters which allow to specify the number of
--- pre- and total-refinement steps (wrt domain distribution).
-numPreRefs = util.GetParamNumber("-numPreRefs", 0)
-numRefs = util.GetParamNumber("-numRefs", 0)
-
 -- Lets write some info about the choosen parameter
 print(" Choosen Parater:")
-print("    dim        	= " .. dim)
-print("    numTotalRefs = " .. numRefs)
-print("    numPreRefs 	= " .. numPreRefs)
-print("    grid       	= " .. gridName)
-print("    order        = " .. order)
-print("    type         = " .. discType)
+print("    dim              = " .. dim)
+print("    numTotalRefs     = " .. numRefs)
+print("    numPreRefs       = " .. numPreRefs)
+print("    grid             = " .. gridName)
+print("    porder           = " .. porder)
+print("    vorder           = " .. vorder)
+print("    type             = " .. discType)
+print("    only stokes      = " .. tostring(bStokes))
+print("    no laplace       = " .. tostring(bNoLaplace))
+print("    exact jacobian   = " .. tostring(bExactJac))
+print("    peclet blend     = " .. tostring(bPecletBlend))
+print("    Umax             = " .. Umax)
+print("    Viscosity        = " .. Viscosity)
 
 --------------------------------------------------------------------------------
 -- Loading Domain and Domain Refinement
 --------------------------------------------------------------------------------
 
+-- Init UG
+InitUG(dim, AlgebraType("CPU", 1));
+
 -- Create the domain and load a grid
 neededSubsets = {"Inner", "Inlet", "Outlet", "UpperWall", "LowerWall"}
 dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, neededSubsets)
-
--- We succesfully loaded and refined the domain. Now its time to setup an
--- ApproximationSpace on the domain. First, we check that the domain we use
--- has suitable subsets. This are parts of the domain, that partition the domain.
--- We need them, to handle e.g. boundary conditions on different parts of the
--- domain boundary.
 
 -- All subset are ok. So we can create the Approximation Space
 approxSpace = ApproximationSpace(dom)
@@ -85,95 +77,60 @@ elseif discType == "fv" or discType == "fe" then
 else print("Disc Type '"..discType.."' not supported."); exit(); end
 
 -- finally we print some statistic on the distributed dofs
-approxSpace:init_levels()
 approxSpace:init_top_surface()
 approxSpace:print_statistic()
-
---OrderLex(approxSpace, "lr");
---OrderCuthillMcKee(approxSpace, true);
 
 --------------------------------------------------------------------------------
 -- Discretization
 --------------------------------------------------------------------------------
 
--- We set up the discretization. The basic idea is to first create the single
--- components of the discretization (e.g. element discretization, boundary
--- conditions, ...) and then glue everything together in one DomainDiscretization
--- object that does nothing else than grouping the single components. When it
--- comes to assembling this object runs all scheduled discretization component
--- one after the other.
-
--- Lets begin with the element discretization. This is the core part for the
--- Navier-Stokes equation and provides the local stiffness- and mass matrices,
--- that are then added to the global matrices. 
-
--- Now we create the Navier-Stokes disc. Here we use a util function, that
--- creates the disc for the right world dimension according to the loaded domain
--- (this is handled internally, since the approxSpace knows the domain and the
--- domain knows the dimension). We tell the elem Disc to assemble on all elements
--- that are in the subset "Inner". If we would have several domains, where we
--- would like to do the same, this could be done by passing a list of subsets
--- separated by ',', (e.g. "Inner1, Inner2, Inner3").
+-- create NavierStokes disc
 NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discType)
-
--- Now, we have to setup the stabilization, that is used for the Continuity Equation.
--- The stabilization is passed to the Navier-Stokes elem disc as an object.
--- Therefore, we created it now and will pass it to the disc. But first, we have
--- to create the Upwind scheme, that is used inside the stabilization. There are
--- several possibilities:
-
---upwind = NavierStokesNoUpwind();
---upwind = NavierStokesFullUpwind();
---upwind = NavierStokesSkewedUpwind();
-upwind = NavierStokesLinearProfileSkewedUpwind();
---upwind = NavierStokesRegularUpwind();
---upwind = NavierStokesPositiveUpwind();
-
--- Now, we create the stabilization ...
-stab = NavierStokesFIELDSStabilization()
---stab = NavierStokesFLOWStabilization()
-
--- ... and set the upwind
-stab:set_upwind(upwind)
-
--- We also can choose, how the diffusion length of the stabilization is computed.
--- Under the option we pick on:
---stab:set_diffusion_length("RAW")
-stab:set_diffusion_length("FIVEPOINT")
---stab:set_diffusion_length("COR")
-
--- Next we set the options for the Navier-Stokes elem disc ...
-if discType == "fv1" then
-NavierStokesDisc:set_stabilization(stab)
-NavierStokesDisc:set_conv_upwind(upwind)
-end
-if discType == "fe" then
-	if porder == vorder then
-		NavierStokesDisc:set_stabilization(3)
-	end
-end
-NavierStokesDisc:set_peclet_blend(false)
-NavierStokesDisc:set_exact_jacobian(false)
-NavierStokesDisc:set_stokes(true)
-NavierStokesDisc:set_laplace(true)
-
--- ... and finally we choose a value for the kinematic viscosity.
-Viscosity = 0.01
+NavierStokesDisc:set_exact_jacobian(bExactJac)
+NavierStokesDisc:set_stokes(bStokes)
+NavierStokesDisc:set_laplace( not(bNoLaplace) )
 NavierStokesDisc:set_kinematic_viscosity(Viscosity);
 
--- Next, lets create the boundary conditions. Lets define
--- some functions in lua: Parameters are the coordinates of the point at which
--- the value should be evaluated and the time of the current time-step.
--- Note that we use math-functions from luas standard math-library.
--- (here the . operator is used, since math is not an object but a library)
-Umax = 1.5
-function exactSolVel2d(x, y, t)
-	return (1.0-y*y) * Umax, 0.0
+--upwind if available
+if type == "fv1" or type == "fvcr" then
+	--upwind = NavierStokesNoUpwind();
+	--upwind = NavierStokesFullUpwind();
+	--upwind = NavierStokesSkewedUpwind();
+	upwind = NavierStokesLinearProfileSkewedUpwind();
+	--upwind = NavierStokesRegularUpwind();
+	--upwind = NavierStokesPositiveUpwind();
+	NavierStokesDisc:set_conv_upwind(upwind)
+	
+	NavierStokesDisc:set_peclet_blend(bPecletBlend)
 end
 
-function exactSolPress2d(x, y, t)
-	return -2 * Umax * Viscosity * x -- +/- arbitrary constant
+-- fv1 must be stablilized
+if type == "fv1" then
+	stab = NavierStokesFIELDSStabilization()
+	--stab = NavierStokesFLOWStabilization()
+	stab:set_upwind(upwind)
+
+	--stab:set_diffusion_length("RAW")
+	stab:set_diffusion_length("FIVEPOINT")
+	--stab:set_diffusion_length("COR")
+
+	NavierStokesDisc:set_stabilization(stab)
 end
+
+-- fe must be stabilized for (Pk, Pk) space
+if discType == "fe" and porder == vorder then
+	NavierStokesDisc:set_stabilization(3)
+end
+
+
+-- exact solution of the problem
+function exactSolU2d(x, y, t) return (1.0-y*y) * Umax 				end
+function exactSolV2d(x, y, t) return 0.0              				end
+function exactSolP2d(x, y, t) return -2 * Umax * Viscosity * (x-20) end
+function exactSolVel2d(x, y, t)
+	return exactSolU2d(x,y,t), exactSolV2d(x,y,t)
+end
+
 
 -- setup Outlet
 OutletDisc = DirichletBoundary()
@@ -200,87 +157,42 @@ domainDisc:add(OutletDisc)
 -- Solution of the Problem
 --------------------------------------------------------------------------------
 
--- Now lets solve the problem. Create a vector of unknowns and a vector
--- which contains the right hand side. We will use the approximation space
--- to create the vectors. Make sure to create the vector for the same
--- dofs as set to linOp through linOp:set_dof_distribution.
--- Note that the vectors automatically have the right size.
-u = GridFunction(approxSpace)
-
--- Init the vector representing the unknowns with 0 to obtain
--- reproducable results.
-u:set(0)
-time = 0.0
-domainDisc:adjust_solution(u)
-
--- we need a linear solver that solves the linearized problem inside of the
--- newton solver iteration. We create an exact LU solver here and an HLibSolver.
-
+-- Linear Solver
 gmg = GeometricMultiGrid(approxSpace)
-gmg:set_discretization(domainDisc)
-gmg:set_base_level(0)
 gmg:set_base_solver(LU())
 gmg:set_smoother(ILUT())
-gmg:set_cycle_type(1)
 gmg:set_num_presmooth(2)
 gmg:set_num_postsmooth(2)
---gmg:set_debug(dbgWriter)
 
--- create Linear Solver
-linSolver = LinearSolver()
-linSolver:set_preconditioner(gmg)
-linSolver:set_convergence_check(ConvCheck(100, 1e-16, 1e-8, true))
+gmgSolver = LinearSolver()
+gmgSolver:set_preconditioner(gmg)
+gmgSolver:set_convergence_check(ConvCheck(100, 1e-10, 1e-8, true))
 
 -- choose a solver
-solver = linSolver
+linSolver = gmgSolver
 
--- Next we need a convergence check, that computes the defect within each
--- newton step and stops the iteration when a specified creterion is fullfilled.
--- For our purpose is the ConvCheck is sufficient. Please note,
--- that this class derives from a general IConvergenceCheck-Interface and
--- also more specialized or self-coded convergence checks could be used.
-newtonConvCheck = ConvCheck()
-newtonConvCheck:set_maximum_steps(10)
-newtonConvCheck:set_minimum_defect(1e-16)
-newtonConvCheck:set_reduction(1e-6)
-newtonConvCheck:set_verbose(true)
-
--- Within each newton step a line search can be applied. In order to do so an
--- implementation of the ILineSearch-Interface can be passed to the newton
--- solver. Here again we use the standard implementation.
-newtonLineSearch = StandardLineSearch()
-newtonLineSearch:set_maximum_steps(5)
-newtonLineSearch:set_lambda_start(1.0)
-newtonLineSearch:set_reduce_factor(0.5)
-newtonLineSearch:set_accept_best(true)
-
--- In ug4 we use Operator interfaces. An operator is simply a mapping from in
--- space into the other. A frequently used implementation of such a mapping is
--- the usage of discretizations, that map a solution (grid function) onto some
--- right-hand side. We can create an operator that uses the recently created
--- domainDisc.
-op = AssembledOperator(domainDisc)
-
--- Now we can set up the newton solver. We set the linear solver created above
--- as solver for the linearized problem and set the convergence check. If you
--- want to you can also set the line search.
-newtonSolver = NewtonSolver(op)
-newtonSolver:set_linear_solver(solver)
-newtonSolver:set_convergence_check(newtonConvCheck)
---newtonSolver:set_line_search(newtonLineSearch)
+-- Non-Linear Solver
+newtonSolver = NewtonSolver(AssembledOperator(domainDisc))
+newtonSolver:set_linear_solver(linSolver)
+newtonSolver:set_convergence_check(ConvCheck(10, 1e-12, 1e-6, true))
+--newtonSolver:set_line_search(StandardLineSearch(5, 1, 0.5, true))
 --newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 
--- Now we can apply the newton solver. A newton itertation is performed to find
--- the solution.
+-- Interpolate Start Iterate
+u = GridFunction(approxSpace)
+Interpolate("exactSolU"..dim.."d", u, "u")
+Interpolate("exactSolV"..dim.."d", u, "v")
+Interpolate("exactSolP"..dim.."d", u, "p")
+--u:set(0.0)
+
+-- Apply the newton solver. A newton itertation is performed to find the solution.
 if newtonSolver:apply(u) == false then
 	 print ("Newton solver apply failed."); exit();
 end
 
--- Finally we're nearly done. The only thing left to do is to write the
--- solution to a file which can then be examined using e.g. Paraview.
--- (Open "Solution.vtu" in paraview to view the complete domain
+-- Output of solution
 vtkWriter = VTKOutput()
 vtkWriter:select_all(false)
 vtkWriter:select_nodal(VelCmp, "velocity")
 vtkWriter:select_nodal("p", "pressure")
-vtkWriter:print("Solution", u)
+vtkWriter:print("Channel", u)
