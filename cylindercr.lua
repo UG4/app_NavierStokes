@@ -73,7 +73,7 @@ NavierStokesDisc = NavierStokes(fctUsed, "Inner", "fvcr")
 noUpwind = NavierStokesNoUpwind();
 fullUpwind = NavierStokesFullUpwind();
 weightedUpwind = NavierStokesWeightedUpwind(0.6);
-NavierStokesDisc:set_conv_upwind(weightedUpwind)
+NavierStokesDisc:set_upwind(weightedUpwind)
 
 NavierStokesDisc:set_peclet_blend(false)
 NavierStokesDisc:set_exact_jacobian(false)

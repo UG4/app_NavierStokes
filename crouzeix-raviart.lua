@@ -125,7 +125,7 @@ noUpwind = NavierStokesNoUpwind()
 fullUpwind = NavierStokesFullUpwind()
 
 -- ... and set the upwind
-NavierStokesDisc:set_conv_upwind(fullUpwind)
+NavierStokesDisc:set_upwind(fullUpwind)
 
 NavierStokesDisc:set_peclet_blend(false)
 NavierStokesDisc:set_exact_jacobian(false)

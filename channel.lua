@@ -11,19 +11,22 @@
 
 ug_load_script("ug_util.lua")
 
-dim 		= util.GetParamNumber("-dim", 2)
-numRefs 	= util.GetParamNumber("-numRefs", 0)
-numPreRefs 	= util.GetParamNumber("-numPreRefs", 0)
+dim 		= util.GetParamNumber("-dim", 2, "world dimension")
+numRefs 	= util.GetParamNumber("-numRefs", 0, "number of grid refinements")
+numPreRefs 	= util.GetParamNumber("-numPreRefs", 0, "number of prerefinements (parallel)")
 
-order 		= util.GetParamNumber("-order", 1)
-vorder 		= util.GetParamNumber("-vorder", order)
-porder 		= util.GetParamNumber("-porder", order-1)
+order 		= util.GetParamNumber("-order", 1, "order pressure and velocity space")
+vorder 		= util.GetParamNumber("-vorder", order, "order velocity space")
+porder 		= util.GetParamNumber("-porder", order-1, "order pressure space")
 
-discType   	= util.GetParam("-type", "fv1")
+type     	= util.GetParam("-type", "fv1", "Type of discretization")
 bStokes 	= util.HasParamOption("-stokes", "If defined, only Stokes Eq. computed")
 bNoLaplace 	= util.HasParamOption("-nolaplace", "If defined, only laplace term used")
 bExactJac 	= util.HasParamOption("-exactjac", "If defined, exact jacobian used")
 bPecletBlend= util.HasParamOption("-pecletblend", "If defined, Peclet Blend used")
+upwind      = util.GetParam("-upwind", "lps", "Upwind type")
+stab        = util.GetParam("-stab", "fields", "Stabilization type")
+diffLength  = util.GetParam("-difflength", "raw", "Diffusion length type")
 
 Umax 		= util.GetParamNumber("-umax", 1.5)
 Viscosity   = util.GetParamNumber("-visco", 0.01)
@@ -40,11 +43,14 @@ print("    numPreRefs       = " .. numPreRefs)
 print("    grid             = " .. gridName)
 print("    porder           = " .. porder)
 print("    vorder           = " .. vorder)
-print("    type             = " .. discType)
+print("    type             = " .. type)
 print("    only stokes      = " .. tostring(bStokes))
 print("    no laplace       = " .. tostring(bNoLaplace))
 print("    exact jacobian   = " .. tostring(bExactJac))
 print("    peclet blend     = " .. tostring(bPecletBlend))
+print("    upwind           = " .. upwind)
+print("    stab             = " .. stab)
+print("    diffLength       = " .. diffLength)
 print("    Umax             = " .. Umax)
 print("    Viscosity        = " .. Viscosity)
 
@@ -69,12 +75,12 @@ elseif  dim == 3 then VelCmp = {"u", "v", "w"}; FctCmp = {"u", "v", "w", "p"};
 else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
 -- we add the velocity and pressure as Lagrange Ansatz function of first order
-if discType == "fv1" then
+if type == "fv1" then
 	approxSpace:add_fct(FctCmp, "Lagrange", 1) 
-elseif discType == "fv" then
+elseif type == "fv" then
 	approxSpace:add_fct(VelCmp, "Lagrange", vorder) 
 	approxSpace:add_fct("p", "Lagrange", porder) 
-elseif discType == "fe" then
+elseif type == "fe" then
 	if porder==0 then
 		approxSpace:add_fct(VelCmp, "Crouzeix-Raviart",1)
 		approxSpace:add_fct("p", "piecewise-constant") 
@@ -82,10 +88,10 @@ elseif discType == "fe" then
 		approxSpace:add_fct(VelCmp, "Lagrange", vorder) 
 		approxSpace:add_fct("p", "Lagrange", porder) 
 	end
-elseif discType=="fvcr" then
+elseif type=="fvcr" then
 	approxSpace:add_fct(VelCmp, "Crouzeix-Raviart")
 	approxSpace:add_fct("p", "piecewise-constant") 
-else print("Disc Type '"..discType.."' not supported."); exit(); end
+else print("Disc Type '"..type.."' not supported."); exit(); end
 
 -- finally we print some statistic on the distributed dofs
 approxSpace:init_top_surface()
@@ -96,7 +102,7 @@ approxSpace:print_statistic()
 --------------------------------------------------------------------------------
 
 -- create NavierStokes disc
-NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discType)
+NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, type)
 NavierStokesDisc:set_exact_jacobian(bExactJac)
 NavierStokesDisc:set_stokes(bStokes)
 NavierStokesDisc:set_laplace( not(bNoLaplace) )
@@ -104,32 +110,17 @@ NavierStokesDisc:set_kinematic_viscosity(Viscosity);
 
 --upwind if available
 if type == "fv1" or type == "fvcr" then
-	--upwind = NavierStokesNoUpwind();
-	--upwind = NavierStokesFullUpwind();
-	--upwind = NavierStokesSkewedUpwind();
-	upwind = NavierStokesLinearProfileSkewedUpwind();
-	--upwind = NavierStokesRegularUpwind();
-	--upwind = NavierStokesPositiveUpwind();
-	NavierStokesDisc:set_conv_upwind(upwind)
-	
+	NavierStokesDisc:set_upwind(upwind)
 	NavierStokesDisc:set_peclet_blend(bPecletBlend)
 end
 
 -- fv1 must be stablilized
 if type == "fv1" then
-	stab = NavierStokesFIELDSStabilization()
-	--stab = NavierStokesFLOWStabilization()
-	stab:set_upwind(upwind)
-
-	--stab:set_diffusion_length("RAW")
-	stab:set_diffusion_length("FIVEPOINT")
-	--stab:set_diffusion_length("COR")
-
-	NavierStokesDisc:set_stabilization(stab)
+	NavierStokesDisc:set_stabilization(stab, diffLength)
 end
 
 -- fe must be stabilized for (Pk, Pk) space
-if discType == "fe" and porder == vorder then
+if type == "fe" and porder == vorder then
 	NavierStokesDisc:set_stabilization(3)
 end
 
@@ -185,7 +176,7 @@ linSolver = gmgSolver
 -- Non-Linear Solver
 newtonSolver = NewtonSolver(AssembledOperator(domainDisc))
 newtonSolver:set_linear_solver(linSolver)
-newtonSolver:set_convergence_check(ConvCheck(10, 1e-12, 1e-6, true))
+newtonSolver:set_convergence_check(ConvCheck(40, 1e-8, 1e-6, true))
 --newtonSolver:set_line_search(StandardLineSearch(5, 1, 0.5, true))
 --newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 
@@ -203,7 +194,6 @@ end
 
 -- Output of solution
 vtkWriter = VTKOutput()
-vtkWriter:select_all(false)
-vtkWriter:select_nodal(VelCmp, "velocity")
-vtkWriter:select_nodal("p", "pressure")
+vtkWriter:select(VelCmp, "velocity")
+vtkWriter:select("p", "pressure")
 vtkWriter:print("Channel", u)

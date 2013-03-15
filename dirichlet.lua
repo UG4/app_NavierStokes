@@ -126,7 +126,7 @@ if discType=="fvcr" then
 	-- set upwind
 	noUpwind = NavierStokesNoUpwind()
 	fullUpwind = NavierStokesFullUpwind()
-	NavierStokesDisc:set_conv_upwind(noUpwind)
+	NavierStokesDisc:set_upwind(noUpwind)
 	NavierStokesDisc:set_defect_upwind(false)
 	NavierStokesDisc:set_defect_upwind(true)
 end	
@@ -150,7 +150,7 @@ if discType=="fv1" then
 	NavierStokesDisc:set_stabilization(stab)
 	
 	-- set upwind
-	NavierStokesDisc:set_conv_upwind(upwind)
+	NavierStokesDisc:set_upwind(upwind)
 
 end
 

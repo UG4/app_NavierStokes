@@ -166,7 +166,7 @@ fieldsStab:set_diffusion_length("RAW")
 
 -- Next we set the options for the Navier-Stokes elem disc ...
 NavierStokesDisc:set_stabilization(fieldsStab)
-NavierStokesDisc:set_conv_upwind(fullUpwind)
+NavierStokesDisc:set_upwind(fullUpwind)
 NavierStokesDisc:set_peclet_blend(false)
 NavierStokesDisc:set_exact_jacobian(false)
 
