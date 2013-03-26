@@ -34,6 +34,7 @@ bNoLaplace 	= util.HasParamOption("-nolaplace", "If defined, only laplace term u
 bExactJac 	= util.HasParamOption("-exactjac", "If defined, exact jacobian used")
 bPecletBlend= util.HasParamOption("-pecletblend", "If defined, Peclet Blend used")
 upwind      = util.GetParam("-upwind", "no", "Upwind type")
+bPac        = util.HasParamOption("-pac", "If defined, pac upwind used")
 stab        = util.GetParam("-stab", "flow", "Stabilization type")
 diffLength  = util.GetParam("-difflength", "COR", "Diffusion length type")
 linred      = util.GetParam("-linred", 1e-2 , "Linear reduction")
@@ -70,6 +71,7 @@ print("    no laplace       = " .. tostring(bNoLaplace))
 print("    exact jacobian   = " .. tostring(bExactJac))
 print("    peclet blend     = " .. tostring(bPecletBlend))
 print("    upwind           = " .. upwind)
+print("    pac upwind       = " .. tostring(bPac))
 print("    stab             = " .. stab)
 print("    diffLength       = " .. diffLength)
 print("    linear reduction = " .. linred)
@@ -148,6 +150,8 @@ end
 -- fv1 must be stablilized
 if type == "fv1" then
 	NavierStokesDisc:set_stabilization(stab, diffLength)
+	--  use PAC upwind or not
+	NavierStokesDisc:set_pac_upwind(bPac)
 end
 
 -- fe must be stabilized for (Pk, Pk) space
@@ -273,8 +277,8 @@ end
 Interpolate("StartValue_p"..dim.."d", u, "p")
 
 egsSolver = LinearSolver()
-egsSolver:set_preconditioner(ElementGaussSeidel())
-egsSolver:set_convergence_check(ConvCheck(10000, 5e-8, linred, true))
+egsSolver:set_preconditioner(Vanka())
+egsSolver:set_convergence_check(ConvCheck(10000, 5e-8, linred, false))
 
 -- base solver
 ilut = ILUT()
@@ -290,13 +294,14 @@ elseif type=="fvcr" then
 	smoother=Vanka()
 elseif type=="fv" or type=="fe" then 
 	smoother=ElementGaussSeidel()
+	smoother=Vanka()
 end
 smoother:set_damp(0.95)
 
 gmg = GeometricMultiGrid(approxSpace)
 gmg:set_discretization(domainDisc)
 gmg:set_base_level(0)
-gmg:set_base_solver(ilutSolver)
+gmg:set_base_solver(egsSolver)
 gmg:set_smoother(smoother)
 gmg:set_cycle_type(1)
 gmg:set_num_presmooth(2)
@@ -315,7 +320,7 @@ if type=="fv1" then
 elseif type=="fvcr" then 
 	solver=gmgSolver
 elseif type=="fv" or type=="fe" then 
---	solver=egsSolver
+	solver=egsSolver
 --	solver=gmgSolver
 	solver=BiCGStabSolver
 end

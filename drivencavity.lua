@@ -18,6 +18,7 @@ bNoLaplace 	= util.HasParamOption("-nolaplace", "If defined, only laplace term u
 bExactJac 	= util.HasParamOption("-exactjac", "If defined, exact jacobian used")
 bPecletBlend= util.HasParamOption("-pecletblend", "If defined, Peclet Blend used")
 upwind      = util.GetParam("-upwind", "no", "Upwind type")
+bPac        = util.HasParamOption("-pac", "If defined, pac upwind used")
 stab        = util.GetParam("-stab", "flow", "Stabilization type")
 diffLength  = util.GetParam("-difflength", "COR", "Diffusion length type")
 linred      = util.GetParam("-linred", 1e-1 , "Linear reduction")
@@ -32,13 +33,17 @@ numTimeSteps =  util.GetParamNumber("-numTimeSteps", 5)
 numPreRefs = util.GetParamNumber("-numPreRefs", 0)
 numRefs = util.GetParamNumber("-numRefs",2)
 
-InitUG(dim, AlgebraType("CPU", 1));
+if type==fv1 then
+	InitUG(dim, AlgebraType("CPU", dim+1));
+else
+	InitUG(dim, AlgebraType("CPU", 1));
+end
 
 if 	dim == 2 then
 	if elemType == "tri" then 
 		gridName = util.GetParam("-grid", "grids/unit_square_01_tri_unstruct_4bnd.ugx")
 	else 
-		gridName = util.GetParam("-grid", "grids/dc_quads.ugx") 
+		gridName = util.GetParam("-grid", "grids/dc_quads.ugx")
 --		gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_2x2_four_bnd.ugx")	
 	end
 else print("Chosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
@@ -59,6 +64,7 @@ print("    no laplace          = " .. tostring(bNoLaplace))
 print("    exact jacobian      = " .. tostring(bExactJac))
 print("    peclet blend        = " .. tostring(bPecletBlend))
 print("    upwind              = " .. upwind)
+print("    pac upwind          = " .. tostring(bPac))
 print("    stab                = " .. stab)
 print("    diffLength          = " .. diffLength)
 print("    linear reduction    = " .. linred)
@@ -130,6 +136,8 @@ NavierStokesDisc:set_stokes(bStokes)
 NavierStokesDisc:set_laplace( not(bNoLaplace) )
 NavierStokesDisc:set_kinematic_viscosity(1.0/reynoldsNr);
 
+
+
 --upwind if available
 if type == "fv1" or type == "fvcr" then
 	NavierStokesDisc:set_upwind(upwind)
@@ -139,6 +147,8 @@ end
 -- fv1 must be stablilized
 if type == "fv1" then
 	NavierStokesDisc:set_stabilization(stab, diffLength)
+--  use PAC upwind or not
+	NavierStokesDisc:set_pac_upwind(bPac)
 end
 
 -- fe must be stabilized for (Pk, Pk) space
@@ -190,7 +200,7 @@ if type=="fvcr" then
 	print("Ordering took " .. tAfter-tBefore .. " seconds.");
 else
 	if type=="fv1" then
---		OrderCuthillMcKee(approxSpace,true)
+			OrderCuthillMcKee(approxSpace,true)
 	end
 end
 u:set(0)
@@ -209,7 +219,8 @@ ilutSolver:set_convergence_check(ConvCheck(100000,  lintol, linred, true))
 
 if type=="fv1" then 
 	ilutsmoother = ILUT()
-	ilutsmoother:set_threshold(1e-5)
+	ilutsmoother:set_threshold(1e-4)
+	ilutsmoother:set_info(true)
 	smoother=ilutsmoother
 elseif type=="fvcr" then 
 	smoother=Vanka()
@@ -217,7 +228,7 @@ elseif type=="fvcr" then
 elseif type=="fv" or type=="fe" then 
 	smoother=ElementGaussSeidel()
 end
-smoother:set_damp(0.9)
+smoother:set_damp(0.8)
 
 if type=="fv1" then 
 	basePre = ILUT()
