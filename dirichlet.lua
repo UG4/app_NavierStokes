@@ -41,7 +41,8 @@ linred      = util.GetParam("-linred", 1e-2 , "Linear reduction")
 nlintol     = util.GetParam("-nlintol", 1e-8, "Nonlinear tolerance")
 lintol      = util.GetParam("-lintol", nlintol*0.5, "Linear tolerance")
 nlinred     = util.GetParam("-nlinred", nlintol*0.1, "Nonlinear reduction")
-
+numPreRefs = util.GetParamNumber("-numPreRefs", 0)
+numRefs = util.GetParamNumber("-numRefs",2)
 
 if 	dim == 2 then
 	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2.ugx")
@@ -56,8 +57,7 @@ end
 
 InitUG(dim, AlgebraType("CPU", 1))
 
-numPreRefs = util.GetParamNumber("-numPreRefs", 0)
-numRefs = util.GetParamNumber("-numRefs",2)
+
 
 print(" Chosen Parameters:")
 print("    dim        	= " .. dim)
@@ -100,7 +100,11 @@ if type == "fv1" then
 	approxSpace:add_fct(FctCmp, "Lagrange", 1) 
 elseif type == "fv" then
 	approxSpace:add_fct(VelCmp, "Lagrange", vorder) 
-	approxSpace:add_fct("p", "Lagrange", porder) 
+	if porder==0 then
+		print("p order 0 not possible for fv type. Exiting.") exit()
+	else
+		approxSpace:add_fct("p", "Lagrange", porder) 
+	end
 elseif type == "fe" then
 	if porder==0 then
 		if vorder==1 then
@@ -289,11 +293,11 @@ ilutSolver:set_preconditioner(ilut)
 ilutSolver:set_convergence_check(ConvCheck(100000,  lintol, linred, false))
 
 if type=="fv1" then 
-	smoother=ILUT()
+	smoother=ILUT(1e-4)
 elseif type=="fvcr" then 
 	smoother=Vanka()
 elseif type=="fv" or type=="fe" then 
-	smoother=ElementGaussSeidel()
+	smoother=ElementGaussSeidel("vertex")
 	smoother=Vanka()
 end
 smoother:set_damp(0.95)
@@ -324,6 +328,10 @@ elseif type=="fv" or type=="fe" then
 --	solver=gmgSolver
 	solver=BiCGStabSolver
 end
+
+cr_ilut0 = CRILUT()
+cr_ilut1 = CRILUT(1e-3)
+cr_ilut2 = CRILUT(1e-2,1e-3,1e-3,1e-4)
 
 newtonConvCheck = ConvCheck()
 newtonConvCheck:set_maximum_steps(100)
@@ -372,6 +380,14 @@ end
 -- p would have to be adjusted by adding a reasonable constant
 -- l2error = L2Error("psol"..dim.."d", u, "p", 0.0, 1, "Inner")
 -- write("L2Error in p component is "..l2error .."\n")
+maxerror = MaxError("usol"..dim.."d", u, "u")
+write("Maximum error in u component is "..maxerror .."\n")
+maxerror = MaxError("vsol"..dim.."d", u, "v")
+write("Maximum error in v component is "..maxerror .."\n")
+if dim==3 then
+	maxerror = MaxError("wsol"..dim.."d", u, "w")
+	write("Maximum error in w component is "..maxerror .."\n")
+end
 
 vtkWriter = VTKOutput()
 vtkWriter:select(VelCmp, "velocity")
