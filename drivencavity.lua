@@ -21,10 +21,14 @@ upwind      = util.GetParam("-upwind", "no", "Upwind type")
 bPac        = util.HasParamOption("-pac", "If defined, pac upwind used")
 stab        = util.GetParam("-stab", "flow", "Stabilization type")
 diffLength  = util.GetParam("-difflength", "COR", "Diffusion length type")
+bPSep       = util.HasParamOption("-psep", "If defined, pressure separation used")
+bPGrad       = util.HasParamOption("-pgrad", "If defined, pressure gradient is used")
+bNoUpwindInDefect = util.HasParamOption("-noupwindindefect", "If defined, no upwind is used in defect")
 linred      = util.GetParam("-linred", 1e-1 , "Linear reduction")
 nlintol     = util.GetParam("-nlintol", 1e-5, "Nonlinear tolerance")
 lintol      = util.GetParam("-lintol", nlintol*0.5, "Linear tolerance")
 nlinred     = util.GetParam("-nlinred", nlintol*0.1, "Nonlinear reduction")
+bNoLineSearch  = util.HasParamOption("-noline", "If defined, no line search is used")
 boolStat = util.GetParamNumber("-stat", 1)
 elemType = util.GetParam("-elem", "quad")
 dt = util.GetParamNumber("-dt", 0.1)
@@ -64,15 +68,57 @@ print("    no laplace          = " .. tostring(bNoLaplace))
 print("    exact jacobian      = " .. tostring(bExactJac))
 print("    peclet blend        = " .. tostring(bPecletBlend))
 print("    upwind              = " .. upwind)
-print("    pac upwind          = " .. tostring(bPac))
-print("    stab                = " .. stab)
-print("    diffLength          = " .. diffLength)
+if type=="fv1" then
+	print("    pac upwind          = " .. tostring(bPac))
+	print("    stab                = " .. stab)
+	print("    diffLength          = " .. diffLength)
+end
+if type=="fvcr" then
+	print("    pressure separation = " .. tostring(bPSep))
+	print("    no upwind in defect = " .. tostring(bNoUpwindInDefect))
+	print("    p gradient use      = " .. tostring(bPGrad))
+end
+print("    no line search      = " .. tostring(bNoLineSearch))
 print("    linear reduction    = " .. linred)
 print("    linear tolerance    = " .. lintol)
 print("    nonlinear reduction = " .. nlinred)
 print("    nonlinear tolerance = " .. nlintol)
 print("    stationary          = " .. boolStat)
 print("    Reynolds-nr         = " .. reynoldsNr)
+
+-- undo fvcr only options if type is not fvcr
+if upwind == "cgrad" then
+	if type~="fvcr" then
+		print("Upwind type '"..upwind.."' only supported for fvcr discretization."); exit();
+	end
+	upwind = "full"
+	bCentralGrad = true
+else
+	bCentralGrad = false
+end
+
+if bPSep == true then
+	if type~="fvcr" then
+		print("Warning: pressure separation only supported for fvcr discretization.")
+		bPSep=false
+	end
+end
+
+if bPGrad == true then
+	if type~="fvcr" then
+		print("Warning: pressure gradient defect modification only supported for fvcr discretization.")
+		bPGrad=false
+	end
+end
+
+if bNoUpwindInDefect == true then
+	if type~="fvcr" then
+		print("Warning: pressure gradient defect modification only supported for fvcr discretization.")
+		bNoUpwindInDefect=false
+	else
+		upwind = "full"
+	end
+end
 
 --------------------------------------------------------------------------------
 -- Loading Domain and Domain Refinement
@@ -134,7 +180,8 @@ NavierStokesDisc = NavierStokes(fctUsed, "Inner", type)
 NavierStokesDisc:set_exact_jacobian(bExactJac)
 NavierStokesDisc:set_stokes(bStokes)
 NavierStokesDisc:set_laplace( not(bNoLaplace) )
-NavierStokesDisc:set_kinematic_viscosity(1.0/reynoldsNr);
+NavierStokesDisc:set_kinematic_viscosity(1.0/reynoldsNr)
+
 
 
 
@@ -182,12 +229,23 @@ if boolStat==1 then
 else
 	-- create time discretization
 	timeDisc = ThetaTimeStep(domainDisc)
-	timeDisc:set_theta(1.0) -- 1.0 is implicit euler
+	timeDisc:set_theta(0.5) -- 1.0 is implicit euler
 	op = AssembledOperator(timeDisc)
 end
 op:init()
 
 u = GridFunction(approxSpace)
+if bCentralGrad==true then
+	cgdata=CentralGradient(u)
+	NavierStokesDisc:set_central_grad(cgdata)
+end
+if bPGrad == true then
+	pgradData=PressureGradient(approxSpace,u)
+	NavierStokesDisc:set_pressure_grad(pgradData)
+end
+if bNoUpwindInDefect == true then
+	NavierStokesDisc:set_defect_upwind(false)
+end
 if type=="fvcr" then
 	tBefore = os.clock()
 	OrderCRCuthillMcKee(approxSpace,u,true)
@@ -200,13 +258,15 @@ if type=="fvcr" then
 	print("Ordering took " .. tAfter-tBefore .. " seconds.");
 else
 	if type=="fv1" then
-			OrderCuthillMcKee(approxSpace,true)
+		OrderCuthillMcKee(approxSpace,true)
 	end
 end
 u:set(0)
 
 egsSolver = LinearSolver()
-egsSolver:set_preconditioner(ElementGaussSeidel())
+egsSolver:set_preconditioner(ElementGaussSeidel("vertex"))
+-- egsSolver:set_preconditioner(Vanka())
+-- egsSolver:set_preconditioner(ILUT(1e-16))
 egsSolver:set_convergence_check(ConvCheck(10000, lintol, linred, true))
 
 -- base solver
@@ -263,6 +323,7 @@ gmgSolver = LinearSolver()
 gmgSolver:set_preconditioner(gmg)
 gmgSolver:set_convergence_check(ConvCheck(10000, lintol, linred, true))
 
+
 BiCGStabSolver = BiCGStab()
 BiCGStabSolver:set_preconditioner(smoother)
 BiCGStabSolver:set_convergence_check(ConvCheck(100000, lintol, linred, true))
@@ -270,7 +331,9 @@ BiCGStabSolver:set_convergence_check(ConvCheck(100000, lintol, linred, true))
 if type=="fv1" then 
 	solver=gmgSolver
 elseif type=="fvcr" then 
+	solver=ilutSolver
 	solver=gmgSolver
+--	solver=egsSolver
 elseif type=="fv" or type=="fe" then 
 	solver=egsSolver
 --	solver=ilutSolver
@@ -282,7 +345,15 @@ end
 newtonSolver = NewtonSolver(op)
 newtonSolver:set_linear_solver(solver)
 newtonSolver:set_convergence_check(ConvCheck(10000, nlintol, nlinred, true))
-newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.9, true))
+if bNoLineSearch==false then
+	newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.9, true))
+end
+if bCentralGrad==true then
+	newtonSolver:add_inner_step_update(cgdata)
+end
+if bPGrad==true then
+	newtonSolver:add_inner_step_update(pgradData)
+end
 -- newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 
 SaveVectorForConnectionViewer(u, "StartSolution.vec")
@@ -320,12 +391,36 @@ if boolStat==1 then
 		print ("Newton solver apply failed."); exit();
 	end
 	
+	-- pressure separation (only fvcr)
+	if bPSep==true then
+		pGradSource=SeparatedPressureSource(approxSpace,u)
+		NavierStokesDisc:set_source(pGradSource)
+		pGradSource:update()
+		
+		dcevaluation(u,reynoldsNr)
+		
+		function zero(x,y,t) return 0 end
+		Interpolate("zero", u, "p")
+			
+		-- prepare newton solver
+		if newtonSolver:prepare(u) == false then 
+			print ("Newton solver failed at step "..step.."."); exit(); 
+		end 
+		
+		-- apply newton solver
+		if newtonSolver:apply(u) == false then 
+			print ("Newton solver failed at step "..step.."."); exit(); 
+		end 
+	end
+	
 	out:print("DrivenCavity", u)
 else
 
 	-- store grid function in vector of  old solutions
 	solTimeSeries = SolutionTimeSeries()
 	solTimeSeries:push(uOld, time)
+	
+	out:print("TimeDrivenCavity", u,0,0)
 
 	for step = 1, numTimeSteps do
 		print("++++++ TIMESTEP " .. step .. " BEGIN ++++++")
@@ -357,14 +452,17 @@ else
 	
 		-- push oldest solutions with new values to front, oldest sol pointer is poped from end
 		solTimeSeries:push_discard_oldest(oldestSol, time)
+		
+		-- compute CFL number 
+		cflNumber(u,do_dt)
 
 		print("++++++ TIMESTEP " .. step .. "  END ++++++");
 		
 		-- plot solution
-		out:print("TimeDrivenCavity", u)
+		out:print("TimeDrivenCavity", u,step,time)
+		
 	end
 end
 tAfter = os.clock()
-print("Computation took " .. tAfter-tBefore .. " seconds.");
-
 dcevaluation(u,reynoldsNr)
+print("Computation took " .. tAfter-tBefore .. " seconds.");
