@@ -22,8 +22,10 @@ bPac        = util.HasParamOption("-pac", "If defined, pac upwind used")
 stab        = util.GetParam("-stab", "flow", "Stabilization type")
 diffLength  = util.GetParam("-difflength", "COR", "Diffusion length type")
 bPSep       = util.HasParamOption("-psep", "If defined, pressure separation used")
-bPGrad       = util.HasParamOption("-pgrad", "If defined, pressure gradient is used")
-bNoUpwindInDefect = util.HasParamOption("-noupwindindefect", "If defined, no upwind is used in defect")
+bPLin       = util.HasParamOption("-linp", "If defined, pressure gradient is used")
+bPLinDefect   = util.HasParamOption("-linpdefect", "If defined, pressure gradient is used only in defect")
+bNoUpwindInDefect = util.HasParamOption("-noupdefect", "If defined, no upwind is used in defect")
+bLinUpwindInDefect = util.HasParamOption("-linupdefect", "If defined, linear upwind is used in defect")
 linred      = util.GetParam("-linred", 1e-1 , "Linear reduction")
 nlintol     = util.GetParam("-nlintol", 1e-5, "Nonlinear tolerance")
 lintol      = util.GetParam("-lintol", nlintol*0.5, "Linear tolerance")
@@ -43,6 +45,16 @@ else
 	InitUG(dim, AlgebraType("CPU", 1));
 end
 
+if upwind == "linear" then
+	bLinUpwindInDefect=true
+end
+if bPLin == true then
+	bPLinDefect=true
+end
+if bPLinDefect==false then
+	bPLin=false
+end
+
 if 	dim == 2 then
 	if elemType == "tri" then 
 		gridName = util.GetParam("-grid", "grids/unit_square_01_tri_unstruct_4bnd.ugx")
@@ -51,6 +63,24 @@ if 	dim == 2 then
 --		gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_2x2_four_bnd.ugx")	
 	end
 else print("Chosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
+
+if bNoUpwindInDefect == true then
+	if type~="fvcr" then
+		print("Warning: no upwind in defect modification only supported for fvcr discretization.")
+		bNoUpwindInDefect=false
+	else
+		upwind = "full"
+	end
+end
+if bLinUpwindInDefect == true then
+	if type~="fvcr" then
+		print("Warning: linear upwind in defect modification only supported for fvcr discretization.")
+		bLinUpwindInDefect=false
+	else
+		upwind = "full"
+	end
+end
+
 
 print(" Chosen Parameters:")
 print("    dim                 = " .. dim)
@@ -76,7 +106,16 @@ end
 if type=="fvcr" then
 	print("    pressure separation = " .. tostring(bPSep))
 	print("    no upwind in defect = " .. tostring(bNoUpwindInDefect))
-	print("    p gradient use      = " .. tostring(bPGrad))
+	if bLinUpwind==true then
+		print("    linear upwind         = " .. tostring(bLinUpwind))
+	else
+		print("    linear upwind in def  = " .. tostring(bLinUpwindInDefect))
+	end
+	if bPLin==true then
+		print("    linear pressure       = " .. tostring(bPLin))
+	else
+		print("    lin pressure in def   = " .. tostring(bPLinDefect))
+	end
 end
 print("    no line search      = " .. tostring(bNoLineSearch))
 print("    linear reduction    = " .. linred)
@@ -87,14 +126,16 @@ print("    stationary          = " .. boolStat)
 print("    Reynolds-nr         = " .. reynoldsNr)
 
 -- undo fvcr only options if type is not fvcr
-if upwind == "cgrad" then
+if upwind == "linear" then
 	if type~="fvcr" then
-		print("Upwind type '"..upwind.."' only supported for fvcr discretization."); exit();
+		print("Upwind type '"..upwind.."' only supported for fvcr discretization.")
+		upwind = "no"
+	else
+		upwind = "full"
+		bLinearUpwind = true
 	end
-	upwind = "full"
-	bCentralGrad = true
 else
-	bCentralGrad = false
+	bLinearUpwind = false
 end
 
 if bPSep == true then
@@ -104,21 +145,14 @@ if bPSep == true then
 	end
 end
 
-if bPGrad == true then
+if bPLin == true then
 	if type~="fvcr" then
 		print("Warning: pressure gradient defect modification only supported for fvcr discretization.")
-		bPGrad=false
+		bPLin=false
 	end
 end
 
-if bNoUpwindInDefect == true then
-	if type~="fvcr" then
-		print("Warning: pressure gradient defect modification only supported for fvcr discretization.")
-		bNoUpwindInDefect=false
-	else
-		upwind = "full"
-	end
-end
+
 
 --------------------------------------------------------------------------------
 -- Loading Domain and Domain Refinement
@@ -203,8 +237,10 @@ if type == "fe" and porder == vorder then
 	NavierStokesDisc:set_stabilization(3)
 end
 
+
+
 --------------------------------------------------------------------------------
--- Boundary conditions
+-- Boundary conditions and constraints
 --------------------------------------------------------------------------------
 
 InletDisc = NavierStokesInflow(NavierStokesDisc)
@@ -217,6 +253,7 @@ domainDisc = DomainDiscretization(approxSpace)
 domainDisc:add(NavierStokesDisc)
 domainDisc:add(InletDisc)
 domainDisc:add(WallDisc)
+
 
 --------------------------------------------------------------------------------
 -- Solution of the Problem
@@ -235,24 +272,21 @@ end
 op:init()
 
 u = GridFunction(approxSpace)
-if bCentralGrad==true then
+if bLinearUpwind==true then
 	cgdata=CentralGradient(u)
 	NavierStokesDisc:set_central_grad(cgdata)
 end
-if bPGrad == true then
-	pgradData=PressureGradient(approxSpace,u)
-	NavierStokesDisc:set_pressure_grad(pgradData)
-end
+
 if bNoUpwindInDefect == true then
 	NavierStokesDisc:set_defect_upwind(false)
 end
 if type=="fvcr" then
 	tBefore = os.clock()
-	OrderCRCuthillMcKee(approxSpace,u,true)
+--	OrderCRCuthillMcKee(approxSpace,u,true)
 --	CROrderCuthillMcKee(approxSpace,u,true,false,false,true)
 	-- CROrderSloan(approxSpace,u,false,false,true)
 	-- CROrderKing(approxSpace,u,true,false,false,true)
---	CROrderMinimumDegree(approxSpace,u,true,false,true)
+	CROrderMinimumDegree(approxSpace,u,true,false,true)
 	-- OrderLex(approxSpace, "lr");
 	tAfter = os.clock()
 	print("Ordering took " .. tAfter-tBefore .. " seconds.");
@@ -262,6 +296,10 @@ else
 	end
 end
 u:set(0)
+
+if (bLinearUpwind==true)or(bPLin==true) then
+	domainDisc:add(DiscConstraintFVCR(u,bLinUpwindInDefect,bLinearUpwind,bPLinDefect,bPLin,false))
+end
 
 egsSolver = LinearSolver()
 egsSolver:set_preconditioner(ElementGaussSeidel("vertex"))
@@ -280,10 +318,12 @@ ilutSolver:set_convergence_check(ConvCheck(100000,  lintol, linred, true))
 if type=="fv1" then 
 	ilutsmoother = ILUT()
 	ilutsmoother:set_threshold(1e-4)
-	ilutsmoother:set_info(true)
+--	ilutsmoother:set_info(true)
 	smoother=ilutsmoother
 elseif type=="fvcr" then 
 	smoother=Vanka()
+	smoother=CRILUT(1e-0,1e-1,false)
+--	smoother:set_info(true)
 	smoother:set_damp(0.95)
 elseif type=="fv" or type=="fe" then 
 	smoother=ElementGaussSeidel()
@@ -348,12 +388,7 @@ newtonSolver:set_convergence_check(ConvCheck(10000, nlintol, nlinred, true))
 if bNoLineSearch==false then
 	newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.9, true))
 end
-if bCentralGrad==true then
-	newtonSolver:add_inner_step_update(cgdata)
-end
-if bPGrad==true then
-	newtonSolver:add_inner_step_update(pgradData)
-end
+
 -- newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 
 SaveVectorForConnectionViewer(u, "StartSolution.vec")
@@ -465,4 +500,5 @@ else
 end
 tAfter = os.clock()
 dcevaluation(u,reynoldsNr)
+newtonSolver:print_average_convergence()
 print("Computation took " .. tAfter-tBefore .. " seconds.");
