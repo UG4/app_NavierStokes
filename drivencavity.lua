@@ -15,7 +15,7 @@ vorder = util.GetParamNumber("-vorder", order)
 porder = util.GetParamNumber("-porder", vorder-1)
 bStokes 	= util.HasParamOption("-stokes", "If defined, only Stokes Eq. computed")
 bNoLaplace 	= util.HasParamOption("-nolaplace", "If defined, only laplace term used")
-bExactJac 	= util.HasParamOption("-exactjac", "If defined, exact jacobian used")
+exactJacFactor = util.GetParamNumber("-exactjac", 0)
 bPecletBlend= util.HasParamOption("-pecletblend", "If defined, Peclet Blend used")
 upwind      = util.GetParam("-upwind", "no", "Upwind type")
 bPac        = util.HasParamOption("-pac", "If defined, pac upwind used")
@@ -95,7 +95,7 @@ print("    grid                = " .. gridName)
 print("    v ansatz order      = " ..vorder)
 print("    p ansatz order      = " ..porder)
 print("    no laplace          = " .. tostring(bNoLaplace))
-print("    exact jacobian      = " .. tostring(bExactJac))
+print("    exact jacob. factor = " .. exactJacFactor)
 print("    peclet blend        = " .. tostring(bPecletBlend))
 print("    upwind              = " .. upwind)
 if type=="fv1" then
@@ -211,7 +211,7 @@ if dim >= 3 then fctUsed = fctUsed .. ", w" end
 fctUsed = fctUsed .. ", p"
 
 NavierStokesDisc = NavierStokes(fctUsed, "Inner", type)
-NavierStokesDisc:set_exact_jacobian(bExactJac)
+NavierStokesDisc:set_exact_jacobian(exactJacFactor)
 NavierStokesDisc:set_stokes(bStokes)
 NavierStokesDisc:set_laplace( not(bNoLaplace) )
 NavierStokesDisc:set_kinematic_viscosity(1.0/reynoldsNr)
@@ -323,7 +323,6 @@ if type=="fv1" then
 elseif type=="fvcr" then 
 	smoother=Vanka()
 	smoother=CRILUT(1e-0,1e-1,false)
---	smoother:set_info(true)
 	smoother:set_damp(0.95)
 elseif type=="fv" or type=="fe" then 
 	smoother=ElementGaussSeidel()
@@ -334,7 +333,7 @@ if type=="fv1" then
 	basePre = ILUT()
 	basePre:set_threshold(1e-7)
 elseif type=="fvcr" then 
-	basePre = Vanka()
+	basePre = CRILUT(1e-0,1e-1,false)
 elseif type=="fv" or type=="fe" then 
 	basePre=ElementGaussSeidel()
 end
