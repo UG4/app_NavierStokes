@@ -14,7 +14,7 @@ dim = util.GetParamNumber("-dim", 2) -- default dimension is 2.
 discType = util.GetParam("-type", "fvcr")
 elemType = util.GetParam("-elem", "quads")
 
-InitUG(dim, AlgebraType("CPU", 1));
+InitUG(dim, AlgebraType("CPU", 1))
 
 -- Setup from John LES book (p. 200) computation on [-1 1] square
 sigma0=1.0/14.0
@@ -29,18 +29,47 @@ if 	dim == 2 then
 	else
 		gridName = util.GetParam("-grid", "unit_square/unit_square_quads_2x2_4bnd.ugx")
 	end
-else print("Chosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
+else print("Chosen Dimension " .. dim .. "not supported. Exiting.") exit() end
+
 dt = util.GetParamNumber("-dt", -0.1)
 dtTimeUnit = util.GetParamNumber("-dtScale", 0.1)*timeUnit
-timeMethod = util.GetParam("-timeMethod","CN");
+timeMethod = util.GetParam("-timeMethod","CN")
 numTimeSteps =  util.GetParamNumber("-numTimeSteps", 100)
 numPreRefs = util.GetParamNumber("-numPreRefs", 0)
 numRefs = util.GetParamNumber("-numRefs",3)
 turbViscMethod = util.GetParam("-turbulenceModel","Dyn")
-pressureSeparation = util.GetParamNumber("-pSeparation",1)
+exactJacFactor = util.GetParamNumber("-exactjac", 0)
+bPecletBlend= util.HasParamOption("-pecletblend", "If defined, Peclet Blend used")
+upwind      = util.GetParam("-upwind", "full", "Upwind type")
+bPac        = util.HasParamOption("-pac", "If defined, pac upwind used")
+stab        = util.GetParam("-stab", "flow", "Stabilization type")
+diffLength  = util.GetParam("-difflength", "COR", "Diffusion length type")
+bPSep       = util.HasParamOption("-psep", "If defined, pressure separation used")
+bPLin       = util.HasParamOption("-linp", "If defined, pressure gradient is used")
+bPLinDefect   = util.HasParamOption("-linpdefect", "If defined, pressure gradient is used only in defect")
+bNoUpwindInDefect = util.HasParamOption("-noupdefect", "If defined, no upwind is used in defect")
+bLinUpwindInDefect = util.HasParamOption("-linupdefect", "If defined, linear upwind is used in defect")
+linred      = util.GetParam("-linred", 1e-1 , "Linear reduction")
+nlintol     = util.GetParam("-nlintol", 1e-6, "Nonlinear tolerance")
+lintol      = util.GetParam("-lintol", nlintol*0.5, "Linear tolerance")
+nlinred     = util.GetParam("-nlinred", nlintol*0.1, "Nonlinear reduction")
+bNoLineSearch  = util.HasParamOption("-noline", "If defined, no line search is used")
 
 if dt < 0 then
 	dt = dtTimeUnit
+end
+
+if upwind == "linear" then
+	bLinUpwindInDefect=true
+end
+if bPLin == true then
+	bPLinDefect=true
+end
+if bPLinDefect==false then
+	bPLin=false
+end
+if (bNoUpwindInDefect == true) or (bLinUpwindInDefect == true) then
+	upwind = "full"
 end
 
 ---------------------------------------------
@@ -82,6 +111,33 @@ print("    numTimeSteps = " .. numTimeSteps)
 print("    time stepping method = " .. timeMethod)
 print("    turbulence model = " .. turbViscMethod)
 print("    grid       	= " .. gridName)
+print("    exact jacob. factor = " .. exactJacFactor)
+print("    peclet blend        = " .. tostring(bPecletBlend))
+print("    upwind              = " .. upwind)
+print("    pressure separation = " .. tostring(bPSep))
+print("    no upwind in defect = " .. tostring(bNoUpwindInDefect))
+if bLinUpwind==true then
+	print("    linear upwind         = " .. tostring(bLinUpwind))
+else
+	print("    linear upwind in def  = " .. tostring(bLinUpwindInDefect))
+end
+if bPLin==true then
+	print("    linear pressure       = " .. tostring(bPLin))
+else
+	print("    lin pressure in def   = " .. tostring(bPLinDefect))
+end
+print("    no line search      = " .. tostring(bNoLineSearch))
+print("    linear reduction    = " .. linred)
+print("    linear tolerance    = " .. lintol)
+print("    nonlinear reduction = " .. nlinred)
+print("    nonlinear tolerance = " .. nlintol)
+
+if upwind == "linear" then
+	upwind = "full"
+	bLinearUpwind = true
+else
+	bLinearUpwind = false
+end
 
 --------------------------------------------
 --------------------------------------------
@@ -92,7 +148,7 @@ print("    grid       	= " .. gridName)
 -- Lets define a list of all subsets that we need
 requiredSubsets = {"Inner", "Top", "Bottom", "Right", "Left"}
 dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
-IdentifySubsets(dom,"Left","Right");
+IdentifySubsets(dom,"Left","Right")
 
 -- All subset are ok. So we can create the Approximation Space
 approxSpace = ApproximationSpace(dom)
@@ -111,11 +167,11 @@ approxSpace:print_local_dof_statistic(2)
 approxSpaceVorticity = ApproximationSpace(dom)
 approxSpaceVorticity:add_fct("c", "Crouzeix-Raviart", 1)
 
-vort = GridFunction(approxSpaceVorticity);
+vort = GridFunction(approxSpaceVorticity)
 
-u = GridFunction(approxSpace);
--- OrderCRCuthillMcKee(approxSpace,u,true);
--- OrderLex(approxSpace, "lr");
+u = GridFunction(approxSpace)
+-- OrderCRCuthillMcKee(approxSpace,u,true)
+-- OrderLex(approxSpace, "lr")
 
 --------------------------------
 --------------------------------
@@ -131,15 +187,12 @@ fctUsed = fctUsed .. ", p"
 NavierStokesDisc = NavierStokes(fctUsed, "Inner", "fvcr")
 
 -- set upwind
-noUpwind = NavierStokesNoUpwind();
-fullUpwind = NavierStokesFullUpwind();
-weightedUpwind = NavierStokesWeightedUpwind(0.5);
-NavierStokesDisc:set_upwind(fullUpwind)	
+NavierStokesDisc:set_upwind(upwind)
+NavierStokesDisc:set_peclet_blend(bPecletBlend)
 
 NavierStokesDisc:set_peclet_blend(true)
-NavierStokesDisc:set_exact_jacobian(false)
+NavierStokesDisc:set_exact_jacobian(exactJacFactor)
 NavierStokesDisc:set_stokes(false)
-NavierStokesDisc:set_laplace(false)
 
 ----------------------------------
 ----------------------------------
@@ -147,23 +200,27 @@ NavierStokesDisc:set_laplace(false)
 ----------------------------------
 ----------------------------------
 
-if turbViscMethod=="Dyn" then
-	viscosityData = CRDynamicTurbViscData(approxSpace,u)
+if turbViscMethod=="no" then
+	NavierStokesDisc:set_kinematic_viscosity(viscosity)
+else
+	if turbViscMethod=="Dyn" then
+		viscosityData = CRDynamicTurbViscData(approxSpace,u)
+	end
+	if turbViscMethod=="Sma" then
+		viscosityData = CRSmagorinskyTurbViscData(approxSpace,u,0.1)
+	end	
+	viscosityData:set_turbulence_zero_bnd("Top,Bottom")
+	viscosityData:set_kinematic_viscosity(viscosity)
+	NavierStokesDisc:set_kinematic_viscosity(viscosityData)
+	NavierStokesDisc:set_laplace(false)
 end
-if turbViscMethod=="Sma" then
-	viscosityData = CRSmagorinskyTurbViscData(approxSpace,u,0.1)
-end	
-
-viscosityData:set_kinematic_viscosity(viscosity);
-NavierStokesDisc:set_kinematic_viscosity(viscosityData);
-NavierStokesDisc:set_laplace(false);
 
 
-----------------------------------
-----------------------------------
+------------------------------------------
+------------------------------------------
 -- Boundary conditions
-----------------------------------
-----------------------------------
+------------------------------------------
+------------------------------------------
 
 -- OutletDiscTop = NavierStokesNoNormalStressOutflow(NavierStokesDisc)
 OutletDiscTop = CRNavierStokesSymBC(NavierStokesDisc)
@@ -172,11 +229,11 @@ OutletDiscTop:add("Top")
 OutletDiscBottom = CRNavierStokesSymBC(NavierStokesDisc)
 OutletDiscBottom:add("Bottom")
 
-----------------------------------
-----------------------------------
+------------------------------------------
+------------------------------------------
 -- Source
-----------------------------------
-----------------------------------
+------------------------------------------
+------------------------------------------
 
 function source2d(x, y, t)
 	return 0,0
@@ -187,20 +244,24 @@ rhs = LuaUserVector("source2d")
 NavierStokesDisc:set_source(rhs)
 
 if pressureSeparation==1 then
-	source = SeparatedPressureSource(approxSpace,u);
+	source = SeparatedPressureSource(approxSpace,u)
 	source:set_source(rhs)
 	NavierStokesDisc:set_source(source)
 end
 
---------------------------------
---------------------------------
--- Solution of the Problem
---------------------------------
---------------------------------
+------------------------------------------
+------------------------------------------
+-- Set up discretization and constraints
+------------------------------------------
+------------------------------------------
 domainDisc = DomainDiscretization(approxSpace)
 domainDisc:add(NavierStokesDisc)
 domainDisc:add(OutletDiscTop)
 domainDisc:add(OutletDiscBottom)
+
+if (bLinearUpwind==true)or(bPLin==true) then
+	domainDisc:add(DiscConstraintFVCR(u,bLinUpwindInDefect,bLinearUpwind,bPLinDefect,bPLin,false))
+end
 
 -- create operator from discretization
 
@@ -227,7 +288,7 @@ op:init()
 u:set(0)
 
 function StartValue_u2d(x,y,t) 
-	return winf*math.tanh(2*y/sigma0)+cnoise*winf*(-8*y*math.exp(-(2*y/sigma0)*(2*y/sigma0))*(math.cos(8*math.pi*x)+math.cos(20*math.pi*x)))/sigma0/sigma0;
+	return winf*math.tanh(2*y/sigma0)+cnoise*winf*(-8*y*math.exp(-(2*y/sigma0)*(2*y/sigma0))*(math.cos(8*math.pi*x)+math.cos(20*math.pi*x)))/sigma0/sigma0
 end
 
 function StartValue_v2d(x,y,t) 
@@ -256,12 +317,9 @@ baseConvCheck:set_reduction(1e-1)
 baseConvCheck:set_verbose(false)
 
 CRILUT = CRILUT()
-CRILUT:set_threshold(1e-0,1e-2,1e-2,1e-2)
+CRILUT:set_threshold(1e-0,1e-1)
 CRILUT:set_damp(1)
 -- CRILUT:set_info(true)
-ILUTBase = ILUT()
-ILUTBase:set_threshold(0)
-ILUTBase:set_info(false)
 ilutSolver = LinearSolver()
 ilutSolver:set_preconditioner(CRILUT)
 ilutSolver:set_convergence_check(ConvCheck(100000, 1e-5, 1e-1, true))
@@ -273,8 +331,8 @@ vankaBase:set_convergence_check(baseConvCheck)
 gmg = GeometricMultiGrid(approxSpace)
 gmg:set_discretization(domainDisc)
 gmg:set_base_level(0)
-gmg:set_base_solver(vankaSolver)
-gmg:set_smoother(vanka)
+gmg:set_base_solver(ilutSolver)
+gmg:set_smoother(CRILUT)
 gmg:set_cycle_type(1)
 gmg:set_num_presmooth(2)
 gmg:set_num_postsmooth(2)
@@ -291,7 +349,7 @@ BiCGStabSolver:set_convergence_check(ConvCheck(100000, 1e-5, 1e-1, true))
 
 gmgSolver = LinearSolver()
 gmgSolver:set_preconditioner(gmg)
-gmgSolver:set_convergence_check(ConvCheck(10000, 1e-5, 1e-1, true))
+gmgSolver:set_convergence_check(ConvCheck(10000, lintol, linred, true))
 
 -- choose a solver
 solver = BiCGStabSolver
@@ -301,8 +359,8 @@ solver = gmgSolver
 
 newtonConvCheck = ConvCheck()
 newtonConvCheck:set_maximum_steps(10000)
-newtonConvCheck:set_minimum_defect(1e-5)
-newtonConvCheck:set_reduction(1e-10)
+newtonConvCheck:set_minimum_defect(nlintol)
+newtonConvCheck:set_reduction(nlinred)
 newtonConvCheck:set_verbose(true)
 
 newtonLineSearch = StandardLineSearch()
@@ -324,13 +382,13 @@ newtonSolver:init(op)
 newtonSolver:add_step_update(viscosityData)
 
 if newtonSolver:prepare(u) == false then
-	print ("Newton solver prepare failed."); exit();
+	print ("Newton solver prepare failed.") exit()
 end
 
 SaveVectorForConnectionViewer(u, "StartSolution.vec")
 
 -- if newtonSolver:apply(u) == false then
---	 print ("Newton solver apply failed."); exit();
+--	 print ("Newton solver apply failed.") exit()
 -- end
 
 --------------------------------------------------------------------------------
@@ -394,12 +452,12 @@ for step = 1, numTimeSteps do
 	
 		-- prepare newton solver
 		if newtonSolver:prepare(u) == false then 
-			print ("Newton solver failed at step "..step.."."); exit(); 
+			print ("Newton solver failed at step "..step..".") exit() 
 		end 
 	
 		-- apply newton solver
 		if newtonSolver:apply(u) == false then 
-			print ("Newton solver failed at step "..step.."."); exit(); 
+			print ("Newton solver failed at step "..step..".") exit() 
 		end 
 		
 		
@@ -409,12 +467,12 @@ for step = 1, numTimeSteps do
 			
 			-- prepare newton solver
 			if newtonSolver:prepare(u) == false then 
-				print ("Newton solver failed at step "..step.."."); exit(); 
+				print ("Newton solver failed at step "..step..".") exit() 
 			end 
 		
 			-- apply newton solver
 			if newtonSolver:apply(u) == false then 
-				print ("Newton solver failed at step "..step.."."); exit(); 
+				print ("Newton solver failed at step "..step..".") exit() 
 			end 
 		end
 
@@ -433,7 +491,7 @@ for step = 1, numTimeSteps do
 	end
 	
 		
-	print ("Time units = ".. time/timeUnit);
+	print ("Time units = ".. time/timeUnit)
 	
 	-- compute vorticity
 	vort:set(0)
@@ -459,11 +517,11 @@ for step = 1, numTimeSteps do
 	outv:select_element("c","c")
 	outv:print("vorticity", vort,step,time)
 	print(" ")
-	print("++++++ TIMESTEP " .. step .. "  END ++++++");
+	print("++++++ TIMESTEP " .. step .. "  END ++++++")
 end
 
 tAfter = os.clock()
-print("Computation took " .. tAfter-tBefore .. " seconds.");
+print("Computation took " .. tAfter-tBefore .. " seconds.")
 
 
 -- plot solution
