@@ -318,11 +318,11 @@ baseConvCheck:set_verbose(false)
 
 CRILUT = CRILUT()
 CRILUT:set_threshold(1e-0,1e-1)
-CRILUT:set_damp(1)
+CRILUT:set_damp(0.95)
 -- CRILUT:set_info(true)
 ilutSolver = LinearSolver()
 ilutSolver:set_preconditioner(CRILUT)
-ilutSolver:set_convergence_check(ConvCheck(100000, 1e-5, 1e-1, true))
+ilutSolver:set_convergence_check(ConvCheck(100000, 1e-5, 1e-1, false))
 
 vankaBase = LinearSolver()
 vankaBase:set_preconditioner(Vanka())
@@ -385,7 +385,8 @@ if newtonSolver:prepare(u) == false then
 	print ("Newton solver prepare failed.") exit()
 end
 
-SaveVectorForConnectionViewer(u, "StartSolution.vec")
+-- SaveVectorForConnectionViewer(u, "StartSolution.vec")
+-- LoadVector(u, "StartSolution.vec")
 
 -- if newtonSolver:apply(u) == false then
 --	 print ("Newton solver apply failed.") exit()
