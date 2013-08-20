@@ -54,6 +54,8 @@ nlintol     = util.GetParam("-nlintol", 1e-6, "Nonlinear tolerance")
 lintol      = util.GetParam("-lintol", nlintol*0.5, "Linear tolerance")
 nlinred     = util.GetParam("-nlinred", nlintol*0.1, "Nonlinear reduction")
 bNoLineSearch  = util.HasParamOption("-noline", "If defined, no line search is used")
+bSave          = util.HasParamOption("-save", "If defined solution vector is safed after every step")
+tsOffset       = util.GetParamNumber("-tsOffset",0) 
 
 if dt < 0 then
 	dt = dtTimeUnit
@@ -285,8 +287,6 @@ op = AssembledOperator(timeDisc)
 
 op:init()
 
-u:set(0)
-
 function StartValue_u2d(x,y,t) 
 	return winf*math.tanh(2*y/sigma0)+cnoise*winf*(-8*y*math.exp(-(2*y/sigma0)*(2*y/sigma0))*(math.cos(8*math.pi*x)+math.cos(20*math.pi*x)))/sigma0/sigma0
 end
@@ -297,9 +297,14 @@ end
 
 function StartValue_p2d(x,y,t) return 0 end
 
-Interpolate("StartValue_u2d", u, "u")
-Interpolate("StartValue_v2d", u, "v")
-Interpolate("StartValue_p2d", u, "p")
+-- if offset is > 0 use current solution as start solution
+if tsOffset==0 then
+	Interpolate("StartValue_u2d", u, "u")
+	Interpolate("StartValue_v2d", u, "v")
+	Interpolate("StartValue_p2d", u, "p")
+else
+	LoadVector(u,"currentSolution.vec")
+end
 
 vanka = Vanka()
 vanka:set_damp(0.9)
@@ -379,14 +384,13 @@ newtonSolver:set_convergence_check(newtonConvCheck)
 -- newtonSolver:set_debug(dbgWriter)
 
 newtonSolver:init(op)
-newtonSolver:add_step_update(viscosityData)
+if turbViscMethod~="no" then
+	newtonSolver:add_step_update(viscosityData)
+end
 
 if newtonSolver:prepare(u) == false then
 	print ("Newton solver prepare failed.") exit()
 end
-
--- SaveVectorForConnectionViewer(u, "StartSolution.vec")
--- LoadVector(u, "StartSolution.vec")
 
 -- if newtonSolver:apply(u) == false then
 --	 print ("Newton solver apply failed.") exit()
@@ -435,7 +439,7 @@ solTimeSeries:push(uOld, time)
 
 function zero(x,y,t) return 0 end
 
-for step = 1, numTimeSteps do
+for step = 1 + tsOffset, numTimeSteps do
 	print("++++++ TIMESTEP " .. step .. " BEGIN ++++++")
 
 	-- choose time step
@@ -504,6 +508,10 @@ for step = 1, numTimeSteps do
 	-- compute kinetic energy
 	kineticEnergy(u)
 	
+	if (bSave) then
+		SaveVectorForConnectionViewer(u,"currentSolution.vec")
+	end
+	
 	-- plot solution
 
 	out = VTKOutput()
@@ -523,7 +531,6 @@ end
 
 tAfter = os.clock()
 print("Computation took " .. tAfter-tBefore .. " seconds.")
-
 
 -- plot solution
 
