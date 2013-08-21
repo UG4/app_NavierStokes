@@ -262,7 +262,7 @@ domainDisc:add(OutletDiscTop)
 domainDisc:add(OutletDiscBottom)
 
 if (bLinearUpwind==true)or(bPLin==true) then
-	domainDisc:add(DiscConstraintFVCR(u,bLinUpwindInDefect,bLinearUpwind,bPLinDefect,bPLin,false))
+	domainDisc:add(DiscConstraintFVCR(u,bLinUpwindInDefect,bLinearUpwind,bPLinDefect,bPLin,false,"Top,Bottom"))
 end
 
 -- create operator from discretization
