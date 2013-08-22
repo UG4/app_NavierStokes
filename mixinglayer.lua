@@ -19,7 +19,7 @@ InitUG(dim, AlgebraType("CPU", 1))
 -- Setup from John LES book (p. 200) computation on [-1 1] square
 sigma0=1.0/14.0
 winf=1
-cnoise=0.01
+cnoise=0.001
 viscosity=1/140000
 timeUnit=sigma0/winf
 
@@ -31,7 +31,9 @@ if 	dim == 2 then
 	end
 else print("Chosen Dimension " .. dim .. "not supported. Exiting.") exit() end
 
-dt = util.GetParamNumber("-dt", -0.1)
+undefined    = -3458789.116
+
+dt = util.GetParamNumber("-dt", undefined)
 dtTimeUnit = util.GetParamNumber("-dtScale", 0.1)*timeUnit
 timeMethod = util.GetParam("-timeMethod","CN")
 numTimeSteps =  util.GetParamNumber("-numTimeSteps", 100)
@@ -56,8 +58,9 @@ nlinred     = util.GetParam("-nlinred", nlintol*0.1, "Nonlinear reduction")
 bNoLineSearch  = util.HasParamOption("-noline", "If defined, no line search is used")
 bSave          = util.HasParamOption("-save", "If defined solution vector is safed after every step")
 tsOffset       = util.GetParamNumber("-tsOffset",0) 
+startTime       = util.GetParamNumber("-starttime",undefined) 
 
-if dt < 0 then
+if dt == undefined then
 	dt = dtTimeUnit
 end
 
@@ -401,11 +404,12 @@ end
 --------------------------------------------------------------------------------
 
 -- start
-time = 0.0
 step = 0
-
--- Now interpolate the function
-time = 0.0
+if startTime==undefined then
+	time = tsOffset * dt
+else
+	time = startTime
+end
 
 -- filename
 filename = "Sol"
