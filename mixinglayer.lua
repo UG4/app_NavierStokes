@@ -175,7 +175,7 @@ approxSpaceVorticity:add_fct("c", "Crouzeix-Raviart", 1)
 vort = GridFunction(approxSpaceVorticity)
 
 u = GridFunction(approxSpace)
--- OrderCRCuthillMcKee(approxSpace,u,true)
+OrderCRCuthillMcKee(approxSpace,u,true)
 -- OrderLex(approxSpace, "lr")
 
 --------------------------------
@@ -265,7 +265,8 @@ domainDisc:add(OutletDiscTop)
 domainDisc:add(OutletDiscBottom)
 
 if (bLinearUpwind==true)or(bPLin==true) then
-	domainDisc:add(DiscConstraintFVCR(u,bLinUpwindInDefect,bLinearUpwind,bPLinDefect,bPLin,false,"Top,Bottom"))
+	-- last three parameters: adaptivity boolean, gradient limiter boolean, boundaries where full upwind/constant pressure is used 
+	domainDisc:add(DiscConstraintFVCR(u,bLinUpwindInDefect,bLinearUpwind,bPLinDefect,bPLin,false,true,"Top,Bottom"))
 end
 
 -- create operator from discretization
@@ -383,7 +384,9 @@ dbgWriter:set_vtk_output(false)
 newtonSolver = NewtonSolver()
 newtonSolver:set_linear_solver(solver)
 newtonSolver:set_convergence_check(newtonConvCheck)
--- newtonSolver:set_line_search(newtonLineSearch)
+if bNoLineSearch==false then
+	newtonSolver:set_line_search(newtonLineSearch)
+end
 -- newtonSolver:set_debug(dbgWriter)
 
 newtonSolver:init(op)
@@ -411,26 +414,25 @@ else
 	time = startTime
 end
 
--- filename
-filename = "Sol"
+if tsOffset==0 then
+	-- compute initial vorticity
+	vorticity(vort,u)
 
--- compute initial vorticity
-vorticity(vort,u)
+	-- write start solution
+	print("Writing start values")
+	out = VTKOutput()
+	out:clear_selection()
+	out:select_all(false)
+	out:select_element("u,v", "velocity")
+	out:select_element("u", "u")
+	out:select_element("v", "v")
+	out:select_element("p", "p")
+	out:print("MixingLayer", u,0,0)
 
--- write start solution
-print("Writing start values")
-out = VTKOutput()
-out:clear_selection()
-out:select_all(false)
-out:select_element("u,v", "velocity")
-out:select_element("u", "u")
-out:select_element("v", "v")
-out:select_element("p", "p")
-out:print("MixingLayer", u,0,0)
-
-outv = VTKOutput()
-outv:select_element("c","c")
-outv:print("vorticity", vort,0,0)
+	outv = VTKOutput()
+	outv:select_element("c","c")
+	outv:print("vorticity", vort,0,0)
+end
 
 -- create new grid function for old value
 uOld = u:clone()
