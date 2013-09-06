@@ -45,6 +45,35 @@ else
 	InitUG(dim, AlgebraType("CPU", 1));
 end
 
+-- undo fvcr only options if type is not fvcr
+if upwind == "linear" then
+	if type~="fvcr" then
+		print("Upwind type '"..upwind.."' only supported for fvcr discretization.")
+		upwind = "no"
+	else
+		upwind = "full"
+		bLinearUpwind = true
+		bLinUpwindInDefect = true
+	end
+else
+	bLinearUpwind = false
+end
+
+if bPSep == true then
+	if type~="fvcr" then
+		print("Warning: pressure separation only supported for fvcr discretization.")
+		bPSep=false
+	end
+end
+
+if bPLin == true then
+	if type~="fvcr" then
+		print("Warning: pressure gradient defect modification only supported for fvcr discretization.")
+		bPLin=false
+	end
+end
+
+
 if upwind == "linear" then
 	bLinUpwindInDefect=true
 end
@@ -125,38 +154,11 @@ print("    nonlinear tolerance = " .. nlintol)
 print("    stationary          = " .. boolStat)
 print("    Reynolds-nr         = " .. reynoldsNr)
 
--- undo fvcr only options if type is not fvcr
-if upwind == "linear" then
-	if type~="fvcr" then
-		print("Upwind type '"..upwind.."' only supported for fvcr discretization.")
-		upwind = "no"
-	else
-		upwind = "full"
-		bLinearUpwind = true
-	end
-else
-	bLinearUpwind = false
-end
-
-if bPSep == true then
-	if type~="fvcr" then
-		print("Warning: pressure separation only supported for fvcr discretization.")
-		bPSep=false
-	end
-end
-
-if bPLin == true then
-	if type~="fvcr" then
-		print("Warning: pressure gradient defect modification only supported for fvcr discretization.")
-		bPLin=false
-	end
-end
-
-
 
 --------------------------------------------------------------------------------
 -- Loading Domain and Domain Refinement
 --------------------------------------------------------------------------------
+
 
 -- Lets define a list of all subsets that we need
 requiredSubsets = {"Inner", "Top", "Bottom", "Right", "Left"}
@@ -191,7 +193,7 @@ elseif type == "fe" then
 elseif type=="fvcr" then
 	approxSpace:add_fct(VelCmp, "Crouzeix-Raviart")
 	approxSpace:add_fct("p", "piecewise-constant") 
-else print("Disc Type '"..type.."' not supported."); exit(); end
+else print("Disc Type '"..type.."' not supported.") exit() end
 
 -- finally we print some statistic on the distributed dofs
 approxSpace:init_levels()
@@ -272,10 +274,6 @@ end
 op:init()
 
 u = GridFunction(approxSpace)
-if bLinearUpwind==true then
-	cgdata=CentralGradient(u)
-	NavierStokesDisc:set_central_grad(cgdata)
-end
 
 if bNoUpwindInDefect == true then
 	NavierStokesDisc:set_defect_upwind(false)
@@ -287,9 +285,10 @@ if type=="fvcr" then
 	-- CROrderSloan(approxSpace,u,false,false,true)
 	-- CROrderKing(approxSpace,u,true,false,false,true)
 	CROrderMinimumDegree(approxSpace,u,true,false,true)
-	-- OrderLex(approxSpace, "lr");
+	-- OrderLex(approxSpace, "lr")
 	tAfter = os.clock()
-	print("Ordering took " .. tAfter-tBefore .. " seconds.");
+	tOrder = tAfter-tBefore
+	print("Ordering took " .. tAfter-tBefore .. " seconds.")
 else
 	if type=="fv1" then
 		OrderCuthillMcKee(approxSpace,true)
@@ -297,7 +296,7 @@ else
 end
 u:set(0)
 
-if (bLinearUpwind==true)or(bPLin==true) then
+if (bLinearUpwind==true)or(bPLin==true)or(bLinUpwindInDefect==true) then
 	domainDisc:add(DiscConstraintFVCR(u,bLinUpwindInDefect,bLinearUpwind,bPLinDefect,bPLin,false))
 end
 
@@ -322,8 +321,7 @@ if type=="fv1" then
 	smoother=ilutsmoother
 elseif type=="fvcr" then 
 	smoother=Vanka()
-	smoother=CRILUT(1e-0,1e-1,false)
-	smoother:set_damp(0.95)
+	smoother=CRILUT(1e-1,1e-3,true)
 elseif type=="fv" or type=="fe" then 
 	smoother=ElementGaussSeidel()
 end
@@ -333,7 +331,7 @@ if type=="fv1" then
 	basePre = ILUT()
 	basePre:set_threshold(1e-7)
 elseif type=="fvcr" then 
-	basePre = CRILUT(1e-0,1e-1,false)
+	basePre = CRILUT(1e-1,1e-2,false)
 elseif type=="fv" or type=="fe" then 
 	basePre=ElementGaussSeidel()
 end
@@ -347,6 +345,7 @@ if type=="fv1" then
 else
 --  for Vanka type smoothers there should be more smoothing steps on higher levels
 	numSmooth=2*numRefs
+	numSmooth=2
 end
 
 gmg = GeometricMultiGrid(approxSpace)
@@ -360,7 +359,7 @@ gmg:set_num_postsmooth(numSmooth)
 gmg:set_damp(MinimalResiduumDamping())
 gmgSolver = LinearSolver()
 gmgSolver:set_preconditioner(gmg)
-gmgSolver:set_convergence_check(ConvCheck(10000, lintol, linred, true))
+gmgSolver:set_convergence_check(ConvCheck(100, lintol, linred, true))
 
 
 BiCGStabSolver = BiCGStab()
@@ -383,14 +382,14 @@ end
 
 newtonSolver = NewtonSolver(op)
 newtonSolver:set_linear_solver(solver)
-newtonSolver:set_convergence_check(ConvCheck(10000, nlintol, nlinred, true))
+newtonSolver:set_convergence_check(ConvCheck(250, nlintol, nlinred, true))
 if bNoLineSearch==false then
-	newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.9, true))
+	newtonSolver:set_line_search(StandardLineSearch(10, 1.0, 0.9, true))
 end
 
 -- newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 
-SaveVectorForConnectionViewer(u, "StartSolution.vec")
+-- SaveVectorForConnectionViewer(u, "StartSolution.vec")
 
 --------------------------------------------------------------------------------
 --  Apply Solver
@@ -416,13 +415,13 @@ if boolStat==1 then
 
 	newtonSolver:init(op)
 		if newtonSolver:prepare(u) == false then
-		print ("Newton solver prepare failed."); exit();
+		print ("Newton solver prepare failed.") exit()
 	end
 
-	SaveVectorForConnectionViewer(u, "StartSolution.vec")
+--	SaveVectorForConnectionViewer(u, "StartSolution.vec")
 
 	if newtonSolver:apply(u) == false then
-		print ("Newton solver apply failed."); exit();
+		print ("Newton solver apply failed.") exit()
 	end
 	
 	-- pressure separation (only fvcr)
@@ -438,12 +437,12 @@ if boolStat==1 then
 			
 		-- prepare newton solver
 		if newtonSolver:prepare(u) == false then 
-			print ("Newton solver failed at step "..step.."."); exit(); 
+			print ("Newton solver failed at step "..step..".") exit() 
 		end 
 		
 		-- apply newton solver
 		if newtonSolver:apply(u) == false then 
-			print ("Newton solver failed at step "..step.."."); exit(); 
+			print ("Newton solver failed at step "..step..".") exit() 
 		end 
 	end
 	
@@ -467,12 +466,12 @@ else
 	
 		-- prepare newton solver
 		if newtonSolver:prepare(u) == false then 
-			print ("Newton solver failed at step "..step.."."); exit(); 
+			print ("Newton solver failed at step "..step..".") exit() 
 		end 
 	
 		-- apply newton solver
 		if newtonSolver:apply(u) == false then 
-			print ("Newton solver failed at step "..step.."."); exit(); 
+			print ("Newton solver failed at step "..step..".") exit() 
 		end 
 
 		-- update new time
@@ -490,7 +489,7 @@ else
 		-- compute CFL number 
 		cflNumber(u,do_dt)
 
-		print("++++++ TIMESTEP " .. step .. "  END ++++++");
+		print("++++++ TIMESTEP " .. step .. "  END ++++++")
 		
 		-- plot solution
 		out:print("TimeDrivenCavity", u,step,time)
@@ -500,4 +499,5 @@ end
 tAfter = os.clock()
 dcevaluation(u,reynoldsNr)
 newtonSolver:print_average_convergence()
-print("Computation took " .. tAfter-tBefore .. " seconds.");
+print("Computation took " .. tAfter-tBefore .. " seconds.")
+print("Computation + ordering took " .. tAfter-tBefore+tOrder .. " seconds.")
