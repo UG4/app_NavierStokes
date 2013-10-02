@@ -154,7 +154,7 @@ u = GridFunction(approxSpace)
 -- Linear Solver
 gmg = GeometricMultiGrid(approxSpace)
 gmg:set_base_solver(LU())
-gmg:set_smoother(ElementGaussSeidel("vertex"))
+gmg:set_smoother(ComponentGaussSeidel("p"))
 gmg:set_num_presmooth(2)
 gmg:set_num_postsmooth(2)
 
@@ -199,9 +199,11 @@ trafoSmoother:set_damp(1)
 --]]
 
 linSolver = LinearSolver()
-linSolver:set_preconditioner(ElementGaussSeidel(1, "element"))
---linSolver:set_preconditioner(gmg)
-linSolver:set_convergence_check(ConvCheck(1000, 1e-10, 1e-8, true))
+--linSolver:set_preconditioner(ElementGaussSeidel(1, "element"))
+--linSolver:set_preconditioner(ComponentGaussSeidel(1, "p"))
+linSolver:set_preconditioner(gmg)
+linSolver:set_convergence_check(ConvCheck(5, 1e-10, 1e-8, true))
+linSolver:set_compute_fresh_defect_when_finished(true)
 
 --linSolver = LU()
 --linSolver:set_minimum_for_sparse(100000)
@@ -225,7 +227,7 @@ u:set(0.0)
 u:set_random(0,1)
 vtkWriter:print("NigonStart", u)
 
-----[[
+--[[
 A = MatrixOperator()
 b = GridFunction(approxSpace)
 domainDisc:assemble_linear(A, b)
@@ -236,7 +238,7 @@ linSolver:init(A, u)
 linSolver:apply(u,b)
 vtkWriter:print("Nigon", u)
 exit()
-----]]
+--]]
 
 -- Apply the newton solver. A newton itertation is performed to find the solution.
 if newtonSolver:apply(u) == false then
