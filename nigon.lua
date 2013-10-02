@@ -30,7 +30,7 @@ stab        = util.GetParam("-stab", "fields", "Stabilization type")
 diffLength  = util.GetParam("-difflength", "raw", "Diffusion length type")
 
 -- Channel sizes as in grid file: [0,20] x [-1,1]
-if 	dim == 2 then gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_2x2.ugx")
+if 	dim == 2 then gridName = util.GetParam("-grid", "grids/unit_square_01_quads_2x2_pressure_node.ugx")
 else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
 -- Lets write some info about the choosen parameter
@@ -58,7 +58,7 @@ print("    diffLength       = " .. diffLength)
 InitUG(dim, AlgebraType("CPU", 1));
 
 -- Create the domain and load a grid
-neededSubsets = {"Inner", "Boundary"}
+neededSubsets = {"Inner", "Boundary", "PressureNode"}
 dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, neededSubsets)
 
 -- All subset are ok. So we can create the Approximation Space
@@ -136,14 +136,15 @@ end
 
 
 FixPressureDisc = DirichletBoundary()
-FixPressureDisc:add(0.0, "p", "Outlet")
+FixPressureDisc:add(0, "p", "PressureNode")
 
 BndDisc = NavierStokesInflow(NavierStokesDisc)
-BndDisc:add("exactSolVel"..dim.."d", "Boundary")
+BndDisc:add("exactSolVel"..dim.."d", "Boundary, PressureNode")
 
 domainDisc = DomainDiscretization(approxSpace)
 domainDisc:add(NavierStokesDisc)
 domainDisc:add(BndDisc)
+--domainDisc:add(FixPressureDisc)
 
 --------------------------------------------------------------------------------
 -- Solution of the Problem
@@ -197,16 +198,18 @@ trafoSmoother:set_debug(GridFunctionDebugWriter(approxSpace))
 trafoSmoother:set_damp(1)
 --]]
 
-linSolver = BiCGStab()
-linSolver:set_preconditioner(ElementGaussSeidel(1.0, "vertex"))
+linSolver = LinearSolver()
+linSolver:set_preconditioner(ElementGaussSeidel(1, "element"))
+--linSolver:set_preconditioner(gmg)
 linSolver:set_convergence_check(ConvCheck(1000, 1e-10, 1e-8, true))
 
-linSolver = LU()
+--linSolver = LU()
+--linSolver:set_minimum_for_sparse(100000)
 
 -- Non-Linear Solver
 newtonSolver = NewtonSolver(AssembledOperator(domainDisc))
 newtonSolver:set_linear_solver(linSolver)
-newtonSolver:set_convergence_check(ConvCheck(40, 1e-8, 1e-6, true))
+newtonSolver:set_convergence_check(ConvCheck(1, 1e-8, 1e-6, true))
 --newtonSolver:set_line_search(StandardLineSearch(5, 1, 0.5, true))
 --newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 
@@ -219,19 +222,21 @@ Interpolate("exactSolU"..dim.."d", u, "u")
 Interpolate("exactSolV"..dim.."d", u, "v")
 Interpolate("exactSolP"..dim.."d", u, "p")
 u:set(0.0)
---u:set_random(0,1)
+u:set_random(0,1)
 vtkWriter:print("NigonStart", u)
 
---[[
+----[[
 A = MatrixOperator()
 b = GridFunction(approxSpace)
 domainDisc:assemble_linear(A, b)
 domainDisc:adjust_solution(u)
 linSolver:set_debug(GridFunctionDebugWriter(approxSpace))
+linSolver:set_convergence_check(ConvCheck(10, 1e-10, 1e-8, true))
 linSolver:init(A, u)
 linSolver:apply(u,b)
+vtkWriter:print("Nigon", u)
 exit()
---]]
+----]]
 
 -- Apply the newton solver. A newton itertation is performed to find the solution.
 if newtonSolver:apply(u) == false then
