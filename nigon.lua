@@ -106,7 +106,7 @@ NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, type)
 NavierStokesDisc:set_exact_jacobian(bExactJac)
 NavierStokesDisc:set_stokes(bStokes)
 NavierStokesDisc:set_laplace( not(bNoLaplace) )
-NavierStokesDisc:set_source("Source2d");
+--NavierStokesDisc:set_source("Source2d");
 NavierStokesDisc:set_kinematic_viscosity(1);
 
 --upwind if available
@@ -131,12 +131,13 @@ function exactSolU2d(x, y, t) return math.sin(3*(x+y)) 				end
 function exactSolV2d(x, y, t) return -math.sin(3*(x+y)) 			end
 function exactSolP2d(x, y, t) return -6*math.cos(3*(x+y))			end
 function exactSolVel2d(x, y, t)
-	return exactSolU2d(x,y,t), exactSolV2d(x,y,t)
+	return 0, 0
+--	return exactSolU2d(x,y,t), exactSolV2d(x,y,t)
 end
 
 
 FixPressureDisc = DirichletBoundary()
-FixPressureDisc:add(0, "p", "PressureNode")
+FixPressureDisc:add(0, "p", "Boundary, PressureNode")
 
 BndDisc = NavierStokesInflow(NavierStokesDisc)
 BndDisc:add("exactSolVel"..dim.."d", "Boundary, PressureNode")
@@ -151,12 +152,20 @@ domainDisc:add(BndDisc)
 --------------------------------------------------------------------------------
 u = GridFunction(approxSpace)
 
+LUSolver = LU()
+LUSolver:set_minimum_for_sparse(100000)
+
 -- Linear Solver
 gmg = GeometricMultiGrid(approxSpace)
-gmg:set_base_solver(LU())
-gmg:set_smoother(ComponentGaussSeidel("p"))
+gmg:set_discretization(domainDisc)
+gmg:set_base_level(1)
+gmg:set_base_solver(LUSolver)
+gmg:set_smoother(ComponentGaussSeidel(0.9, "p"))
+--gmg:set_smoother(ElementGaussSeidel("vertex"))
 gmg:set_num_presmooth(2)
 gmg:set_num_postsmooth(2)
+gmg:add_prolongation_post_process(AverageComponent(approxSpace, "p"))
+--gmg:set_debug(GridFunctionDebugWriter(approxSpace))
 
 --[[
 rightTrafoDisc = DomainDiscretization(approxSpace)
@@ -199,14 +208,13 @@ trafoSmoother:set_damp(1)
 --]]
 
 linSolver = LinearSolver()
---linSolver:set_preconditioner(ElementGaussSeidel(1, "element"))
---linSolver:set_preconditioner(ComponentGaussSeidel(1, "p"))
-linSolver:set_preconditioner(gmg)
-linSolver:set_convergence_check(ConvCheck(5, 1e-10, 1e-8, true))
+--linSolver:set_preconditioner(ElementGaussSeidel(0.9, "element"))
+linSolver:set_preconditioner(ComponentGaussSeidel(0.9, "p"))
+--linSolver:set_preconditioner(gmg)
+linSolver:set_convergence_check(ConvCheck(100, 1e-10, 1e-8, true))
 linSolver:set_compute_fresh_defect_when_finished(true)
+--linSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 
---linSolver = LU()
---linSolver:set_minimum_for_sparse(100000)
 
 -- Non-Linear Solver
 newtonSolver = NewtonSolver(AssembledOperator(domainDisc))
@@ -227,18 +235,22 @@ u:set(0.0)
 u:set_random(0,1)
 vtkWriter:print("NigonStart", u)
 
---[[
+----[[
 A = MatrixOperator()
 b = GridFunction(approxSpace)
 domainDisc:assemble_linear(A, b)
 domainDisc:adjust_solution(u)
 linSolver:set_debug(GridFunctionDebugWriter(approxSpace))
-linSolver:set_convergence_check(ConvCheck(10, 1e-10, 1e-8, true))
+
+solverConvCheck = CompositeConvCheck(approxSpace, 1000, 1e-12, 1e-20)
+solverConvCheck:set_component_check({"u", "v", "p"}, 1e-12, 1e-20)
+
+linSolver:set_convergence_check(solverConvCheck)
 linSolver:init(A, u)
 linSolver:apply(u,b)
 vtkWriter:print("Nigon", u)
 exit()
---]]
+----]]
 
 -- Apply the newton solver. A newton itertation is performed to find the solution.
 if newtonSolver:apply(u) == false then
