@@ -106,7 +106,7 @@ NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, type)
 NavierStokesDisc:set_exact_jacobian(bExactJac)
 NavierStokesDisc:set_stokes(bStokes)
 NavierStokesDisc:set_laplace( not(bNoLaplace) )
---NavierStokesDisc:set_source("Source2d");
+NavierStokesDisc:set_source("Source2d");
 NavierStokesDisc:set_kinematic_viscosity(1);
 
 --upwind if available
@@ -131,8 +131,8 @@ function exactSolU2d(x, y, t) return math.sin(3*(x+y)) 				end
 function exactSolV2d(x, y, t) return -math.sin(3*(x+y)) 			end
 function exactSolP2d(x, y, t) return -6*math.cos(3*(x+y))			end
 function exactSolVel2d(x, y, t)
-	return 0, 0
---	return exactSolU2d(x,y,t), exactSolV2d(x,y,t)
+--	return 0, 0
+	return exactSolU2d(x,y,t), exactSolV2d(x,y,t)
 end
 
 
@@ -155,21 +155,28 @@ u = GridFunction(approxSpace)
 LUSolver = LU()
 LUSolver:set_minimum_for_sparse(100000)
 
+cmpGS = ComponentGaussSeidel(0.8, "p", {0,1,2,1,0}, {1,1,1,1})
+
+transfer = StdTransfer(approxSpace)
+transfer:set_restriction_damping(0.25)
+
 -- Linear Solver
 gmg = GeometricMultiGrid(approxSpace)
 gmg:set_discretization(domainDisc)
 gmg:set_base_level(1)
 gmg:set_base_solver(LUSolver)
-gmg:set_smoother(ComponentGaussSeidel(0.9, "p", {0,1,2}, {1,1,1,1}))
---gmg:set_smoother(ElementGaussSeidel("vertex"))
-gmg:set_num_presmooth(3)
-gmg:set_num_postsmooth(3)
---gmg:add_prolongation_post_process(AverageComponent(approxSpace, "p"))
+gmg:set_smoother(cmpGS)
+--gmg:set_smoother(ElementGaussSeidel(0.9, "vertex"))
+gmg:set_num_presmooth(2)
+gmg:set_num_postsmooth(2)
+gmg:set_prolongation(transfer)
+gmg:set_restriction(transfer)
+gmg:add_prolongation_post_process(AverageComponent(approxSpace, "p"))
 --gmg:set_debug(GridFunctionDebugWriter(approxSpace))
 
 linSolver = LinearSolver()
---linSolver:set_preconditioner(ElementGaussSeidel(0.9, "element"))
---linSolver:set_preconditioner(ComponentGaussSeidel(0.9, "p", {2,1,0}, {1,1,1,1}))
+--linSolver:set_preconditioner(ElementGaussSeidel(0.9, "vertex"))
+--linSolver:set_preconditioner(cmpGS)
 linSolver:set_preconditioner(gmg)
 linSolver:set_convergence_check(ConvCheck(100, 1e-10, 1e-8, true))
 linSolver:set_compute_fresh_defect_when_finished(true)
@@ -192,8 +199,7 @@ Interpolate("exactSolU"..dim.."d", u, "u")
 Interpolate("exactSolV"..dim.."d", u, "v")
 Interpolate("exactSolP"..dim.."d", u, "p")
 u:set(0.0)
-u:set_random(0,1)
-Interpolate(2, u, "p")
+--u:set_random(0,1)
 vtkWriter:print("NigonStart", u)
 
 ----[[
@@ -203,7 +209,7 @@ domainDisc:assemble_linear(A, b)
 domainDisc:adjust_solution(u)
 linSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 
-solverConvCheck = CompositeConvCheck(approxSpace, 1000, 1e-12, 1e-20)
+solverConvCheck = CompositeConvCheck(approxSpace, 100, 1e-12, 1e-20)
 solverConvCheck:set_component_check({"u", "v", "p"}, 1e-12, 1e-20)
 
 linSolver:set_convergence_check(solverConvCheck)
