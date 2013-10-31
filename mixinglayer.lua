@@ -40,6 +40,7 @@ numTimeSteps =  util.GetParamNumber("-numTimeSteps", 100)
 numPreRefs = util.GetParamNumber("-numPreRefs", 0)
 numRefs = util.GetParamNumber("-numRefs",3)
 turbViscMethod = util.GetParam("-turbulenceModel","Dyn")
+modellconstant = util.GetParamNumber("-c",0.1)
 exactJacFactor = util.GetParamNumber("-exactjac", 0)
 bPecletBlend= util.HasParamOption("-pecletblend", "If defined, Peclet Blend used")
 upwind      = util.GetParam("-upwind", "full", "Upwind type")
@@ -212,7 +213,7 @@ else
 		viscosityData = CRDynamicTurbViscData(approxSpace,u)
 	end
 	if turbViscMethod=="Sma" then
-		viscosityData = CRSmagorinskyTurbViscData(approxSpace,u,0.1)
+		viscosityData = CRSmagorinskyTurbViscData(approxSpace,u,modellconstant)
 	end	
 	viscosityData:set_turbulence_zero_bnd("Top,Bottom")
 	viscosityData:set_kinematic_viscosity(viscosity)
@@ -299,12 +300,26 @@ function StartValue_v2d(x,y,t)
 	return cnoise*winf*(-math.exp(-4*y*y/sigma0/sigma0)*(-8*math.sin(8*math.pi*x)*math.pi-20*math.sin(20*math.pi*x)*math.pi))
 end
 
+-- filter value for start solution
+h = 1
+for i=1,numRefs do
+	h = 0.5 * h
+end
+
+function StartValueFiltered_u2d(x,y,t) 
+	return 0.25*( StartValue_u2d(x+h,y)+StartValue_u2d(x-h,y)+StartValue_u2d(x,y+h)+StartValue_u2d(x,y-h) )
+end
+
+function StartValueFiltered_v2d(x,y,t) 
+	return 0.25*( StartValue_v2d(x+h,y)+StartValue_v2d(x-h,y)+StartValue_v2d(x,y+h)+StartValue_v2d(x,y-h) )
+end
+
 function StartValue_p2d(x,y,t) return 0 end
 
 -- if offset is > 0 use current solution as start solution
 if tsOffset==0 then
-	Interpolate("StartValue_u2d", u, "u")
-	Interpolate("StartValue_v2d", u, "v")
+	Interpolate("StartValueFiltered_u2d", u, "u")
+	Interpolate("StartValueFiltered_v2d", u, "v")
 	Interpolate("StartValue_p2d", u, "p")
 else
 	LoadVector(u,"currentSolution.vec")
@@ -445,6 +460,11 @@ solTimeSeries:push(uOld, time)
 
 function zero(x,y,t) return 0 end
 
+clearFile("kineticEnergy.m")
+-- compute kinetic energy
+ke=kineticEnergy(u)
+writeNumbers("kineticEnergy.m",1,0,ke)
+
 for step = 1 + tsOffset, numTimeSteps do
 	print("++++++ TIMESTEP " .. step .. " BEGIN ++++++")
 
@@ -512,7 +532,8 @@ for step = 1 + tsOffset, numTimeSteps do
 	cflNumber(u,do_dt)
 	
 	-- compute kinetic energy
-	kineticEnergy(u)
+	ke=kineticEnergy(u)
+	writeNumbers("kineticEnergy.m",step+1,time,ke)
 	
 	if (bSave) then
 		SaveVectorForConnectionViewer(u,"currentSolution.vec")
