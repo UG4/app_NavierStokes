@@ -171,7 +171,7 @@ gmg:set_num_presmooth(2)
 gmg:set_num_postsmooth(2)
 gmg:set_prolongation(transfer)
 gmg:set_restriction(transfer)
-gmg:add_prolongation_post_process(AverageComponent(approxSpace, "p"))
+gmg:add_prolongation_post_process(AverageComponent("p"))
 --gmg:set_debug(GridFunctionDebugWriter(approxSpace))
 
 linSolver = LinearSolver()

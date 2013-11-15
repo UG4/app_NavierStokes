@@ -347,7 +347,7 @@ gmg:set_cycle_type(1)
 gmg:set_num_presmooth(1)
 gmg:set_num_postsmooth(1)
 gmg:set_damp(MinimalResiduumDamping())
--- gmg:add_prolongation_post_process(AverageComponent(approxSpace,"p"))
+-- gmg:add_prolongation_post_process(AverageComponent("p"))
 -- gmg:set_damp(MinimalEnergyDamping())
 
 --gmg:set_debug(dbgWriter)

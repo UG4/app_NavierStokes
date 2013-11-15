@@ -183,8 +183,8 @@ gmg:set_cycle_type(1)
 gmg:set_damp(MinimalResiduumDamping())
 gmg:set_num_presmooth(2)
 gmg:set_num_postsmooth(2)
--- gmg:add_restriction_post_process(AverageComponent(approxSpace,"p"))
--- gmg:add_prolongation_post_process(AverageComponent(approxSpace,"p"))
+-- gmg:add_restriction_post_process(AverageComponent("p"))
+-- gmg:add_prolongation_post_process(AverageComponent("p"))
 
 --gmg:set_debug(dbgWriter)
 -- create Linear Solver
