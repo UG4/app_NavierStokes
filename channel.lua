@@ -67,6 +67,15 @@ print("    stab             = " .. stab)
 print("    diffLength       = " .. diffLength)
 print("    Umax             = " .. Umax)
 print("    Viscosity        = " .. Viscosity)
+print("")
+print(" solution process related parameters chosen:")
+print("    linear solver   = " .. sol)
+print("    gmg cycle       = " .. cycleType)
+print("    gmg base level  = " .. baseLev)
+print("    gmg smoother    = " .. smooth)
+print("    # pre-smooth    = " .. numPreSmooth)
+print("    # post-smooth   = " .. numPostSmooth)
+print("    rap             = " .. tostring(bRAP))
 
 --------------------------------------------------------------------------------
 -- Loading Domain and Domain Refinement
