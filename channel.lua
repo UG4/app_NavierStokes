@@ -35,6 +35,20 @@ Viscosity   = util.GetParamNumber("-visco", 0.01)
 if 	dim == 2 then gridName = util.GetParam("-grid", "grids/channel20Q18x10.ugx")
 else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
+-- choose some solver:
+sol = util.GetParam("-sol", "gmg")
+numPreSmooth = util.GetParamNumber("-numPreSmooth", 2)
+numPostSmooth = util.GetParamNumber("-numPostSmooth", 2)
+if util.HasParamOption("-numSmooth") then
+numPreSmooth = util.GetParamNumber("-numSmooth", 2)
+numPostSmooth = numPreSmooth
+end
+smooth = util.GetParam("-smooth", "ilut", "Type of smoother [jac |Êilu | ilut |Êegs |Êgs |Êsgs]")
+groupType = util.GetParam("-group", "element", "Type of grouping for ElementGaussSeidel (egs)")
+baseLev = util.GetParamNumber("-baseLev", 0)
+cycleType =  util.GetParam("-cycle", "V", "gmg-cycle type [V | W | F]")
+bRAP = util.HasParamOption("-rap", "use rap product as level matrices")
+
 -- Lets write some info about the choosen parameter
 print(" Choosen Parater:")
 print("    dim              = " .. dim)
@@ -159,19 +173,38 @@ domainDisc:add(OutletDisc)
 -- Solution of the Problem
 --------------------------------------------------------------------------------
 
--- Linear Solver
+baseLU = LU()
+baseLU:set_minimum_for_sparse(10000)
+
 gmg = GeometricMultiGrid(approxSpace)
-gmg:set_base_solver(LU())
-gmg:set_smoother(ILUT())
-gmg:set_num_presmooth(2)
-gmg:set_num_postsmooth(2)
+gmg:set_base_level(baseLev)
+gmg:set_base_solver(baseLU)
+gmg:set_gathered_base_solver_if_ambiguous(true)
+if 	    smooth == "ilu"  then gmg:set_smoother(ILU());
+elseif 	smooth == "ilut" then gmg:set_smoother(ILUT(1e-4));
+elseif 	smooth == "egs"  then gmg:set_smoother(ElementGaussSeidel(groupType));
+elseif 	smooth == "jac"   then gmg:set_smoother(Jacobi(0.66));
+elseif 	smooth == "gs"   then gmg:set_smoother(GaussSeidel());
+elseif 	smooth == "sgs"  then gmg:set_smoother(SymmetricGaussSeidel());
+else print("Smoother not set, use -smooth option [ilu, ilut, jac, egs, gs, sgs]"); exit(); end
+gmg:set_cycle_type(cycleType)
+gmg:set_num_presmooth(numPreSmooth)
+gmg:set_num_postsmooth(numPostSmooth)
+gmg:set_rap(bRAP)
 
-gmgSolver = LinearSolver()
-gmgSolver:set_preconditioner(gmg)
-gmgSolver:set_convergence_check(ConvCheck(100, 1e-10, 1e-8, true))
+-- create Linear Solver
+GMGSolver = LinearSolver()
+GMGSolver:set_preconditioner(gmg)
 
--- choose a solver
-linSolver = gmgSolver
+-- create BiCGStab Solver
+BiCGStabSolver = BiCGStab()
+BiCGStabSolver:set_preconditioner(gmg)
+
+-- select some of the created solver
+if 		sol == "gmg" then linSolver = GMGSolver;
+elseif 	sol == "bicgstab" then linSolver = BiCGStabSolver;
+else print("Linear solver not set, use -sol option [gmg, bicgstab]"); exit(); end
+linSolver:set_convergence_check(ConvCheck(60, 1e-10, 1e-8, true))
 
 -- Non-Linear Solver
 newtonSolver = NewtonSolver(AssembledOperator(domainDisc))
@@ -182,10 +215,13 @@ newtonSolver:set_convergence_check(ConvCheck(40, 1e-8, 1e-6, true))
 
 -- Interpolate Start Iterate
 u = GridFunction(approxSpace)
-Interpolate("exactSolU"..dim.."d", u, "u")
-Interpolate("exactSolV"..dim.."d", u, "v")
-Interpolate("exactSolP"..dim.."d", u, "p")
---u:set(0.0)
+u:set(0.0)
+
+if util.HasParamOption("-startWithExact", "StartWithExactSol") == true then 
+	Interpolate("exactSolU"..dim.."d", u, "u")
+	Interpolate("exactSolV"..dim.."d", u, "v")
+	Interpolate("exactSolP"..dim.."d", u, "p")
+end
 
 -- Apply the newton solver. A newton itertation is performed to find the solution.
 if newtonSolver:apply(u) == false then
