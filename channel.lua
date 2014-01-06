@@ -190,7 +190,7 @@ gmg:set_base_level(baseLev)
 gmg:set_base_solver(baseLU)
 gmg:set_gathered_base_solver_if_ambiguous(true)
 if 	    smooth == "ilu"  then gmg:set_smoother(ILU());
-elseif 	smooth == "ilut" then gmg:set_smoother(ILUT(1e-4));
+elseif 	smooth == "ilut" then gmg:set_smoother(ILUT(1e-6));
 elseif 	smooth == "egs"  then gmg:set_smoother(ElementGaussSeidel(groupType));
 elseif 	smooth == "jac"   then gmg:set_smoother(Jacobi(0.66));
 elseif 	smooth == "gs"   then gmg:set_smoother(GaussSeidel());
@@ -200,6 +200,10 @@ gmg:set_cycle_type(cycleType)
 gmg:set_num_presmooth(numPreSmooth)
 gmg:set_num_postsmooth(numPostSmooth)
 gmg:set_rap(bRAP)
+
+-- create Linear Solver
+SmoothSolver = LinearSolver()
+SmoothSolver:set_preconditioner(smooth)
 
 -- create Linear Solver
 GMGSolver = LinearSolver()
@@ -212,7 +216,8 @@ BiCGStabSolver:set_preconditioner(gmg)
 -- select some of the created solver
 if 		sol == "gmg" then linSolver = GMGSolver;
 elseif 	sol == "bicgstab" then linSolver = BiCGStabSolver;
-else print("Linear solver not set, use -sol option [gmg, bicgstab]"); exit(); end
+elseif 	sol == "smooth" then linSolver = SmoothSolver;
+else print("Linear solver not set, use -sol option [gmg, bicgstab, smooth]"); exit(); end
 linSolver:set_convergence_check(ConvCheck(60, 1e-10, 1e-8, true))
 
 -- Non-Linear Solver
