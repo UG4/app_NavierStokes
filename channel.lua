@@ -189,13 +189,14 @@ gmg = GeometricMultiGrid(approxSpace)
 gmg:set_base_level(baseLev)
 gmg:set_base_solver(baseLU)
 gmg:set_gathered_base_solver_if_ambiguous(true)
-if 	    smooth == "ilu"  then gmg:set_smoother(ILU());
-elseif 	smooth == "ilut" then gmg:set_smoother(ILUT(1e-6));
-elseif 	smooth == "egs"  then gmg:set_smoother(ElementGaussSeidel(groupType));
-elseif 	smooth == "jac"   then gmg:set_smoother(Jacobi(0.66));
-elseif 	smooth == "gs"   then gmg:set_smoother(GaussSeidel());
-elseif 	smooth == "sgs"  then gmg:set_smoother(SymmetricGaussSeidel());
+if 	    smooth == "ilu"  then smoother = ILU();
+elseif 	smooth == "ilut" then smoother = ILUT(1e-6);
+elseif 	smooth == "egs"  then smoother = ElementGaussSeidel(groupType);
+elseif 	smooth == "jac"   then smoother = Jacobi(0.66);
+elseif 	smooth == "gs"   then smoother = GaussSeidel();
+elseif 	smooth == "sgs"  then smoother = SymmetricGaussSeidel();
 else print("Smoother not set, use -smooth option [ilu, ilut, jac, egs, gs, sgs]"); exit(); end
+gmg:set_smoother(smoother)
 gmg:set_cycle_type(cycleType)
 gmg:set_num_presmooth(numPreSmooth)
 gmg:set_num_postsmooth(numPostSmooth)
@@ -203,7 +204,7 @@ gmg:set_rap(bRAP)
 
 -- create Linear Solver
 SmoothSolver = LinearSolver()
-SmoothSolver:set_preconditioner(smooth)
+SmoothSolver:set_preconditioner(smoother)
 
 -- create Linear Solver
 GMGSolver = LinearSolver()
