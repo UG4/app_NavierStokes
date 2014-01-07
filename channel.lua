@@ -192,7 +192,7 @@ gmg:set_gathered_base_solver_if_ambiguous(true)
 if 	    smooth == "ilu"  then smoother = ILU();
 elseif 	smooth == "ilut" then smoother = ILUT(1e-6);
 elseif 	smooth == "egs"  then smoother = ElementGaussSeidel(groupType);
-elseif 	smooth == "cgs"  then smoother = ComponentGaussSeidel(0.8, "p", {0,1,2,1,0}, {1,1,1,1})
+elseif 	smooth == "cgs"  then smoother = ComponentGaussSeidel(0.8, {"p"}, {0,1,2,1,0}, {1,1,1,1})
 elseif 	smooth == "jac"   then smoother = Jacobi(0.66);
 elseif 	smooth == "gs"   then smoother = GaussSeidel();
 elseif 	smooth == "sgs"  then smoother = SymmetricGaussSeidel();
