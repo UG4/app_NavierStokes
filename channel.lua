@@ -118,6 +118,7 @@ else print("Disc Type '"..type.."' not supported."); exit(); end
 
 -- finally we print some statistic on the distributed dofs
 approxSpace:init_top_surface()
+approxSpace:init_levels()
 approxSpace:print_statistic()
 
 --------------------------------------------------------------------------------
@@ -183,7 +184,7 @@ domainDisc:add(OutletDisc)
 --------------------------------------------------------------------------------
 
 baseLU = LU()
-baseLU:set_minimum_for_sparse(10000)
+baseLU:set_minimum_for_sparse(2000)
 
 gmg = GeometricMultiGrid(approxSpace)
 gmg:set_base_level(baseLev)
@@ -192,8 +193,8 @@ gmg:set_gathered_base_solver_if_ambiguous(true)
 if 	    smooth == "ilu"  then smoother = ILU();
 elseif 	smooth == "ilut" then smoother = ILUT(1e-6);
 elseif 	smooth == "egs"  then smoother = ElementGaussSeidel(groupType);
-elseif 	smooth == "cgs"  then smoother = ComponentGaussSeidel(0.8, {"p"}, {0,1,2,1,0}, {1,1,1,1})
-elseif 	smooth == "jac"   then smoother = Jacobi(0.66);
+elseif 	smooth == "cgs"  then smoother = ComponentGaussSeidel(0.1, {"p"}, {0}, {1})
+elseif 	smooth == "jac"  then smoother = Jacobi(0.66);
 elseif 	smooth == "gs"   then smoother = GaussSeidel();
 elseif 	smooth == "sgs"  then smoother = SymmetricGaussSeidel();
 else print("Smoother not set, use -smooth option [ilu, ilut, jac, egs, cgs, gs, sgs]"); exit(); end
@@ -219,8 +220,35 @@ BiCGStabSolver:set_preconditioner(gmg)
 if 		sol == "gmg" then linSolver = GMGSolver;
 elseif 	sol == "bicgstab" then linSolver = BiCGStabSolver;
 elseif 	sol == "smooth" then linSolver = SmoothSolver;
+elseif  sol == "schur" then 
+	-- create Schur Solver
+	ug_load_script("solver_util/setup_schur.lua")
+	schurType = util.GetParam("-schurType", "Full")
+	skeletonSolverType = util.GetParam("-schurSkeletonSolver", "LapackLU")
+	schur = util.schur.GetPreconditioner(schurType, skeletonSolverType)
+	
+	--schur:set_debug(GridFunctionDebugWriter(approxSpace))
+	
+	if util.HasParamOption("-auto") then
+		solver = AutoLinearSolver(1e-8, 1e-3)
+		solver:set_preconditioner(schur)
+		solver:set_convergence_check(ConvCheck(200, 1e-8, 1e-3, true))
+	else
+		solver = LinearSolver()
+		solver:set_preconditioner(schur)
+		solver:set_convergence_check(ConvCheck(200, 1e-8, 1e-3, true))
+	end		
+		
+	lu = LU()
+	lu:set_minimum_for_sparse(1e99)
+	--lu:set_info(true)
+	linSolver = solver
+elseif sol == "lu" then
+	linSolver = LU()
+	linSolver:set_minimum_for_sparse(1e99)
+	linSolver:set_info(true)
 else print("Linear solver not set, use -sol option [gmg, bicgstab, smooth]"); exit(); end
-linSolver:set_convergence_check(ConvCheck(60, 1e-10, 1e-8, true))
+linSolver:set_convergence_check(ConvCheck(200, 1e-10, 1e-8, true))
 
 -- Non-Linear Solver
 newtonSolver = NewtonSolver(AssembledOperator(domainDisc))
@@ -239,10 +267,24 @@ if util.HasParamOption("-startWithExact", "StartWithExactSol") == true then
 	Interpolate("exactSolP"..dim.."d", u, "p")
 end
 
+if util.HasParamOption("-debugSmoother") == true then
+u:set_random(0,1)
+A = MatrixOperator()
+b = GridFunction(approxSpace)
+domainDisc:assemble_linear(A, b)
+domainDisc:adjust_solution(u)
+
+SmoothSolver:set_debug(GridFunctionDebugWriter(approxSpace))
+SmoothSolver:init(A)
+SmoothSolver:apply(u,b)
+exit()
+end
+
 -- Apply the newton solver. A newton itertation is performed to find the solution.
 if newtonSolver:apply(u) == false then
 	 print ("Newton solver apply failed."); exit();
 end
+
 
 -- Output of solution
 vtkWriter = VTKOutput()
