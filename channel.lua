@@ -285,6 +285,12 @@ if newtonSolver:apply(u) == false then
 	 print ("Newton solver apply failed."); exit();
 end
 
+l2error = L2Error("exactSolU"..dim.."d", u, "u", 0.0, 1, "Inner")
+write("L2Error in u component is "..l2error .."\n")
+l2error = L2Error("exactSolV"..dim.."d", u, "v", 0.0, 1, "Inner")
+write("L2Error in v component is "..l2error .."\n")
+l2error = L2Error("exactSolP"..dim.."d", u, "p", 0.0, 1, "Inner")
+write("L2Error in p component is "..l2error .."\n")
 
 -- Output of solution
 vtkWriter = VTKOutput()
