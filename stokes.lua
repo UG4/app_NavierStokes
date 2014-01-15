@@ -1,12 +1,12 @@
--------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 --
 --  Lua - Script to test the Navier-Stokes implementation
 --
 --  Author: Christian Wehner
 --
 --	A theoretical example to test the Navier-Stokes discretization.
---	The boundary conditions are inflow boundary conditions (Dirichlet conditions for the velocity)
---  on the whole boundary.
+--	The boundary conditions are inflow boundary conditions 
+--  (Dirichlet conditions for the velocity) on the whole boundary.
 --  The analytical solution can be constructed e.g. via maple:
 --
 --  # construct u and v solution so that velocity is divergence-free
@@ -19,7 +19,7 @@
 --  rhsu:=factor(simplify(-1/R*diff(diff(u,x),x)-1/R*diff(diff(u,y),y)+u*diff(u,x)+v*diff(u,y)+diff(p,x)))
 --  rhsv:=factor(simplify(-1/R*diff(diff(v,x),x)-1/R*diff(diff(v,y),y)+u*diff(v,x)+v*diff(v,y)+diff(p,y)))
 --
-------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 ug_load_script("ug_util.lua")
 
@@ -56,23 +56,12 @@ print("    grid       	= " .. gridName)
 print("    v ansatz order = " ..vorder)
 print("    p ansatz order = " ..porder)
 
---------------------------------------------
---------------------------------------------
+--------------------------------------------------------------------------------
 -- Loading Domain and Domain Refinement
---------------------------------------------
---------------------------------------------
+--------------------------------------------------------------------------------
 
--- Lets define a list of all subsets that we need
 requiredSubsets = {"Inner", "Boundary"}
 dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
-
--- We succesfully loaded and refined the domain. Now its time to setup an
--- ApproximationSpace on the domain. First, we check that the domain we use
--- has suitable subsets. This are parts of the domain, that partition the domain.
--- We need them, to handle e.g. boundary conditions on different parts of the
--- domain boundary.
-
--- All subset are ok. So we can create the Approximation Space
 approxSpace = ApproximationSpace(dom)
 
 -- we destinguish the components of the velocity 
@@ -109,11 +98,9 @@ approxSpace:init_top_surface()
 approxSpace:print_statistic()
 approxSpace:print_local_dof_statistic(2)
 
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 -- Discretization
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 
 fctUsed = "u"
 if dim >= 2 then fctUsed = fctUsed .. ", v" end
@@ -160,13 +147,9 @@ NavierStokesDisc:set_stokes(true)
 NavierStokesDisc:set_laplace(true)
 NavierStokesDisc:set_kinematic_viscosity(1.0/R)
 
-
-
-----------------------------------
-----------------------------------
+-------------------------------------------------------------------------------
 -- Boundary conditions
-----------------------------------
-----------------------------------
+--------------------------------------------------------------------------------
 
 function usol2d(x, y, t)
 --	return 2*x^2*(1-x)^2*(y*(1-y)^2-y^2*(1-y))		
@@ -221,11 +204,9 @@ pSolution = LuaUserNumber("psol"..dim.."d")
 InletDisc = NavierStokesInflow(NavierStokesDisc)
 InletDisc:add("inletVel"..dim.."d", "Boundary")
 
-----------------------------------
-----------------------------------
+--------------------------------------------------------------------------------
 -- Source
-----------------------------------
-----------------------------------
+--------------------------------------------------------------------------------
 
 function source2d(x, y, t)
 	return 
@@ -261,11 +242,9 @@ end
 
 NavierStokesDisc:set_source(rhs)
 
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 -- Solution of the Problem
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 domainDisc = DomainDiscretization(approxSpace)
 domainDisc:add(NavierStokesDisc)
 domainDisc:add(InletDisc)
