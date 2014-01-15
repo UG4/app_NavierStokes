@@ -1,12 +1,12 @@
--------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 --
 --  Lua - Script to test the Navier-Stokes implementation
 --
 --  Author: Christian Wehner
 --
 --	A theoretical example to test the Navier-Stokes discretization.
---	The boundary conditions are inflow boundary conditions (Dirichlet conditions for the velocity)
---  on the whole boundary.
+--	The boundary conditions are inflow boundary conditions 
+--  (Dirichlet conditions for the velocity) on the whole boundary.
 --  The analytical solution can be constructed e.g. via maple:
 --
 --  # construct u and v solution so that velocity is divergence-free
@@ -19,16 +19,16 @@
 --  rhsu:=factor(simplify(-1/R*diff(diff(u,x),x)-1/R*diff(diff(u,y),y)+u*diff(u,x)+v*diff(u,y)+diff(p,x)))
 --  rhsv:=factor(simplify(-1/R*diff(diff(v,x),x)-1/R*diff(diff(v,y),y)+u*diff(v,x)+v*diff(v,y)+diff(p,y)))
 --
-------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 ug_load_script("ug_util.lua")
 
-dim = util.GetParamNumber("-dim", 2)
-type = util.GetParam("-type", "fvcr")
-order = util.GetParamNumber("-order", 1)
-vorder = util.GetParamNumber("-vorder", order)
-porder = util.GetParamNumber("-porder", vorder-1)
-R = util.GetParamNumber("-R", 1)
+dim 		= util.GetParamNumber("-dim", 2)
+type 		= util.GetParam("-type", "fvcr")
+order 		= util.GetParamNumber("-order", 1)
+vorder 		= util.GetParamNumber("-vorder", order)
+porder 		= util.GetParamNumber("-porder", vorder-1)
+R 			= util.GetParamNumber("-R", 1)
 bStokes 	= util.HasParamOption("-stokes", "If defined, only Stokes Eq. computed")
 bNoLaplace 	= util.HasParamOption("-nolaplace", "If defined, only laplace term used")
 bExactJac 	= util.HasParamOption("-exactjac", "If defined, exact jacobian used")
@@ -41,8 +41,8 @@ linred      = util.GetParam("-linred", 1e-2 , "Linear reduction")
 nlintol     = util.GetParam("-nlintol", 1e-8, "Nonlinear tolerance")
 lintol      = util.GetParam("-lintol", nlintol*0.5, "Linear tolerance")
 nlinred     = util.GetParam("-nlinred", nlintol*0.1, "Nonlinear reduction")
-numPreRefs = util.GetParamNumber("-numPreRefs", 0)
-numRefs = util.GetParamNumber("-numRefs",2)
+numPreRefs 	= util.GetParamNumber("-numPreRefs", 0)
+numRefs 	= util.GetParamNumber("-numRefs",2)
 
 if 	dim == 2 then
 	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2.ugx")
@@ -80,11 +80,9 @@ print("    nonlinear reduction = " .. nlinred)
 print("    nonlinear tolerance = " .. nlintol)
 print("    Reynolds number = " .. R)
 
---------------------------------------------
---------------------------------------------
+--------------------------------------------------------------------------------
 -- Loading Domain and Domain Refinement
---------------------------------------------
---------------------------------------------
+--------------------------------------------------------------------------------
 
 requiredSubsets = {"Inner", "Boundary"}
 dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
@@ -128,11 +126,9 @@ approxSpace:init_top_surface()
 approxSpace:print_statistic()
 approxSpace:print_local_dof_statistic(2)
 
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 -- Discretization
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 
 fctUsed = "u"
 if dim >= 2 then fctUsed = fctUsed .. ", v" end
@@ -154,7 +150,6 @@ end
 -- fv1 must be stablilized
 if type == "fv1" then
 	NavierStokesDisc:set_stabilization(stab, diffLength)
-	--  use PAC upwind or not
 	NavierStokesDisc:set_pac_upwind(bPac)
 end
 
@@ -163,11 +158,9 @@ if type == "fe" and porder == vorder then
 	NavierStokesDisc:set_stabilization(3)
 end
 
-----------------------------------
-----------------------------------
+--------------------------------------------------------------------------------
 -- Boundary conditions
-----------------------------------
-----------------------------------
+--------------------------------------------------------------------------------
 
 function usol2d(x, y, t)
 	return 2*x^2*(1-x)^2*(y*(1-y)^2-y^2*(1-y))
@@ -216,11 +209,9 @@ end
 InletDisc = NavierStokesInflow(NavierStokesDisc)
 InletDisc:add("inletVel"..dim.."d", "Boundary")
 
-----------------------------------
-----------------------------------
+--------------------------------------------------------------------------------
 -- Source
-----------------------------------
-----------------------------------
+--------------------------------------------------------------------------------
 
 function source2d(x, y, t)
 	return 
@@ -250,11 +241,9 @@ end
 
 NavierStokesDisc:set_source("source"..dim.."d")
 
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 -- Solution of the Problem
---------------------------------
---------------------------------
+--------------------------------------------------------------------------------
 domainDisc = DomainDiscretization(approxSpace)
 domainDisc:add(NavierStokesDisc)
 domainDisc:add(InletDisc)
