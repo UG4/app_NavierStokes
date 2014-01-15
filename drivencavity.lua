@@ -8,14 +8,14 @@
 
 ug_load_script("ug_util.lua")
 
-dim = util.GetParamNumber("-dim", 2)
-type = util.GetParam("-type", "fvcr")
-order = util.GetParamNumber("-order", 1)
-vorder = util.GetParamNumber("-vorder", order)
-porder = util.GetParamNumber("-porder", vorder-1)
+dim 		= util.GetParamNumber("-dim", 2)
+type 		= util.GetParam("-type", "fvcr")
+order 		= util.GetParamNumber("-order", 1)
+vorder 		= util.GetParamNumber("-vorder", order)
+porder 		= util.GetParamNumber("-porder", vorder-1)
 bStokes 	= util.HasParamOption("-stokes", "If defined, only Stokes Eq. computed")
 bNoLaplace 	= util.HasParamOption("-nolaplace", "If defined, only laplace term used")
-exactJacFactor = util.GetParamNumber("-exactjac", 0)
+bExactJac 	= util.GetParamNumber("-exactjac", 0)
 bPecletBlend= util.HasParamOption("-pecletblend", "If defined, Peclet Blend used")
 upwind      = util.GetParam("-upwind", "no", "Upwind type")
 bPac        = util.HasParamOption("-pac", "If defined, pac upwind used")
@@ -23,7 +23,7 @@ stab        = util.GetParam("-stab", "flow", "Stabilization type")
 diffLength  = util.GetParam("-difflength", "COR", "Diffusion length type")
 bPSep       = util.HasParamOption("-psep", "If defined, pressure separation used")
 bPLin       = util.HasParamOption("-linp", "If defined, pressure gradient is used")
-bPLinDefect   = util.HasParamOption("-linpdefect", "If defined, pressure gradient is used only in defect")
+bPLinDefect = util.HasParamOption("-linpdefect", "If defined, pressure gradient is used only in defect")
 bNoUpwindInDefect = util.HasParamOption("-noupdefect", "If defined, no upwind is used in defect")
 bLinUpwindInDefect = util.HasParamOption("-linupdefect", "If defined, linear upwind is used in defect")
 linred      = util.GetParam("-linred", 1e-1 , "Linear reduction")
@@ -31,18 +31,16 @@ nlintol     = util.GetParam("-nlintol", 1e-5, "Nonlinear tolerance")
 lintol      = util.GetParam("-lintol", nlintol*0.5, "Linear tolerance")
 nlinred     = util.GetParam("-nlinred", nlintol*0.1, "Nonlinear reduction")
 bNoLineSearch  = util.HasParamOption("-noline", "If defined, no line search is used")
-boolStat = util.GetParamNumber("-stat", 1)
-elemType = util.GetParam("-elem", "quad")
-dt = util.GetParamNumber("-dt", 0.1)
-reynoldsNr = util.GetParamNumber("-R",100)
-numTimeSteps =  util.GetParamNumber("-numTimeSteps", 5)
-numPreRefs = util.GetParamNumber("-numPreRefs", 0)
-numRefs = util.GetParamNumber("-numRefs",2)
+boolStat 	= util.GetParamNumber("-stat", 1)
+elemType 	= util.GetParam("-elem", "quad")
+dt 			= util.GetParamNumber("-dt", 0.1)
+reynoldsNr 	= util.GetParamNumber("-R",100)
+numTimeSteps=  util.GetParamNumber("-numTimeSteps", 5)
+numPreRefs 	= util.GetParamNumber("-numPreRefs", 0)
+numRefs 	= util.GetParamNumber("-numRefs",2)
 
-if type==fv1 then
-	InitUG(dim, AlgebraType("CPU", dim+1));
-else
-	InitUG(dim, AlgebraType("CPU", 1));
+if type == "fv1" then 	InitUG(dim, AlgebraType("CPU", dim+1));
+else					InitUG(dim, AlgebraType("CPU", 1));
 end
 
 -- undo fvcr only options if type is not fvcr
@@ -84,7 +82,7 @@ if bPLinDefect==false then
 	bPLin=false
 end
 
-if 	dim == 2 then
+if dim == 2 then
 	if elemType == "tri" then 
 		gridName = util.GetParam("-grid", "grids/unit_square_01_tri_unstruct_4bnd.ugx")
 	else 
@@ -117,34 +115,34 @@ print("    numTotalRefs        = " .. numRefs)
 print("    numPreRefs          = " .. numPreRefs)
 print("    type                = " .. type)
 if boolStat==false then
-	print("    dt                  = " .. dt)
-	print("    numTimeSteps        = " .. numTimeSteps)
+print("    dt                  = " .. dt)
+print("    numTimeSteps        = " .. numTimeSteps)
 end
 print("    grid                = " .. gridName)
 print("    v ansatz order      = " ..vorder)
 print("    p ansatz order      = " ..porder)
 print("    no laplace          = " .. tostring(bNoLaplace))
-print("    exact jacob. factor = " .. exactJacFactor)
+print("    exact jacob. factor = " .. bExactJac)
 print("    peclet blend        = " .. tostring(bPecletBlend))
 print("    upwind              = " .. upwind)
 if type=="fv1" then
-	print("    pac upwind          = " .. tostring(bPac))
-	print("    stab                = " .. stab)
-	print("    diffLength          = " .. diffLength)
+print("    pac upwind          = " .. tostring(bPac))
+print("    stab                = " .. stab)
+print("    diffLength          = " .. diffLength)
 end
 if type=="fvcr" then
-	print("    pressure separation = " .. tostring(bPSep))
-	print("    no upwind in defect = " .. tostring(bNoUpwindInDefect))
-	if bLinUpwind==true then
-		print("    linear upwind         = " .. tostring(bLinUpwind))
-	else
-		print("    linear upwind in def  = " .. tostring(bLinUpwindInDefect))
-	end
-	if bPLin==true then
-		print("    linear pressure       = " .. tostring(bPLin))
-	else
-		print("    lin pressure in def   = " .. tostring(bPLinDefect))
-	end
+print("    pressure separation = " .. tostring(bPSep))
+print("    no upwind in defect = " .. tostring(bNoUpwindInDefect))
+if bLinUpwind==true then
+print("    linear upwind         = " .. tostring(bLinUpwind))
+else
+print("    linear upwind in def  = " .. tostring(bLinUpwindInDefect))
+end
+if bPLin==true then
+print("    linear pressure       = " .. tostring(bPLin))
+else
+print("    lin pressure in def   = " .. tostring(bPLinDefect))
+end
 end
 print("    no line search      = " .. tostring(bNoLineSearch))
 print("    linear reduction    = " .. linred)
@@ -213,13 +211,10 @@ if dim >= 3 then fctUsed = fctUsed .. ", w" end
 fctUsed = fctUsed .. ", p"
 
 NavierStokesDisc = NavierStokes(fctUsed, "Inner", type)
-NavierStokesDisc:set_exact_jacobian(exactJacFactor)
+NavierStokesDisc:set_exact_jacobian(bExactJac)
 NavierStokesDisc:set_stokes(bStokes)
 NavierStokesDisc:set_laplace( not(bNoLaplace) )
 NavierStokesDisc:set_kinematic_viscosity(1.0/reynoldsNr)
-
-
-
 
 --upwind if available
 if type == "fv1" or type == "fvcr" then
@@ -230,7 +225,6 @@ end
 -- fv1 must be stablilized
 if type == "fv1" then
 	NavierStokesDisc:set_stabilization(stab, diffLength)
---  use PAC upwind or not
 	NavierStokesDisc:set_pac_upwind(bPac)
 end
 
@@ -238,8 +232,6 @@ end
 if type == "fe" and porder == vorder then
 	NavierStokesDisc:set_stabilization(3)
 end
-
-
 
 --------------------------------------------------------------------------------
 -- Boundary conditions and constraints
@@ -255,7 +247,6 @@ domainDisc = DomainDiscretization(approxSpace)
 domainDisc:add(NavierStokesDisc)
 domainDisc:add(InletDisc)
 domainDisc:add(WallDisc)
-
 
 --------------------------------------------------------------------------------
 -- Solution of the Problem
