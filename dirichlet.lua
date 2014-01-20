@@ -311,7 +311,7 @@ function createSolver(approxSpace, discType)
 	
 	local sol = util.solver.parseParams()
 	local solver = util.solver.create(sol, gmg)
-	solver:set_convergence_check(ConvCheck(100000, 1e-13, 1e-12, true))
+	solver:set_convergence_check(ConvCheck(100000, 1e-10, 1e-99, true))
 	print(solver:config_string())
 	
 	local newtonSolver = NewtonSolver()
