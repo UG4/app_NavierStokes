@@ -141,7 +141,7 @@ function util.solver.create(sol, precond)
 
 		local skeletonSolver = BiCGStab()
 		skeletonSolver:set_preconditioner(ILU())
-		skeletonSolver:set_convergence_check(ConvCheck(10, 1e-12, 1e-10, true))	
+		skeletonSolver:set_convergence_check(ConvCheck(10000, 1e-12, 1e-10, true))	
 
 		local schur = SchurComplement()
 		local lu = SuperLU()
