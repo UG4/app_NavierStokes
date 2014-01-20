@@ -346,7 +346,7 @@ util.computeConvRatesStatic(
 	DiscTypes = 
 	{
 	 -- {type = "fv1", pmin = 1, pmax = 1, lmin = 1, lmax = numRefs},
-	  {type = "fv", pmin = 2, pmax = 4, lmin = 1, lmax = numRefs}
+	  {type = "fv", pmin = 3, pmax = 3, lmin = 3, lmax = numRefs}
 	}
 })
 
