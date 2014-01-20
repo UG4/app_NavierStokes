@@ -144,8 +144,7 @@ function util.solver.create(sol, precond)
 		skeletonSolver:set_convergence_check(ConvCheck(10, 1e-12, 1e-10, true))	
 
 		local schur = SchurComplement()
-		local lu = LU()
-		lu:set_minimum_for_sparse(1e99)
+		local lu = SuperLU()
 		schur:set_dirichlet_solver(lu)
 		schur:set_skeleton_solver(SchurInverseWithFullMatrix(skeletonSolver))
 	
@@ -153,8 +152,6 @@ function util.solver.create(sol, precond)
 		solver:set_preconditioner(schur)
 			
 	elseif sol == "lu" then
-		solver = LU()
-		solver:set_minimum_for_sparse(1e99)
 		solver = SuperLU()
 	else
 		print("Solver not found."); exit();
