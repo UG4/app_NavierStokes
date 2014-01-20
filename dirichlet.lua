@@ -13,6 +13,7 @@
 ug_load_script("ug_util.lua")
 ug_load_script("util/domain_disc_util.lua")
 ug_load_script("navier_stokes_util.lua")
+ug_load_script("util/conv_rates_static.lua")
 
 dim 		= util.GetParamNumber("-dim", 2)
 numRefs 	= util.GetParamNumber("-numRefs",2)
@@ -78,19 +79,28 @@ print("    Reynolds number = " .. R)
 -- Loading Domain and Domain Refinement
 --------------------------------------------------------------------------------
 
-InitUG(dim, AlgebraType("CPU", 1))
+function createDomain()
 
-requiredSubsets = {"Inner", "Boundary"}
-dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
+	InitUG(dim, AlgebraType("CPU", 1))
+	
+	requiredSubsets = {"Inner", "Boundary"}
+	local dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
+	
+	return dom
+end
 
-approxSpace, FctCmp, VelCmp = util.ns.createApproxSpace(dom, discType, vorder, porder)
+function createApproxSpace(dom, discType, p)
 
--- print statistic on the distributed dofs
-approxSpace:init_levels()
-approxSpace:init_top_surface()
-approxSpace:print_statistic()
---approxSpace:print_local_dof_statistic(2)
-
+	local approxSpace, FctCmp, VelCmp = util.ns.createApproxSpace(dom, discType, p, p-1)
+	
+	-- print statistic on the distributed dofs
+	--approxSpace:init_levels()
+	--approxSpace:init_top_surface()
+	--approxSpace:print_statistic()
+	--approxSpace:print_local_dof_statistic(2)
+	
+	return approxSpace
+end
 
 --------------------------------------------------------------------------------
 -- Source
@@ -158,8 +168,8 @@ else
 	else
 		function source2d(x, y, t)
 			return 
-			-math.pow(y,a-3)*a*(a-1)*(a-2)/R-a*a*math.pow(x,a-1)*math.pow(y,a-2)*(a-1)+math.pow(x,b-1)*b,
-			math.pow(x,a-3)*a*(a-1)*(a-2)/R-a*a*math.pow(y,a-1)*math.pow(x,a-2)*(a-1)+math.pow(y,b-1)*b
+			8.0/R*math.cos(2.0*math.pi*y)*math.pi*math.pi*math.pi+8.0*math.cos(2.0*math.pi*x)*math.pi*math.pi*math.pi*math.sin(2.0*math.pi*y)+2.0*math.cos(2.0*math.pi*x)*math.pi,
+ 			-8.0/R*math.cos(2.0*math.pi*x)*math.pi*math.pi*math.pi+8.0*math.cos(2.0*math.pi*y)*math.pi*math.pi*math.pi*math.sin(2.0*math.pi*x)+2.0*math.cos(2.0*math.pi*y)*math.pi
 		end	
 	end
 
@@ -231,84 +241,118 @@ end
 -- Discretization
 --------------------------------------------------------------------------------
 
-NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discType)
-NavierStokesDisc:set_exact_jacobian(bExactJac)
-NavierStokesDisc:set_stokes(bStokes)
-NavierStokesDisc:set_laplace( not(bNoLaplace) )
-NavierStokesDisc:set_kinematic_viscosity(1.0/R);
-NavierStokesDisc:set_source("source"..dim.."d")
+function createDomainDisc(discType, p, approxSpace)
 
---upwind if available
-if discType == "fv1" or discType == "fvcr" then
-	NavierStokesDisc:set_upwind(upwind)
-	NavierStokesDisc:set_peclet_blend(bPecletBlend)
-end
-
--- fv1 must be stablilized
-if discType == "fv1" then
-	NavierStokesDisc:set_stabilization(stab, diffLength)
-	NavierStokesDisc:set_pac_upwind(bPac)
-end
-
--- fe must be stabilized for (Pk, Pk) space
-if discType == "fe" and porder == vorder then
-	NavierStokesDisc:set_stabilization(3)
-end
-
-InletDisc = NavierStokesInflow(NavierStokesDisc)
-InletDisc:add("inletVel"..dim.."d", "Boundary")
-
-domainDisc = DomainDiscretization(approxSpace)
-domainDisc:add(NavierStokesDisc)
-domainDisc:add(InletDisc)
-
-if bInstat then 
-	timeDisc = ThetaTimeStep(domainDisc)
-	timeDisc:set_theta(0.5) -- 1.0 is implicit euler
-	op = AssembledOperator(timeDisc)
-else
-	op = AssembledOperator(domainDisc)
+	NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discType)
+	NavierStokesDisc:set_exact_jacobian(bExactJac)
+	NavierStokesDisc:set_stokes(bStokes)
+	NavierStokesDisc:set_laplace( not(bNoLaplace) )
+	NavierStokesDisc:set_kinematic_viscosity(1.0/R);
+	NavierStokesDisc:set_source("source"..dim.."d")
+	
+	--upwind if available
+	if discType == "fv1" or discType == "fvcr" then
+		NavierStokesDisc:set_upwind(upwind)
+		NavierStokesDisc:set_peclet_blend(bPecletBlend)
+	end
+	
+	-- fv1 must be stablilized
+	if discType == "fv1" then
+		NavierStokesDisc:set_stabilization(stab, diffLength)
+		NavierStokesDisc:set_pac_upwind(bPac)
+	end
+	
+	-- fe must be stabilized for (Pk, Pk) space
+	if discType == "fe" and porder == vorder then
+		NavierStokesDisc:set_stabilization(3)
+	end
+	
+	InletDisc = NavierStokesInflow(NavierStokesDisc)
+	InletDisc:add("inletVel"..dim.."d", "Boundary")
+	
+	domainDisc = DomainDiscretization(approxSpace)
+	domainDisc:add(NavierStokesDisc)
+	domainDisc:add(InletDisc)
+	
+	return domainDisc
 end
 
 --------------------------------------------------------------------------------
 -- Solution of the Problem
 --------------------------------------------------------------------------------
 
+function createSolver(approxSpace, discType)
 
-if discType == "fvcr" then
-	base =  LinearSolver()
-	base:set_preconditioner(DiagVanka())
-	base:set_convergence_check(ConvCheck(10000, 1e-7, 1e-3, false))
-else
-	base = LU()
+	local base = nil
+	if discType == "fvcr" then
+		base =  LinearSolver()
+		base:set_preconditioner(DiagVanka())
+		base:set_convergence_check(ConvCheck(10000, 1e-7, 1e-3, false))
+	else
+		base = LU()
+	end
+	
+	local smoother = nil
+	if discType == "fvcr" then 
+		smoother = Vanka()
+	else
+		local smooth = util.smooth.parseParams()
+		smoother = util.smooth.create(smooth)
+	end
+	
+	local numPreSmooth, numPostSmooth, baseLev, cycle, bRAP = util.gmg.parseParams()
+	local gmg = util.gmg.create(approxSpace, smoother, numPreSmooth, numPostSmooth,
+							 cycle, base, baseLev, bRAP)
+	gmg:set_damp(MinimalResiduumDamping())
+	--gmg:set_damp(MinimalEnergyDamping())
+	--gmg:add_prolongation_post_process(AverageComponent("p"))
+	--gmg:set_debug(dbgWriter)
+	
+	
+	local sol = util.solver.parseParams()
+	local solver = util.solver.create(sol, gmg)
+	solver:set_convergence_check(ConvCheck(100000, 1e-15, 1e-12, true))
+	print(solver:config_string())
+	
+	local newtonSolver = NewtonSolver()
+	newtonSolver:set_linear_solver(solver)
+	newtonSolver:set_convergence_check(ConvCheck(100, nlintol, nlinred, true))
+	newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.85, true))
+	--newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
+	
+	return newtonSolver
 end
 
-if discType == "fvcr" then 
-	smoother = Vanka()
-else
-	local smooth = util.smooth.parseParams()
-	smoother = util.smooth.create(smooth)
+function computeNonLinearSolution(u, lev, approxSpace, domainDisc, solver)
+
+	solver:init(AssembledOperator(domainDisc, u[lev]:grid_level()))
+	if solver:apply(u[lev]) == false then
+		 print (">> Newton solver apply failed."); exit();
+	end
+	AdjustMeanValue(u[lev], "p")
+	write(">> Newton Solver done.\n")
 end
 
-numPreSmooth, numPostSmooth, baseLev, cycle, bRAP = util.gmg.parseParams()
-gmg = util.gmg.create(approxSpace, smoother, numPreSmooth, numPostSmooth,
-						 cycle, base, baseLev, bRAP)
-gmg:set_damp(MinimalResiduumDamping())
---gmg:set_damp(MinimalEnergyDamping())
---gmg:add_prolongation_post_process(AverageComponent("p"))
---gmg:set_debug(dbgWriter)
+
+util.computeConvRatesStatic(
+{
+	createDomain = createDomain,
+	createApproxSpace = createApproxSpace,
+	createDomainDisc = createDomainDisc,
+	createSolver = createSolver,
+	
+	computeSolution = computeNonLinearSolution,
+	
+	DiscTypes = 
+	{
+	 -- {type = "fv1", pmin = 1, pmax = 1, lmin = 1, lmax = numRefs},
+	  {type = "fv", pmin = 2, pmax = 4, lmin = 1, lmax = numRefs}
+	}
+})
 
 
-sol = util.solver.parseParams()
-solver = util.solver.create(sol, gmg)
-solver:set_convergence_check(ConvCheck(100000, 1e-15, 1e-12, true))
-print(solver:config_string())
+exit()
 
-newtonSolver = NewtonSolver(op)
-newtonSolver:set_linear_solver(solver)
-newtonSolver:set_convergence_check(ConvCheck(100, nlintol, nlinred, true))
-newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.85, true))
---newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 
 u = GridFunction(approxSpace)
 u:set(0)
