@@ -328,7 +328,7 @@ function CreateSolver(approxSpace, discType, p)
 	return newtonSolver
 end
 
-function ComputeNonLinearSolution(u, approxSpace, domainDisc, solver)
+function ComputeNonLinearSolution(u, domainDisc, solver)
 
 	solver:init(AssembledOperator(domainDisc, u:grid_level()))
 	if solver:apply(u) == false then
@@ -381,7 +381,7 @@ if not(bInstat) then
 		u:set(0)
 		
 		timeStart = os.clock()
-		ComputeNonLinearSolution(u, approxSpace, domainDisc, solver)
+		ComputeNonLinearSolution(u, domainDisc, solver)
 		timeEnd = os.clock()
 		print("Computation took " .. timeEnd-timeStart .. " seconds.")
 		
