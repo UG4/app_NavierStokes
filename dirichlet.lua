@@ -219,7 +219,7 @@ end
 -- Discretization
 --------------------------------------------------------------------------------
 
-function CreateDomainDisc(discType, p, approxSpace)
+function CreateDomainDisc(approxSpace, discType, p)
 
 	local FctCmp = approxSpace:names()
 	NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discType)
@@ -374,7 +374,7 @@ if not(bInstat) then
 		local p = vorder
 		local dom = CreateDomain()
 		local approxSpace = CreateApproxSpace(dom, discType, p)
-		local domainDisc = CreateDomainDisc(discType, p, approxSpace)
+		local domainDisc = CreateDomainDisc(approxSpace, discType, p)
 		local solver = CreateSolver(approxSpace, discType, p)
 		
 		local u = GridFunction(approxSpace)
