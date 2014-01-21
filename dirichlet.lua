@@ -272,7 +272,7 @@ end
 
 function CreateApproxSpace(dom, discType, p)
 
-	local approxSpace, FctCmp, VelCmp = util.ns.CreateApproxSpace(dom, discType, p, p-1)
+	local approxSpace = util.ns.CreateApproxSpace(dom, discType, p, p-1)
 	
 	-- print statistic on the distributed dofs
 	--approxSpace:init_levels()
@@ -280,7 +280,7 @@ function CreateApproxSpace(dom, discType, p)
 	--approxSpace:print_statistic()
 	--approxSpace:print_local_dof_statistic(2)
 	
-	return approxSpace, FctCmp
+	return approxSpace
 end
 
 --------------------------------------------------------------------------------
@@ -381,7 +381,7 @@ if not(bInstat) then
 		u:set(0)
 		
 		timeStart = os.clock()
-		computeNonLinearSolution(u, approxSpace, domainDisc, solver)
+		ComputeNonLinearSolution(u, approxSpace, domainDisc, solver)
 		timeEnd = os.clock()
 		print("Computation took " .. timeEnd-timeStart .. " seconds.")
 		
