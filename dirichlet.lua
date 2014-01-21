@@ -330,12 +330,8 @@ end
 
 function ComputeNonLinearSolution(u, domainDisc, solver)
 
-	solver:init(AssembledOperator(domainDisc, u:grid_level()))
-	if solver:apply(u) == false then
-		 print (">> Newton solver apply failed."); exit();
-	end
+	util.rates.static.StdComputeNonLinearSolution(u, domainDisc, solver)
 	AdjustMeanValue(u, "p")
-	write(">> Newton Solver done.\n")
 end
 
 --------------------------------------------------------------------------------
