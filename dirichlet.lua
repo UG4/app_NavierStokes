@@ -338,6 +338,10 @@ function ComputeNonLinearSolution(u, domainDisc, solver)
 	write(">> Newton Solver done.\n")
 end
 
+--------------------------------------------------------------------------------
+-- Run Problem
+--------------------------------------------------------------------------------
+
 if not(bInstat) then
 
 	if bConvRates then
