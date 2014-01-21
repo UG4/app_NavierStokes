@@ -219,7 +219,7 @@ end
 -- Discretization
 --------------------------------------------------------------------------------
 
-function createDomainDisc(discType, p, approxSpace)
+function CreateDomainDisc(discType, p, approxSpace)
 
 	local FctCmp = approxSpace:names()
 	NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discType)
@@ -260,7 +260,7 @@ end
 -- Loading Domain and Domain Refinement
 --------------------------------------------------------------------------------
 
-function createDomain()
+function CreateDomain()
 
 	InitUG(dim, AlgebraType("CPU", 1))
 	
@@ -270,9 +270,9 @@ function createDomain()
 	return dom
 end
 
-function createApproxSpace(dom, discType, p)
+function CreateApproxSpace(dom, discType, p)
 
-	local approxSpace, FctCmp, VelCmp = util.ns.createApproxSpace(dom, discType, p, p-1)
+	local approxSpace, FctCmp, VelCmp = util.ns.CreateApproxSpace(dom, discType, p, p-1)
 	
 	-- print statistic on the distributed dofs
 	--approxSpace:init_levels()
@@ -287,7 +287,7 @@ end
 -- Solution of the Problem
 --------------------------------------------------------------------------------
 
-function createSolver(approxSpace, discType, p)
+function CreateSolver(approxSpace, discType, p)
 
 	local base = nil
 	if discType == "fvcr" then
@@ -344,23 +344,23 @@ if not(bInstat) then
 	if bConvRates then
 		util.rates.static.compute(
 		{
-			exactSol = {
+			ExactSol = {
 				["u"] = "usol"..dim.."d",
 				["v"] = "vsol"..dim.."d",
 				["p"] = "psol"..dim.."d"
 			},
-			exactGrad = {
+			ExactGrad =  {
 				["u"] = "ugrad"..dim.."d",
 				["v"] = "vgrad"..dim.."d",
 				["p"] = "pgrad"..dim.."d"
 			},
 			
-			createDomain = createDomain,
-			createApproxSpace = createApproxSpace,
-			createDomainDisc = createDomainDisc,
-			createSolver = createSolver,
+			CreateDomain = CreateDomain,
+			CreateApproxSpace = CreateApproxSpace,
+			CreateDomainDisc = CreateDomainDisc,
+			CreateSolver = CreateSolver,
 			
-			computeSolution = computeNonLinearSolution,
+			ComputeSolution = computeNonLinearSolution,
 			
 			DiscTypes = 
 			{
@@ -372,10 +372,10 @@ if not(bInstat) then
 	if not(bConvRates) then
 	
 		local p = vorder
-		local dom = createDomain()
-		local approxSpace = createApproxSpace(dom, discType, p)
-		local domainDisc = createDomainDisc(discType, p, approxSpace)
-		local solver = createSolver(approxSpace, discType, p)
+		local dom = CreateDomain()
+		local approxSpace = CreateApproxSpace(dom, discType, p)
+		local domainDisc = CreateDomainDisc(discType, p, approxSpace)
+		local solver = CreateSolver(approxSpace, discType, p)
 		
 		local u = GridFunction(approxSpace)
 		u:set(0)

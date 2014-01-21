@@ -19,7 +19,7 @@ function util.ns.parseParams()
 	return discType, vorder, porder
 end
 
-function util.ns.createApproxSpace(dom, type, vorder, porder)
+function util.ns.CreateApproxSpace(dom, type, vorder, porder)
 
 	-- create Approx Space w.r.t. to domain
 	local dim = dom:get_dim()
