@@ -287,7 +287,7 @@ end
 -- Solution of the Problem
 --------------------------------------------------------------------------------
 
-function createSolver(approxSpace, discType)
+function createSolver(approxSpace, discType, p)
 
 	local base = nil
 	if discType == "fvcr" then
@@ -371,10 +371,11 @@ if not(bInstat) then
 	
 	if not(bConvRates) then
 	
+		local p = vorder
 		local dom = createDomain()
-		local approxSpace = createApproxSpace(dom, discType, vorder)
-		local domainDisc = createDomainDisc(discType, vorder, approxSpace)
-		local solver = createSolver(approxSpace, discType)
+		local approxSpace = createApproxSpace(dom, discType, p)
+		local domainDisc = createDomainDisc(discType, p, approxSpace)
+		local solver = createSolver(approxSpace, discType, p)
 		
 		local u = GridFunction(approxSpace)
 		u:set(0)
