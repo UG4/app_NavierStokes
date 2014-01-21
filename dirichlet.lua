@@ -328,7 +328,7 @@ function CreateSolver(approxSpace, discType, p)
 	return newtonSolver
 end
 
-function computeNonLinearSolution(u, approxSpace, domainDisc, solver)
+function ComputeNonLinearSolution(u, approxSpace, domainDisc, solver)
 
 	solver:init(AssembledOperator(domainDisc, u:grid_level()))
 	if solver:apply(u) == false then
@@ -359,7 +359,7 @@ if not(bInstat) then
 			CreateDomainDisc = CreateDomainDisc,
 			CreateSolver = CreateSolver,
 			
-			ComputeSolution = computeNonLinearSolution,
+			ComputeSolution = ComputeNonLinearSolution,
 			
 			DiscTypes = 
 			{
