@@ -318,7 +318,6 @@ function CreateSolver(approxSpace, discType, p)
 	local sol = util.solver.parseParams()
 	local solver = util.solver.create(sol, gmg)
 	solver:set_convergence_check(ConvCheck(100000, 1e-10, 1e-99, false))
-	print(solver:config_string())
 	
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
@@ -376,6 +375,7 @@ if not(bInstat) then
 		local approxSpace = CreateApproxSpace(dom, discType, p)
 		local domainDisc = CreateDomainDisc(approxSpace, discType, p)
 		local solver = CreateSolver(approxSpace, discType, p)
+		print(solver:config_string())
 		
 		local u = GridFunction(approxSpace)
 		u:set(0)
