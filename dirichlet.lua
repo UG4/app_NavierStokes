@@ -372,8 +372,8 @@ if not(bInstat) then
 	if not(bConvRates) then
 	
 		local dom = createDomain()
-		local approxSpace, FctCmp = createApproxSpace(dom, discType, vorder)
-		local domainDisc = createDomainDisc(discType, vorder, approxSpace, FctCmp)
+		local approxSpace = createApproxSpace(dom, discType, vorder)
+		local domainDisc = createDomainDisc(discType, vorder, approxSpace)
 		local solver = createSolver(approxSpace, discType)
 		
 		local u = GridFunction(approxSpace)
@@ -386,6 +386,7 @@ if not(bInstat) then
 		
 		-- to make error computation for p reasonable
 		-- p would have to be adjusted by adding a reasonable constant
+		local FctCmp = approxSpace:names()
 		for d = 1,#FctCmp do
 			print("L2Error in '"..FctCmp[d].. "' is ".. 
 					L2Error(FctCmp[d].."sol"..dim.."d", u, FctCmp[d], 0.0, 1, "Inner"))
@@ -395,8 +396,10 @@ if not(bInstat) then
 					 MaxError(FctCmp[d].."sol"..dim.."d", u, FctCmp[d]))
 		end
 		
+		local VelCmp = {}
+		for d = 1,#FctCmp-1 do VelCmp[d] = FctCmp[d] end
 		vtkWriter = VTKOutput()
-		vtkWriter:select({"u","v"}, "velocity")
+		vtkWriter:select(VelCmp, "velocity")
 		vtkWriter:select("p", "pressure")
 		vtkWriter:print("Dirichlet", u)
 	end
