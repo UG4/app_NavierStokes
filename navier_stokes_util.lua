@@ -26,6 +26,7 @@ function util.ns.createApproxSpace(dom, type, vorder, porder)
 	local approxSpace = ApproximationSpace(dom)
 	
 	-- components of the velocity 
+	local VelCmp, FctCmp
 	if 		dim == 1 then VelCmp = {"u"}; 			FctCmp = {"u", "p"}
 	elseif  dim == 2 then VelCmp = {"u", "v"};	 	FctCmp = {"u", "v", "p"}
 	elseif  dim == 3 then VelCmp = {"u", "v", "w"}; FctCmp = {"u", "v", "w", "p"}

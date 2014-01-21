@@ -221,6 +221,7 @@ end
 
 function createDomainDisc(discType, p, approxSpace)
 
+	local FctCmp = approxSpace:names()
 	NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discType)
 	NavierStokesDisc:set_exact_jacobian(bExactJac)
 	NavierStokesDisc:set_stokes(bStokes)
@@ -279,7 +280,7 @@ function createApproxSpace(dom, discType, p)
 	--approxSpace:print_statistic()
 	--approxSpace:print_local_dof_statistic(2)
 	
-	return approxSpace
+	return approxSpace, FctCmp
 end
 
 --------------------------------------------------------------------------------
@@ -338,12 +339,10 @@ function computeNonLinearSolution(u, approxSpace, domainDisc, solver)
 	write(">> Newton Solver done.\n")
 end
 
-
-
 if not(bInstat) then
 
 	if bConvRates then
-		util.computeConvRatesStatic(
+		util.rates.static.compute(
 		{
 			exactSol = {
 				["u"] = "usol"..dim.."d",
@@ -373,9 +372,9 @@ if not(bInstat) then
 	if not(bConvRates) then
 	
 		local dom = createDomain()
-		local approxSpace = createApproxSpace(dom, discType, vorder)
+		local approxSpace, FctCmp = createApproxSpace(dom, discType, vorder)
+		local domainDisc = createDomainDisc(discType, vorder, approxSpace, FctCmp)
 		local solver = createSolver(approxSpace, discType)
-		local domainDisc = createDomainDisc(discType, vorder, approxSpace)
 		
 		local u = GridFunction(approxSpace)
 		u:set(0)
@@ -397,7 +396,7 @@ if not(bInstat) then
 		end
 		
 		vtkWriter = VTKOutput()
-		vtkWriter:select(VelCmp, "velocity")
+		vtkWriter:select({"u","v"}, "velocity")
 		vtkWriter:select("p", "pressure")
 		vtkWriter:print("Dirichlet", u)
 	end
