@@ -18,6 +18,7 @@ ug_load_script("util/conv_rates_static.lua")
 dim 		= util.GetParamNumber("-dim", 2)
 numRefs 	= util.GetParamNumber("-numRefs",2)
 numPreRefs 	= util.GetParamNumber("-numPreRefs", 0)
+bConvRates  = util.HasParamOption("-convRate", "compute convergence rates")
 
 bInstat     = util.HasParamOption("-instat", "time-dependent solution")
 if bInstat then
@@ -76,33 +77,6 @@ print("    nonlinear tolerance = " .. nlintol)
 print("    Reynolds number = " .. R)
 
 --------------------------------------------------------------------------------
--- Loading Domain and Domain Refinement
---------------------------------------------------------------------------------
-
-function createDomain()
-
-	InitUG(dim, AlgebraType("CPU", 1))
-	
-	requiredSubsets = {"Inner", "Boundary"}
-	local dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
-	
-	return dom
-end
-
-function createApproxSpace(dom, discType, p)
-
-	local approxSpace, FctCmp, VelCmp = util.ns.createApproxSpace(dom, discType, p, p-1)
-	
-	-- print statistic on the distributed dofs
-	--approxSpace:init_levels()
-	--approxSpace:init_top_surface()
-	--approxSpace:print_statistic()
-	--approxSpace:print_local_dof_statistic(2)
-	
-	return approxSpace
-end
-
---------------------------------------------------------------------------------
 -- Source
 --------------------------------------------------------------------------------
 --[[
@@ -154,22 +128,26 @@ C( laplace_u + nonlin_u + press_u );
 C( laplace_v + nonlin_v + press_v );
  --]]
 else
+	PI = math.pi
+	function usol2d(x, y, t) return 2*math.cos(2*PI*y)*PI  end
+	function vsol2d(x, y, t) return -2*math.cos(2*PI*x)*PI end
+	function psol2d(x, y, t) return math.sin(2*PI*x)+math.sin(2*PI*y)  end
 
-	function usol2d(x, y, t) return 2*math.cos(2*math.pi*y)*math.pi  end
-	function vsol2d(x, y, t) return -2*math.cos(2*math.pi*x)*math.pi end
-	function psol2d(x, y, t) return math.sin(2*math.pi*x)+math.sin(2*math.pi*y)  end
+	function ugrad2d(x, y, t) return 0, -4*PI*PI*math.sin(2*PI*y)  end
+	function vgrad2d(x, y, t) return 4*PI*PI*math.sin(2*PI*x), 0 end
+	function pgrad2d(x, y, t) return 2*PI*math.cos(2*PI*x),2*PI*math.cos(2*PI*y)  end
 
 	if bStokes == true then
 		function source2d(x, y, t)
 			return 
-			8/R*math.cos(2*math.pi*y)*math.pi*math.pi*math.pi+2*math.cos(2*math.pi*x)*math.pi,
-			-8/R*math.cos(2*math.pi*x)*math.pi*math.pi*math.pi+2*math.cos(2*math.pi*y)*math.pi
+			8/R*math.cos(2*PI*y)*PI*PI*PI+2*math.cos(2*PI*x)*PI,
+			-8/R*math.cos(2*PI*x)*PI*PI*PI+2*math.cos(2*PI*y)*PI
 		end
 	else
 		function source2d(x, y, t)
 			return 
-			8.0/R*math.cos(2.0*math.pi*y)*math.pi*math.pi*math.pi+8.0*math.cos(2.0*math.pi*x)*math.pi*math.pi*math.pi*math.sin(2.0*math.pi*y)+2.0*math.cos(2.0*math.pi*x)*math.pi,
- 			-8.0/R*math.cos(2.0*math.pi*x)*math.pi*math.pi*math.pi+8.0*math.cos(2.0*math.pi*y)*math.pi*math.pi*math.pi*math.sin(2.0*math.pi*x)+2.0*math.cos(2.0*math.pi*y)*math.pi
+			8.0/R*math.cos(2.0*PI*y)*PI*PI*PI+8.0*math.cos(2.0*PI*x)*PI*PI*PI*math.sin(2.0*PI*y)+2.0*math.cos(2.0*PI*x)*PI,
+ 			-8.0/R*math.cos(2.0*PI*x)*PI*PI*PI+8.0*math.cos(2.0*PI*y)*PI*PI*PI*math.sin(2.0*PI*x)+2.0*math.cos(2.0*PI*y)*PI
 		end	
 	end
 
@@ -278,6 +256,33 @@ function createDomainDisc(discType, p, approxSpace)
 end
 
 --------------------------------------------------------------------------------
+-- Loading Domain and Domain Refinement
+--------------------------------------------------------------------------------
+
+function createDomain()
+
+	InitUG(dim, AlgebraType("CPU", 1))
+	
+	requiredSubsets = {"Inner", "Boundary"}
+	local dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
+	
+	return dom
+end
+
+function createApproxSpace(dom, discType, p)
+
+	local approxSpace, FctCmp, VelCmp = util.ns.createApproxSpace(dom, discType, p, p-1)
+	
+	-- print statistic on the distributed dofs
+	--approxSpace:init_levels()
+	--approxSpace:init_top_surface()
+	--approxSpace:print_statistic()
+	--approxSpace:print_local_dof_statistic(2)
+	
+	return approxSpace
+end
+
+--------------------------------------------------------------------------------
 -- Solution of the Problem
 --------------------------------------------------------------------------------
 
@@ -311,90 +316,105 @@ function createSolver(approxSpace, discType)
 	
 	local sol = util.solver.parseParams()
 	local solver = util.solver.create(sol, gmg)
-	solver:set_convergence_check(ConvCheck(100000, 1e-10, 1e-99, true))
+	solver:set_convergence_check(ConvCheck(100000, 1e-10, 1e-99, false))
 	print(solver:config_string())
 	
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
-	newtonSolver:set_convergence_check(ConvCheck(100, nlintol, nlinred, true))
-	newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.85, true))
+	newtonSolver:set_convergence_check(ConvCheck(100, nlintol, nlinred, false))
+	--newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.85, true))
 	--newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 	
 	return newtonSolver
 end
 
-function computeNonLinearSolution(u, lev, approxSpace, domainDisc, solver)
+function computeNonLinearSolution(u, approxSpace, domainDisc, solver)
 
-	solver:init(AssembledOperator(domainDisc, u[lev]:grid_level()))
-	if solver:apply(u[lev]) == false then
+	solver:init(AssembledOperator(domainDisc, u:grid_level()))
+	if solver:apply(u) == false then
 		 print (">> Newton solver apply failed."); exit();
 	end
-	AdjustMeanValue(u[lev], "p")
+	AdjustMeanValue(u, "p")
 	write(">> Newton Solver done.\n")
 end
 
 
-util.computeConvRatesStatic(
-{
-	createDomain = createDomain,
-	createApproxSpace = createApproxSpace,
-	createDomainDisc = createDomainDisc,
-	createSolver = createSolver,
-	
-	computeSolution = computeNonLinearSolution,
-	
-	DiscTypes = 
-	{
-	 -- {type = "fv1", pmin = 1, pmax = 1, lmin = 1, lmax = numRefs},
-	  {type = "fv", pmin = 3, pmax = 3, lmin = 3, lmax = numRefs}
-	}
-})
-
-
-exit()
-
-
-u = GridFunction(approxSpace)
-u:set(0)
-
-vtkWriter = VTKOutput()
-vtkWriter:select(VelCmp, "velocity")
-vtkWriter:select("p", "pressure")
 
 if not(bInstat) then
 
-	timeStart = os.clock()
-	
---	for d = 1,#FctCmp do Interpolate(FctCmp[d].."sol"..dim.."d", u, FctCmp[d]) end
---	vtkWriter:print("DirichletExact", u)
-	
-	if newtonSolver:prepare(u) == false then print ("Newton solver prepare failed.") exit() end
-	if newtonSolver:apply(u) == false then print ("Newton solver apply failed.") exit() end
-	AdjustMeanValue(u, "p")
-	print("MeanValue p: "..Integral(u, "p", "Inner", porder))
-	
-	-- to make error computation for p reasonable
-	-- p would have to be adjusted by adding a reasonable constant
-	for d = 1,#FctCmp do
-		print("L2Error in '"..FctCmp[d].. "' is ".. 
-				L2Error(FctCmp[d].."sol"..dim.."d", u, FctCmp[d], 0.0, 1, "Inner"))
+	if bConvRates then
+		util.computeConvRatesStatic(
+		{
+			exactSol = {
+				["u"] = "usol"..dim.."d",
+				["v"] = "vsol"..dim.."d",
+				["p"] = "psol"..dim.."d"
+			},
+			exactGrad = {
+				["u"] = "ugrad"..dim.."d",
+				["v"] = "vgrad"..dim.."d",
+				["p"] = "pgrad"..dim.."d"
+			},
+			
+			createDomain = createDomain,
+			createApproxSpace = createApproxSpace,
+			createDomainDisc = createDomainDisc,
+			createSolver = createSolver,
+			
+			computeSolution = computeNonLinearSolution,
+			
+			DiscTypes = 
+			{
+			  {type = "fv", pmin = 2, pmax = 4, lmin = 1, lmax = numRefs}
+			}
+		})
 	end
-	for d = 1,#FctCmp do
-		print("Maximum error in '"..FctCmp[d].. "' is ".. 
-				 MaxError(FctCmp[d].."sol"..dim.."d", u, FctCmp[d]))
+	
+	if not(bConvRates) then
+	
+		local dom = createDomain()
+		local approxSpace = createApproxSpace(dom, discType, vorder)
+		local solver = createSolver(approxSpace, discType)
+		local domainDisc = createDomainDisc(discType, vorder, approxSpace)
+		
+		local u = GridFunction(approxSpace)
+		u:set(0)
+		
+		timeStart = os.clock()
+		computeNonLinearSolution(u, approxSpace, domainDisc, solver)
+		timeEnd = os.clock()
+		print("Computation took " .. timeEnd-timeStart .. " seconds.")
+		
+		-- to make error computation for p reasonable
+		-- p would have to be adjusted by adding a reasonable constant
+		for d = 1,#FctCmp do
+			print("L2Error in '"..FctCmp[d].. "' is ".. 
+					L2Error(FctCmp[d].."sol"..dim.."d", u, FctCmp[d], 0.0, 1, "Inner"))
+		end
+		for d = 1,#FctCmp do
+			print("Maximum error in '"..FctCmp[d].. "' is ".. 
+					 MaxError(FctCmp[d].."sol"..dim.."d", u, FctCmp[d]))
+		end
+		
+		vtkWriter = VTKOutput()
+		vtkWriter:select(VelCmp, "velocity")
+		vtkWriter:select("p", "pressure")
+		vtkWriter:print("Dirichlet", u)
 	end
-	
-	vtkWriter:print("Dirichlet", u)
-	
-	timeEnd = os.clock()
-	print("Computation took " .. timeEnd-timeStart .. " seconds.")
-else
+end
+
+if bInstat then
 	step=0;
 	time=0;
 	
 	-- create new grid function for old value
+	u = GridFunction(approxSpace)
+	u:set(0)
 	uOld = u:clone()
 	
+	vtkWriter = VTKOutput()
+	vtkWriter:select(VelCmp, "velocity")
+	vtkWriter:select("p", "pressure")
 	vtkWriter:print("TimeDirichlet", u, 0,0)
 	
 	tBefore = os.clock()
