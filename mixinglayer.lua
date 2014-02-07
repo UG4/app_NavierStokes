@@ -35,29 +35,32 @@ undefined    = -3458789.116
 
 dt = util.GetParamNumber("-dt", undefined)
 dtTimeUnit = util.GetParamNumber("-dtScale", 0.1)*timeUnit
-timeMethod = util.GetParam("-timeMethod","CN")
+timeMethod = util.GetParam("-timeMethod","cn")
 numTimeSteps =  util.GetParamNumber("-numTimeSteps", 100)
 numPreRefs = util.GetParamNumber("-numPreRefs", 0)
 numRefs = util.GetParamNumber("-numRefs",3)
-turbViscMethod = util.GetParam("-turbulenceModel","Dyn")
+turbViscMethod = util.GetParam("-turbulenceModel","dyn")
 modellconstant = util.GetParamNumber("-c",0.1)
-exactJacFactor = util.GetParamNumber("-exactjac", 0)
+bLaplace 	= util.HasParamOption("-laplace", "If defined, only laplace term used")
+exJacFactor = util.GetParamNumber("-exactjac", 0)
 bPecletBlend= util.HasParamOption("-pecletblend", "If defined, Peclet Blend used")
 upwind      = util.GetParam("-upwind", "full", "Upwind type")
+nolimit      = util.HasParamOption("-nolimit", "If defined, no limiter is used in linear upwind")
 bPac        = util.HasParamOption("-pac", "If defined, pac upwind used")
 stab        = util.GetParam("-stab", "flow", "Stabilization type")
 diffLength  = util.GetParam("-difflength", "COR", "Diffusion length type")
-bPSep       = util.HasParamOption("-psep", "If defined, pressure separation used")
 bPLin       = util.HasParamOption("-linp", "If defined, pressure gradient is used")
 bPLinDefect   = util.HasParamOption("-linpdefect", "If defined, pressure gradient is used only in defect")
 bNoUpwindInDefect = util.HasParamOption("-noupdefect", "If defined, no upwind is used in defect")
 bLinUpwindInDefect = util.HasParamOption("-linupdefect", "If defined, linear upwind is used in defect")
+graddivFactor = util.GetParamNumber("-graddiv", 0)
 linred      = util.GetParam("-linred", 1e-1 , "Linear reduction")
 nlintol     = util.GetParam("-nlintol", 1e-6, "Nonlinear tolerance")
 lintol      = util.GetParam("-lintol", nlintol*0.5, "Linear tolerance")
 nlinred     = util.GetParam("-nlinred", nlintol*0.1, "Nonlinear reduction")
 bNoLineSearch  = util.HasParamOption("-noline", "If defined, no line search is used")
 bSave          = util.HasParamOption("-save", "If defined solution vector is safed after every step")
+outputFactor     = util.GetParam("-output", 1, "output every ... steps")
 tsOffset       = util.GetParamNumber("-tsOffset",0) 
 startTime       = util.GetParamNumber("-starttime",undefined) 
 
@@ -78,34 +81,10 @@ if (bNoUpwindInDefect == true) or (bLinUpwindInDefect == true) then
 	upwind = "full"
 end
 
----------------------------------------------
----------------------------------------------
--- check for alternative writing from user
--- and print user parameters
----------------------------------------------
----------------------------------------------
-
-if turbViscMethod=="dyn" or turbViscMethod=="dynamic" or turbViscMethod=="Dynamic" 
-	or turbViscMethod=="d" or turbViscMethod=="D"  then
-	turbViscMethod="Dyn"
-end
-if turbViscMethod=="sma" or turbViscMethod=="smagorinsky" or turbViscMethod=="Smagorinsky" 
-	or turbViscMethod=="S" or turbViscMethod=="s"  then
-	turbViscMethod="Sma"
-end
-if timeMethod=="cn" or timeMethod=="cranknicolson" 
-	or timeMethod=="Crank-Nicolson" or timeMethod=="CrankNicolson" then
-	timeMethod="CN"
-end
-if timeMethod=="euler" or timeMethod=="e" or timeMethod=="eul" 
-	or timeMethod=="Eul" then
-	timeMethod="Euler"
-end
-if timeMethod=="frac" or timeMethod=="fracstep" or timeMethod=="fracStep" or timeMethod=="f" then
-	timeMethod="FracStep"
-end
-if timeMethod=="alex" or timeMethod=="alexander" or timeMethod=="a" then
-	timeMethod="Alexander"
+if nolimit==true then
+	bLimit=false
+else
+	bLimit=true
 end
 
 print(" Chosen Parameters:")
@@ -115,17 +94,21 @@ print("    numPreRefs 	= " .. numPreRefs)
 print("    dt           = " .. dt)
 print("    numTimeSteps = " .. numTimeSteps)
 print("    time stepping method = " .. timeMethod)
-print("    turbulence model = " .. turbViscMethod)
-print("    grid       	= " .. gridName)
-print("    exact jacob. factor = " .. exactJacFactor)
+print("    turbulence model    = " .. turbViscMethod)
+print("    grid       	       = " .. gridName)
+print("    laplace             = " .. tostring(bLaplace))
+print("    grad-div factor     = " .. graddivFactor)
+print("    exact jacob. factor = " .. exJacFactor)
 print("    peclet blend        = " .. tostring(bPecletBlend))
 print("    upwind              = " .. upwind)
-print("    pressure separation = " .. tostring(bPSep))
 print("    no upwind in defect = " .. tostring(bNoUpwindInDefect))
 if bLinUpwind==true then
 	print("    linear upwind         = " .. tostring(bLinUpwind))
 else
 	print("    linear upwind in def  = " .. tostring(bLinUpwindInDefect))
+end
+if bLinUpwind==true or bLinUpwindInDefect==true then
+	print("    limiter               = " .. tostring(bLimit))
 end
 if bPLin==true then
 	print("    linear pressure       = " .. tostring(bPLin))
@@ -192,13 +175,13 @@ fctUsed = fctUsed .. ", p"
 
 NavierStokesDisc = NavierStokes(fctUsed, "Inner", "fvcr")
 
--- set upwind
+-- set parameters
 NavierStokesDisc:set_upwind(upwind)
 NavierStokesDisc:set_peclet_blend(bPecletBlend)
-
-NavierStokesDisc:set_peclet_blend(true)
-NavierStokesDisc:set_exact_jacobian(exactJacFactor)
+NavierStokesDisc:set_exact_jacobian(exJacFactor)
+NavierStokesDisc:set_grad_div(graddivFactor)
 NavierStokesDisc:set_stokes(false)
+NavierStokesDisc:set_laplace(bLaplace)
 
 ----------------------------------
 ----------------------------------
@@ -209,16 +192,15 @@ NavierStokesDisc:set_stokes(false)
 if turbViscMethod=="no" then
 	NavierStokesDisc:set_kinematic_viscosity(viscosity)
 else
-	if turbViscMethod=="Dyn" then
+	if turbViscMethod=="dyn" then
 		viscosityData = CRDynamicTurbViscData(approxSpace,u)
 	end
-	if turbViscMethod=="Sma" then
+	if turbViscMethod=="sma" then
 		viscosityData = CRSmagorinskyTurbViscData(approxSpace,u,modellconstant)
 	end	
 	viscosityData:set_turbulence_zero_bnd("Top,Bottom")
 	viscosityData:set_kinematic_viscosity(viscosity)
 	NavierStokesDisc:set_kinematic_viscosity(viscosityData)
-	NavierStokesDisc:set_laplace(false)
 end
 
 
@@ -237,26 +219,6 @@ OutletDiscBottom:add("Bottom")
 
 ------------------------------------------
 ------------------------------------------
--- Source
-------------------------------------------
-------------------------------------------
-
-function source2d(x, y, t)
-	return 0,0
-end
-
-rhs = LuaUserVector("source2d")
-
-NavierStokesDisc:set_source(rhs)
-
-if pressureSeparation==1 then
-	source = SeparatedPressureSource(approxSpace,u)
-	source:set_source(rhs)
-	NavierStokesDisc:set_source(source)
-end
-
-------------------------------------------
-------------------------------------------
 -- Set up discretization and constraints
 ------------------------------------------
 ------------------------------------------
@@ -265,26 +227,26 @@ domainDisc:add(NavierStokesDisc)
 domainDisc:add(OutletDiscTop)
 domainDisc:add(OutletDiscBottom)
 
-if (bLinearUpwind==true)or(bPLin==true) then
+if (bLinearUpwind==true)or(bLinUpwindInDefect==true)or(bPLin==true) then
 	-- last three parameters: adaptivity boolean, gradient limiter boolean, boundaries where full upwind/constant pressure is used 
-	domainDisc:add(DiscConstraintFVCR(u,bLinUpwindInDefect,bLinearUpwind,bPLinDefect,bPLin,false,true,"Top,Bottom"))
+	domainDisc:add(DiscConstraintFVCR(u,bLinUpwindInDefect,bLinearUpwind,bPLinDefect,bPLin,false,bLimit,"Top,Bottom"))
 end
 
 -- create operator from discretization
 
 -- create time discretization
-if timeMethod=="CN" then
+if timeMethod=="cn" then
 	timeDisc = ThetaTimeStep(domainDisc)
 	timeDisc:set_theta(0.5) -- Crank-Nicolson method
 end
-if timeMethod=="Euler" then
+if timeMethod=="euler" then
 	timeDisc = ThetaTimeStep(domainDisc)
 	timeDisc:set_theta(1) -- implicit Euler
 end	
-if timeMethod=="FracStep" then
+if timeMethod=="fracstep" then
 	timeDisc = ThetaTimeStep(domainDisc,"FracStep")
 end
-if timeMethod=="Alexander" then
+if timeMethod=="alex" then
 	timeDisc = ThetaTimeStep(domainDisc, "Alexander")
 end
 
@@ -491,22 +453,6 @@ for step = 1 + tsOffset, numTimeSteps do
 			print ("Newton solver failed at step "..step..".") exit() 
 		end 
 		
-		
-		if pressureSeparation==1 then
-			source:update()
-			Interpolate("zero", u, "p")
-			
-			-- prepare newton solver
-			if newtonSolver:prepare(u) == false then 
-				print ("Newton solver failed at step "..step..".") exit() 
-			end 
-		
-			-- apply newton solver
-			if newtonSolver:apply(u) == false then 
-				print ("Newton solver failed at step "..step..".") exit() 
-			end 
-		end
-
 		-- update new time
 		time = solTimeSeries:time(0) + do_dt
 	
@@ -521,12 +467,7 @@ for step = 1 + tsOffset, numTimeSteps do
 	
 	end
 	
-		
 	print ("Time units = ".. time/timeUnit)
-	
-	-- compute vorticity
-	vort:set(0)
-	vorticity(vort,u)
 	
 	-- compute CFL number 
 	cflNumber(u,do_dt)
@@ -535,25 +476,31 @@ for step = 1 + tsOffset, numTimeSteps do
 	ke=kineticEnergy(u)
 	writeNumbers("kineticEnergy.m",step+1,time,ke)
 	
-	if (bSave) then
-		SaveVectorForConnectionViewer(u,"currentSolution.vec")
-	end
+	if step % outputFactor == 0 then
 	
-	-- plot solution
-
-	out = VTKOutput()
-	out:clear_selection()
-	out:select_all(false)
-	out:select_element("u,v", "velocity")
-	out:select_element("u", "u")
-	out:select_element("v", "v")
-	out:select_element("p", "p")
-	out:print("MixingLayer", u,step,time)
-	outv = VTKOutput()
-	outv:select_element("c","c")
-	outv:print("vorticity", vort,step,time)
-	print(" ")
-	print("++++++ TIMESTEP " .. step .. "  END ++++++")
+		-- compute vorticity
+		vort:set(0)
+		vorticity(vort,u)
+	
+		if (bSave) then
+			SaveVectorForConnectionViewer(u,"currentSolution.vec")
+		end
+	
+		out = VTKOutput()
+		out:clear_selection()
+		out:select_all(false)
+		out:select_element("u,v", "velocity")
+		out:select_element("u", "u")
+		out:select_element("v", "v")
+		out:select_element("p", "p")
+		out:print("MixingLayer", u,step,time)
+		outv = VTKOutput()
+		outv:select_element("c","c")
+		outv:print("vorticity", vort,step,time)
+		print(" ")
+		print("++++++ TIMESTEP " .. step .. "  END ++++++")
+		
+	end
 end
 
 tAfter = os.clock()
