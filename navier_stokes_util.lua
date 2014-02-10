@@ -95,7 +95,7 @@ util.smooth = util.smooth or {}
 
 function util.smooth.parseParams()
 	local smooth = util.GetParam("-smooth", "jac", "Smoother Type", 
-					{"jac","ilu","ilut","egs","gs","sgs"})
+					{"jac","ilu","ilut","egs","gs","sgs", "cgs"})
 	
 	return smooth
 end
