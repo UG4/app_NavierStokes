@@ -295,7 +295,7 @@ function CreateSolver(approxSpace, discType, p)
 		base:set_preconditioner(DiagVanka())
 		base:set_convergence_check(ConvCheck(10000, 1e-7, 1e-3, false))
 	else
-		base = LU()
+		base = SuperLU()
 	end
 	
 	local smoother = nil
@@ -309,9 +309,9 @@ function CreateSolver(approxSpace, discType, p)
 	local numPreSmooth, numPostSmooth, baseLev, cycle, bRAP = util.gmg.parseParams()
 	local gmg = util.gmg.create(approxSpace, smoother, numPreSmooth, numPostSmooth,
 							 cycle, base, baseLev, bRAP)
-	gmg:set_damp(MinimalResiduumDamping())
+	--gmg:set_damp(MinimalResiduumDamping())
 	--gmg:set_damp(MinimalEnergyDamping())
-	--gmg:add_prolongation_post_process(AverageComponent("p"))
+	gmg:add_prolongation_post_process(AverageComponent("p"))
 	--gmg:set_debug(dbgWriter)
 	
 	
