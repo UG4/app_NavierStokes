@@ -397,6 +397,8 @@ if not(bInstat) then
 			
 			gpOptions = options,
 			noplot = true,
+			MaxLevelPadding = function(p) return math.floor((p-1)/2) end,
+			
 		})
 	end
 	
