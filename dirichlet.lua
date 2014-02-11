@@ -152,12 +152,16 @@ else
 	end
 
 --[[
-	a=vorder
-	b=porder
+	a=2   --vorder
+	b=1   --porder
 
 	function usol2d(x, y, t) return math.pow(y,(a-1))*a  end
 	function vsol2d(x, y, t) return -math.pow(x,(a-1))*a end
 	function psol2d(x, y, t) return math.pow(x,b)+math.pow(y,b)-(2/(b+1))  end
+
+	function ugrad2d(x, y, t) return 0,math.pow(y,(a-2))*a*(a-1)  end
+	function vgrad2d(x, y, t) return -math.pow(x,(a-2))*a*(a-1),0 end
+	function pgrad2d(x, y, t) return math.pow(x,(b-1))*b,math.pow(y,(b-1))*b  end
 
 	if bStokes == true then
 		function source2d(x, y, t)
@@ -243,7 +247,10 @@ function CreateDomainDisc(approxSpace, discType, p)
 	
 	-- fe must be stabilized for (Pk, Pk) space
 	if discType == "fe" and porder == vorder then
-		NavierStokesDisc:set_stabilization(3)
+		--NavierStokesDisc:set_stabilization(3)
+	end
+	if discType == "fe" then
+		NavierStokesDisc:set_quad_order(p*p+5)
 	end
 	
 	InletDisc = NavierStokesInflow(NavierStokesDisc)
@@ -264,7 +271,7 @@ function CreateDomain()
 
 	InitUG(dim, AlgebraType("CPU", 1))
 	
-	requiredSubsets = {"Inner", "Boundary"}
+	local requiredSubsets = {"Inner", "Boundary"}
 	local dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
 	
 	return dom
@@ -392,7 +399,8 @@ if not(bInstat) then
 			
 			DiscTypes = 
 			{
-			  {type = "fv", pmin = 2, pmax = 5, lmin = 3, lmax = numRefs}
+			  {type = "fv", pmin = 2, pmax = 5, lmin = 3, lmax = numRefs},
+			  {type = "fe", pmin = 2, pmax = 5, lmin = 3, lmax = numRefs}
 			},
 			
 			gpOptions = options,
