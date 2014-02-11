@@ -128,26 +128,26 @@ C( laplace_u + nonlin_u + press_u );
 C( laplace_v + nonlin_v + press_v );
  --]]
 else
-	PI = math.pi
-	function usol2d(x, y, t) return 2*math.cos(2*PI*y)*PI  end
-	function vsol2d(x, y, t) return -2*math.cos(2*PI*x)*PI end
-	function psol2d(x, y, t) return math.sin(2*PI*x)+math.sin(2*PI*y)  end
+	local s = 20*math.pi
+	function usol2d(x, y, t) return s*math.cos(s*y)  end
+	function vsol2d(x, y, t) return -s*math.cos(s*x) end
+	function psol2d(x, y, t) return math.sin(s*x)+math.sin(s*y)  end
 
-	function ugrad2d(x, y, t) return 0, -4*PI*PI*math.sin(2*PI*y)  end
-	function vgrad2d(x, y, t) return 4*PI*PI*math.sin(2*PI*x), 0 end
-	function pgrad2d(x, y, t) return 2*PI*math.cos(2*PI*x),2*PI*math.cos(2*PI*y)  end
+	function ugrad2d(x, y, t) return 0, -s*s*math.sin(s*y)  end
+	function vgrad2d(x, y, t) return s*s*math.sin(s*x), 0 end
+	function pgrad2d(x, y, t) return s*math.cos(s*x),s*math.cos(s*y)  end
 
 	if bStokes == true then
 		function source2d(x, y, t)
 			return 
-			8/R*math.cos(2*PI*y)*PI*PI*PI+2*math.cos(2*PI*x)*PI,
-			-8/R*math.cos(2*PI*x)*PI*PI*PI+2*math.cos(2*PI*y)*PI
+			s*s*s/R*math.cos(s*y)+s*math.cos(s*x),
+			-s*s*s/R*math.cos(s*x)+s*math.cos(s*y)
 		end
 	else
 		function source2d(x, y, t)
 			return 
-			8.0/R*math.cos(2.0*PI*y)*PI*PI*PI+8.0*math.cos(2.0*PI*x)*PI*PI*PI*math.sin(2.0*PI*y)+2.0*math.cos(2.0*PI*x)*PI,
- 			-8.0/R*math.cos(2.0*PI*x)*PI*PI*PI+8.0*math.cos(2.0*PI*y)*PI*PI*PI*math.sin(2.0*PI*x)+2.0*math.cos(2.0*PI*y)*PI
+			s*s*s/R*math.cos(s*y)+s*s*s*math.cos(s*x)*math.sin(s*y)+s*math.cos(s*x),
+ 			-s*s*s/R*math.cos(s*x)+s*s*s*math.cos(s*y)*math.sin(s*x)+s*math.cos(s*y)
 		end	
 	end
 
