@@ -392,7 +392,7 @@ if not(bInstat) then
 			
 			DiscTypes = 
 			{
-			  {type = "fv", pmin = 2, pmax = 6, lmin = 3, lmax = numRefs}
+			  {type = "fv", pmin = 2, pmax = 5, lmin = 3, lmax = numRefs}
 			},
 			
 			gpOptions = options,
