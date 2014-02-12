@@ -42,7 +42,8 @@ nlinred     = util.GetParam("-nlinred", nlintol*0.1, "Nonlinear reduction")
 
 if 	dim == 2 then
 	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2.ugx")
-	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_1x1.ugx")
+	gridName = util.GetParam("-grid", "grids/unit_square_01_tri_unstruct_fine.ugx")
+	--gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_1x1.ugx")
 else
 	gridName = util.GetParam("-grid", "unit_square_01/unit_cube_01_tets.ugx")
 	gridName = util.GetParam("-grid", "unit_square_01/unit_cube_01_hex_1x1x1.ugx")
@@ -128,26 +129,28 @@ C( laplace_u + nonlin_u + press_u );
 C( laplace_v + nonlin_v + press_v );
  --]]
 else
-	local s = 20*math.pi
+	local s = 4*math.pi
+	local sp = 8*math.pi
 	function usol2d(x, y, t) return s*math.cos(s*y)  end
 	function vsol2d(x, y, t) return -s*math.cos(s*x) end
-	function psol2d(x, y, t) return math.sin(s*x)+math.sin(s*y)  end
+	function psol2d(x, y, t) return math.sin(sp*x)+math.sin(sp*y)  end
 
 	function ugrad2d(x, y, t) return 0, -s*s*math.sin(s*y)  end
 	function vgrad2d(x, y, t) return s*s*math.sin(s*x), 0 end
-	function pgrad2d(x, y, t) return s*math.cos(s*x),s*math.cos(s*y)  end
+	function pgrad2d(x, y, t) return sp*math.cos(sp*x),sp*math.cos(sp*y)  end
 
 	if bStokes == true then
 		function source2d(x, y, t)
+			gradPx, gradPy = pgrad2d(x,y,t)
 			return 
-			s*s*s/R*math.cos(s*y)+s*math.cos(s*x),
-			-s*s*s/R*math.cos(s*x)+s*math.cos(s*y)
+			s*s*s/R*math.cos(s*y)  + gradPx,
+			-s*s*s/R*math.cos(s*x) + gradPy
 		end
 	else
 		function source2d(x, y, t)
 			return 
-			s*s*s/R*math.cos(s*y)+s*s*s*math.cos(s*x)*math.sin(s*y)+s*math.cos(s*x),
- 			-s*s*s/R*math.cos(s*x)+s*s*s*math.cos(s*y)*math.sin(s*x)+s*math.cos(s*y)
+			s*s*s/R*math.cos(s*y)+s*s*s*math.cos(s*x)*math.sin(s*y) + gradPx,
+ 			-s*s*s/R*math.cos(s*x)+s*s*s*math.cos(s*y)*math.sin(s*x)+ gradPy
 		end	
 	end
 
@@ -399,8 +402,8 @@ if not(bInstat) then
 			
 			DiscTypes = 
 			{
-			  {type = "fv", pmin = 2, pmax = 5, lmin = 3, lmax = numRefs},
-			  {type = "fe", pmin = 2, pmax = 5, lmin = 3, lmax = numRefs}
+			  {type = "fv", pmin = 2, pmax = 5, lmin = 1, lmax = numRefs},
+			  {type = "fe", pmin = 2, pmax = 5, lmin = 1, lmax = numRefs}
 			},
 			
 			gpOptions = options,
