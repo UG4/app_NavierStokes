@@ -369,7 +369,7 @@ if not(bInstat) then
 			tics =	 			{x = "nomirror out scale 0.75 format '%g' font ',8'",
 								 y = "10 nomirror out scale 0.75 format '%.te%01T' font ',8'"}, 
 			mtics =				5,
-			slope = 			{dy = 3, quantum = 0.25, at = "last"},
+			slope = 			{dy = 3, quantum = 0.5, at = "last"},
 			padrange = 			{ x = {0.8, 4}, y = {0.5, 1.5}},
 		}
 	
