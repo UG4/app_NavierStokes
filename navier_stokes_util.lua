@@ -121,7 +121,7 @@ util.solver = util.solver or {}
 
 function util.solver.parseParams()
 	local solver = util.GetParam("-solver", "bicgstab", "Linear Solver Type", 
-								{"ls","bicgstab","cg","lu","schur"})
+								{"ls","bicgstab","cg","lu","schur", "gmres"})
 	return solver
 end
 
@@ -134,6 +134,9 @@ function util.solver.create(sol, precond)
 		if precond ~= nil then solver:set_preconditioner(precond) end
 	elseif 	sol == "bicgstab" 	then 
 		solver = BiCGStab();
+		if precond ~= nil then solver:set_preconditioner(precond) end
+	elseif 	sol == "gmres" 	then 
+		solver = GMRES(10);
 		if precond ~= nil then solver:set_preconditioner(precond) end
 	elseif 	sol == "cg" 		then 
 		solver = CG();
