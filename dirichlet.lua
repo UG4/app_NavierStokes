@@ -43,7 +43,7 @@ nlinred     = util.GetParam("-nlinred", nlintol*0.1, "Nonlinear reduction")
 if 	dim == 2 then
 	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2.ugx")
 	gridName = util.GetParam("-grid", "grids/unit_square_01_tri_unstruct_fine.ugx")
-	--gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_1x1.ugx")
+	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_1x1.ugx")
 else
 	gridName = util.GetParam("-grid", "unit_square_01/unit_cube_01_tets.ugx")
 	gridName = util.GetParam("-grid", "unit_square_01/unit_cube_01_hex_1x1x1.ugx")
@@ -129,58 +129,92 @@ C( laplace_u + nonlin_u + press_u );
 C( laplace_v + nonlin_v + press_v );
  --]]
 else
-	local s = 4*math.pi
-	local sp = 8*math.pi
-	function usol2d(x, y, t) return s*math.cos(s*y)  end
-	function vsol2d(x, y, t) return -s*math.cos(s*x) end
-	function psol2d(x, y, t) return math.sin(sp*x)+math.sin(sp*y)  end
 
-	function ugrad2d(x, y, t) return 0, -s*s*math.sin(s*y)  end
-	function vgrad2d(x, y, t) return s*s*math.sin(s*x), 0 end
-	function pgrad2d(x, y, t) return sp*math.cos(sp*x),sp*math.cos(sp*y)  end
-
-	if bStokes == true then
-		function source2d(x, y, t)
-			gradPx, gradPy = pgrad2d(x,y,t)
-			return 
-			s*s*s/R*math.cos(s*y)  + gradPx,
-			-s*s*s/R*math.cos(s*x) + gradPy
+	local probID = 2
+	
+	if probID == 1 then
+		local s = 4*math.pi
+		local sp = 8*math.pi
+		function usol2d(x, y, t) return s*math.cos(s*y)  end
+		function vsol2d(x, y, t) return -s*math.cos(s*x) end
+		function psol2d(x, y, t) return math.sin(sp*x)+math.sin(sp*y)  end
+	
+		function ugrad2d(x, y, t) return 0, -s*s*math.sin(s*y)  end
+		function vgrad2d(x, y, t) return s*s*math.sin(s*x), 0 end
+		function pgrad2d(x, y, t) return sp*math.cos(sp*x),sp*math.cos(sp*y)  end
+	
+		if bStokes == true then
+			function source2d(x, y, t)
+				gradPx, gradPy = pgrad2d(x,y,t)
+				return 
+				s*s*s/R*math.cos(s*y)  + gradPx,
+				-s*s*s/R*math.cos(s*x) + gradPy
+			end
+		else
+			function source2d(x, y, t)
+				gradPx, gradPy = pgrad2d(x,y,t)
+				return 
+				s*s*s/R*math.cos(s*y)+s*s*s*math.cos(s*x)*math.sin(s*y) + gradPx,
+	 			-s*s*s/R*math.cos(s*x)+s*s*s*math.cos(s*y)*math.sin(s*x)+ gradPy
+			end	
 		end
-	else
-		function source2d(x, y, t)
-			return 
-			s*s*s/R*math.cos(s*y)+s*s*s*math.cos(s*x)*math.sin(s*y) + gradPx,
- 			-s*s*s/R*math.cos(s*x)+s*s*s*math.cos(s*y)*math.sin(s*x)+ gradPy
-		end	
 	end
 
---[[
-	a=2   --vorder
-	b=1   --porder
-
-	function usol2d(x, y, t) return math.pow(y,(a-1))*a  end
-	function vsol2d(x, y, t) return -math.pow(x,(a-1))*a end
-	function psol2d(x, y, t) return math.pow(x,b)+math.pow(y,b)-(2/(b+1))  end
-
-	function ugrad2d(x, y, t) return 0,math.pow(y,(a-2))*a*(a-1)  end
-	function vgrad2d(x, y, t) return -math.pow(x,(a-2))*a*(a-1),0 end
-	function pgrad2d(x, y, t) return math.pow(x,(b-1))*b,math.pow(y,(b-1))*b  end
-
-	if bStokes == true then
-		function source2d(x, y, t)
-			return 
-			-math.pow(y,a-3)*a*(a-1)*(a-2)/R+math.pow(x,b-1)*b,
-			math.pow(x,a-3)*a*(a-1)*(a-2)/R+math.pow(y,b-1)*b
+	if probID == 2 then
+		local s = 4*math.pi
+		local sp = 8*math.pi
+		function usol2d(x, y, t) return s*math.sin(s*x)*math.cos(s*y)  end
+		function vsol2d(x, y, t) return -s*math.cos(s*x)*math.sin(s*y) end
+		function psol2d(x, y, t) return math.sin(sp*x)+math.sin(sp*y)  end
+	
+		function ugrad2d(x, y, t) return s*s*math.cos(s*x)*math.cos(s*y), -s*s*math.sin(s*x)*math.sin(s*y)  end
+		function vgrad2d(x, y, t) return s*s*math.sin(s*x)*math.sin(s*y), -s*s*math.cos(s*x)*math.cos(s*y) end
+		function pgrad2d(x, y, t) return sp*math.cos(sp*x),sp*math.cos(sp*y)  end
+	
+		if bStokes == true then
+			function source2d(x, y, t)
+				gradPx, gradPy = pgrad2d(x,y,t)
+				return 
+				2.0*s*s*s/R*math.sin(s*x)*math.cos(s*y) + gradPx,
+				-2.0*s*s*s/R*math.cos(s*x)*math.sin(s*y) + gradPy
+			end
+		else
+			function source2d(x, y, t)
+				gradPx, gradPy = pgrad2d(x,y,t)
+				return 
+				2.0*s*s*s/R*math.sin(s*x)*math.cos(s*y)+math.sin(s*x)*s*s*s*math.cos(s*x) + gradPx,
+				-2.0*s*s*s/R*math.cos(s*x)*math.sin(s*y)+math.cos(s*y)*s*s*s*math.sin(s*y) + gradPy
+			end	
 		end
-	else
-		function source2d(x, y, t)
-			return 
-			-math.pow(y,a-3)*a*(a-1)*(a-2)/R-a*a*math.pow(x,a-1)*math.pow(y,a-2)*(a-1)+math.pow(x,b-1)*b,
-			math.pow(x,a-3)*a*(a-1)*(a-2)/R-a*a*math.pow(y,a-1)*math.pow(x,a-2)*(a-1)+math.pow(y,b-1)*b
-		end	
 	end
---]]
 
+	if probID == 3 then	
+		local a=2   --vorder
+		local b=1   --porder
+	
+		function usol2d(x, y, t) return math.pow(y,(a-1))*a  end
+		function vsol2d(x, y, t) return -math.pow(x,(a-1))*a end
+		function psol2d(x, y, t) return math.pow(x,b)+math.pow(y,b)-(2/(b+1))  end
+	
+		function ugrad2d(x, y, t) return 0,math.pow(y,(a-2))*a*(a-1)  end
+		function vgrad2d(x, y, t) return -math.pow(x,(a-2))*a*(a-1),0 end
+		function pgrad2d(x, y, t) return math.pow(x,(b-1))*b,math.pow(y,(b-1))*b  end
+	
+		if bStokes == true then
+			function source2d(x, y, t)
+				return 
+				-math.pow(y,a-3)*a*(a-1)*(a-2)/R+math.pow(x,b-1)*b,
+				math.pow(x,a-3)*a*(a-1)*(a-2)/R+math.pow(y,b-1)*b
+			end
+		else
+			function source2d(x, y, t)
+				return 
+				-math.pow(y,a-3)*a*(a-1)*(a-2)/R-a*a*math.pow(x,a-1)*math.pow(y,a-2)*(a-1)+math.pow(x,b-1)*b,
+				math.pow(x,a-3)*a*(a-1)*(a-2)/R-a*a*math.pow(y,a-1)*math.pow(x,a-2)*(a-1)+math.pow(y,b-1)*b
+			end	
+		end
+	end
+	
 	function usol3d(x,y,z,t) return 2*x^2*y*z*(2*z-1)*(z-1)*(2*y-1)*(y-1)*(x-1)^2 end
 	function vsol3d(x,y,z,t) return -x*y^2*z*(2*z-1)*(z-1)*(y-1)^2*(2*x-1)*(x-1)end
 	function wsol3d(x,y,z,t) return -x*y*z^2*(z-1)^2*(2*y-1)*(y-1)*(2*x-1)*(x-1)end
@@ -255,6 +289,9 @@ function CreateDomainDisc(approxSpace, discType, p)
 	if discType == "fe" then
 		NavierStokesDisc:set_quad_order(p*p+5)
 	end
+	if discType == "fv" then
+		NavierStokesDisc:set_quad_order(p*p+5)
+	end
 	
 	InletDisc = NavierStokesInflow(NavierStokesDisc)
 	InletDisc:add("inletVel"..dim.."d", "Boundary")
@@ -327,12 +364,12 @@ function CreateSolver(approxSpace, discType, p)
 	
 	local sol = util.solver.parseParams()
 	local solver = util.solver.create(sol, gmg)
-	solver:set_convergence_check(ConvCheck(100000, 1e-10, 1e-99, false))
+	solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-2, true))
 	
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
-	newtonSolver:set_convergence_check(ConvCheck(100, nlintol, nlinred, false))
-	--newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.85, true))
+	newtonSolver:set_convergence_check(ConvCheck(500, 1e-11, 1e-99, true))
+	newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.85, true))
 	--newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 	
 	return newtonSolver
@@ -402,13 +439,20 @@ if not(bInstat) then
 			
 			DiscTypes = 
 			{
-			  {type = "fv", pmin = 2, pmax = 5, lmin = 1, lmax = numRefs},
-			  {type = "fe", pmin = 2, pmax = 5, lmin = 1, lmax = numRefs}
+			  {type = "fv", pmin = 2, pmax = 5, lmin = 4, lmax = numRefs},
+			  {type = "fe", pmin = 2, pmax = 5, lmin = 4, lmax = numRefs}
 			},
+			
+			
+			PrepareInitialGuess = function (u, lev, minLev, maxLev, domainDisc, solver)
+				Interpolate("usol"..dim.."d", u[lev], "u");
+				Interpolate("vsol"..dim.."d", u[lev], "v");
+				Interpolate("psol"..dim.."d", u[lev], "p");
+			end,
 			
 			gpOptions = options,
 			noplot = true,
-			MaxLevelPadding = function(p) return math.floor((p-1)/2) end,
+			MaxLevelPadding = function(p) return math.floor((p+1)/2) end,
 			
 		})
 	end
