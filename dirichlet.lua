@@ -391,10 +391,11 @@ if not(bInstat) then
 		
 		local options = {	
 		
-			size = 				{12.5, 6.75}, -- the size of canvas (i.e. plot)
+			size = 				{12.5, 9.75}, -- the size of canvas (i.e. plot)
 			sizeunit =			"cm", -- one of: cm, mm, {in | inch}, {pt | pixel}
 			font = 				"Arial",
 			fontsize =			12,
+			fontscale = 		1.4,
 			
 			logscale = 			true,
 			grid = 				"lc rgb 'grey70' lt 0 lw 1", 
@@ -402,12 +403,12 @@ if not(bInstat) then
 								linewidth = 3, pointsize = 1.3},
 			border = 			" back lc rgb 'grey40' lw 2",
 			decimalsign = 		",",
-			key =	 			"on box lc rgb 'grey40' right top Left reverse spacing 2 width 1.1 samplen 2 height 0.5",
+			key =	 			"on box lc rgb 'grey40' right bottom Left reverse spacing 1.5 width 1 samplen 2 height 0.5",
 			tics =	 			{x = "nomirror out scale 0.75 format '%g' font ',8'",
 								 y = "10 nomirror out scale 0.75 format '%.te%01T' font ',8'"}, 
 			mtics =				5,
 			slope = 			{dy = 3, quantum = 0.5, at = "last"},
-			padrange = 			{ x = {0.8, 4}, y = {0.5, 1.5}},
+			padrange = 			{ x = {0.8, 1.5}, y = {0.01, 1.5}},
 		}
 	
 		if util.HasParamOption("-replot") then
