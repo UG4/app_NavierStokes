@@ -10,21 +10,30 @@
 --------------------------------------------------------------------------------
 
 ug_load_script("ug_util.lua")
+ug_load_script("util/domain_disc_util.lua")
+ug_load_script("navier_stokes_util.lua")
+ug_load_script("util/conv_rates_static.lua")
 
-dim 		= util.GetParamNumber("-dim", 2)
-type 		= util.GetParam("-type", "fvcr")
-order 		= util.GetParamNumber("-order", 1)
-vorder 		= util.GetParamNumber("-vorder", order)
-numPreRefs 	= util.GetParamNumber("-numPreRefs", 0)
-numRefs 	= util.GetParamNumber("-numRefs",2)
+dim 		= util.GetParamNumber("-dim", 2, "world dimension")
+numRefs 	= util.GetParamNumber("-numRefs", 0, "number of grid refinements")
+numPreRefs 	= util.GetParamNumber("-numPreRefs", 0, "number of prerefinements (parallel)")
+bConvRates  = util.HasParamOption("-convRate", "compute convergence rates")
+
+order 		= util.GetParamNumber("-order", 1, "order pressure and velocity space")
+vorder 		= util.GetParamNumber("-vorder", order, "order velocity space")
+porder 		= util.GetParamNumber("-porder", order-1, "order pressure space")
+
 bStokes 	= util.HasParamOption("-stokes", "If defined, only Stokes Eq. computed")
 bNoLaplace 	= util.HasParamOption("-nolaplace", "If defined, only laplace term used")
-bExactJac 	= util.GetParamNumber("-exactjac", 0)
-R		 	= util.GetParamNumber("-R", 10)
+bExactJac 	= util.HasParamOption("-exactjac", "If defined, exact jacobian used")
 bPecletBlend= util.HasParamOption("-pecletblend", "If defined, Peclet Blend used")
+upwind      = util.GetParam("-upwind", "lps", "Upwind type")
+stab        = util.GetParam("-stab", "fields", "Stabilization type")
+diffLength  = util.GetParam("-difflength", "raw", "Diffusion length type")
 
+R   		= util.GetParamNumber("-R", 100)
 
-InitUG(dim, AlgebraType("CPU", 1));
+discType, vorder, porder = util.ns.parseParams()
 
 if 	dim == 2 then gridName = util.GetParam("-grid", "grids/cylinder.ugx")
 else print("Choosen Dimension not supported. Exiting."); exit(); end
@@ -32,230 +41,244 @@ else print("Choosen Dimension not supported. Exiting."); exit(); end
 
 -- Lets write some info about the choosen parameter
 print(" Choosen Parater:")
-print("    dim        	= " .. dim)
-print("    numTotalRefs = " .. numTotalRefs)
-print("    numPreRefs 	= " .. numPreRefs)
-print("    grid       	= " .. gridName)
+print("    dim              = " .. dim)
+print("    numTotalRefs     = " .. numRefs)
+print("    numPreRefs       = " .. numPreRefs)
+print("    grid             = " .. gridName)
+print("    porder           = " .. porder)
+print("    vorder           = " .. vorder)
+print("    type             = " .. discType)
+print("    only stokes      = " .. tostring(bStokes))
+print("    no laplace       = " .. tostring(bNoLaplace))
+print("    exact jacobian   = " .. tostring(bExactJac))
+print("    peclet blend     = " .. tostring(bPecletBlend))
+print("    upwind           = " .. upwind)
+print("    stab             = " .. stab)
+print("    diffLength       = " .. diffLength)
+print("    R 			    = " .. R)
 
 --------------------------------------------------------------------------------
 -- Loading Domain and Domain Refinement
 --------------------------------------------------------------------------------
 
-requiredSubsets = {"Inner", "Inlet", "Outlet", "UpperWall", "LowerWall", "CylinderWall"}
-dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
+function CreateDomain()
 
--- All subset are ok. So we can create the Approximation Space
-approxSpace = ApproximationSpace(dom)
+	InitUG(dim, AlgebraType("CPU", 1))
+	
+	local requiredSubsets = {}
+	local dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
+	
+	return dom
+end
 
--- we destinguish the components of the velocity 
-if 		dim == 1 then VelCmp = {"u"}; FctCmp = {"u", "p"};
-elseif  dim == 2 then VelCmp = {"u", "v"}; FctCmp = {"u", "v", "p"};
-elseif  dim == 3 then VelCmp = {"u", "v", "w"}; FctCmp = {"u", "v", "w", "p"};
-else print("Choosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
+function CreateApproxSpace(dom, discType, p)
 
-if type == "fv1" then
-	approxSpace:add_fct(FctCmp, "Lagrange", 1) 
-elseif type == "fv" then
-	approxSpace:add_fct(VelCmp, "Lagrange", vorder) 
-	approxSpace:add_fct("p", "Lagrange", porder) 
-elseif type == "fe" then
-	if porder==0 then
-		if vorder==1 then
-			approxSpace:add_fct(VelCmp, "Crouzeix-Raviart",1)
-		else
-			approxSpace:add_fct(VelCmp, "Lagrange", vorder)
-		end
-		approxSpace:add_fct("p", "piecewise-constant") 
-	else
-		approxSpace:add_fct(VelCmp, "Lagrange", vorder) 
-		approxSpace:add_fct("p", "Lagrange", porder) 
-	end
-elseif type == "fvcr" then
-	approxSpace:add_fct(VelCmp, "Crouzeix-Raviart")
-	approxSpace:add_fct("p", "piecewise-constant") 
-else print("Disc Type '"..type.."' not supported.") exit() end
-
--- finally we print some statistic on the distributed dofs
-approxSpace:init_levels()
-approxSpace:init_top_surface()
-approxSpace:print_statistic()
-approxSpace:print_local_dof_statistic(2)
+	local approxSpace = util.ns.CreateApproxSpace(dom, discType, p, p-1)
+	
+	-- print statistic on the distributed dofs
+	--approxSpace:init_levels()
+	--approxSpace:init_top_surface()
+	--approxSpace:print_statistic()
+	--approxSpace:print_local_dof_statistic(2)
+	
+	return approxSpace
+end
 
 --------------------------------------------------------------------------------
 -- Discretization
 --------------------------------------------------------------------------------
 
-NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, type)
-NavierStokesDisc:set_exact_jacobian(bExactJac)
-NavierStokesDisc:set_stokes(bStokes)
-NavierStokesDisc:set_laplace( not(bNoLaplace) )
-NavierStokesDisc:set_kinematic_viscosity(1.0/R)
-NavierStokesDisc:set_peclet_blend(bPecletBlend)
+function CreateDomainDisc(approxSpace, discType, p)
 
-if type == "fv1" then
-	noUpwind = NavierStokesNoUpwind();
-	fullUpwind = NavierStokesFullUpwind();
-	skewedUpwind = NavierStokesSkewedUpwind();
-	LPSUpwind = NavierStokesLinearProfileSkewedUpwind();
-	POSUpwind = NavierStokesPositiveUpwind();
+	local FctCmp = approxSpace:names()
+	NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discType)
+	NavierStokesDisc:set_exact_jacobian(bExactJac)
+	NavierStokesDisc:set_stokes(bStokes)
+	NavierStokesDisc:set_laplace( not(bNoLaplace) )
+	NavierStokesDisc:set_kinematic_viscosity( 1/R );
 	
-	fieldsStab = NavierStokesFIELDSStabilization()
-	fieldsStab:set_upwind(fullUpwind)
+	--upwind if available
+	if discType == "fv1" or discType == "fvcr" then
+		NavierStokesDisc:set_upwind(upwind)
+		NavierStokesDisc:set_peclet_blend(bPecletBlend)
+	end
 	
-	fieldsStab:set_diffusion_length("RAW")
-	--fieldsStab:set_diffusion_length("FIVEPOINT")
-	--fieldsStab:set_diffusion_length("COR")
+	-- fv1 must be stablilized
+	if discType == "fv1" then
+		NavierStokesDisc:set_stabilization(stab, diffLength)
+		--NavierStokesDisc:set_pac_upwind(bPac)
+	end
 	
-	NavierStokesDisc:set_stabilization(fieldsStab)
+	-- fe must be stabilized for (Pk, Pk) space
+	if discType == "fe" and porder == vorder then
+		--NavierStokesDisc:set_stabilization(3)
+	end
+	if discType == "fe" then
+		NavierStokesDisc:set_quad_order(p*p+5)
+	end
+	if discType == "fv" then
+		NavierStokesDisc:set_quad_order(p*p+5)
+	end
+	
+	-- setup Outlet
+	OutletDisc = NavierStokesNoNormalStressOutflow(NavierStokesDisc)
+	OutletDisc:add("Outlet")
+	
+	-- setup Inlet
+	function inletVel2d(x, y, t)
+		local H = 0.41
+		local Um = 0.3
+		return 4 * Um * y * (H-y) / (H*H), 0.0
+	end
+	InletDisc = NavierStokesInflow(NavierStokesDisc)
+	InletDisc:add("inletVel"..dim.."d", "Inlet")
+	
+	--setup Walles
+	WallDisc = NavierStokesWall(NavierStokesDisc)
+	WallDisc:add("UpperWall,LowerWall,CylinderWall")
+	
+	-- Finally we create the discretization object which combines all the
+	-- separate discretizations into one domain discretization.
+	domainDisc = DomainDiscretization(approxSpace)
+	domainDisc:add(NavierStokesDisc)
+	domainDisc:add(InletDisc)
+	domainDisc:add(WallDisc)
+	domainDisc:add(OutletDisc)
+	
+	return domainDisc
 end
-
-if type == "fvcr" then
-	noUpwind = NavierStokesNoUpwind();
-	fullUpwind = NavierStokesFullUpwind();
-	weightedUpwind = NavierStokesWeightedUpwind(0.6);
-	NavierStokesDisc:set_upwind(weightedUpwind)
-	
-	NavierStokesDisc:set_upwind(weightedUpwind)
-end
-
--- setup outlet
--- use "no normal stress" outflow condition
-OutletDisc = NavierStokesNoNormalStressOutflow(NavierStokesDisc)
-OutletDisc:add("Outlet")
-
--- alternatively use "zero pressure" outflow condition
--- OutletDisc = DirichletBoundary()
--- OutletDisc:add(0.0, "p", "Outlet")
-
--- setup inlet
-function inletVel2d(x, y, t)
-	local H = 0.41
-	local Um = 0.3
-	return 4 * Um * y * (H-y) / (H*H), 0.0
-end
-InletDisc = NavierStokesInflow(NavierStokesDisc)
-InletDisc:add("inletVel"..dim.."d", "Inlet")
-
--- setup wall
-WallDisc = NavierStokesWall(NavierStokesDisc)
-WallDisc:add("UpperWall,LowerWall,CylinderWall")
-
--- Finally we create the discretization object which combines all the
--- separate discretizations into one domain discretization.
-domainDisc = DomainDiscretization(approxSpace)
-domainDisc:add(NavierStokesDisc)
-domainDisc:add(InletDisc)
-domainDisc:add(WallDisc)
-domainDisc:add(OutletDisc)
 
 --------------------------------------------------------------------------------
 -- Solution of the Problem
 --------------------------------------------------------------------------------
 
-u = GridFunction(approxSpace)
+function CreateSolver(approxSpace, discType, p)
 
-u:set(0)
-time = 0.0
-
-if type "fvcr" then
-	vanka = LineVanka(approxSpace)
-	vanka:set_num_steps(2,2,2,2)
-	vanka:set_damp(0.9)
+	local base = nil
+	if discType == "fvcr" then
+		base =  LinearSolver()
+		base:set_preconditioner(DiagVanka())
+		base:set_convergence_check(ConvCheck(10000, 1e-7, 1e-3, false))
+	else
+		base = SuperLU()
+	end
 	
-	vankaSolver = LinearSolver()
-	vankaSolver:set_preconditioner(vanka)
-	vankaSolver:set_convergence_check(ConvCheck(100000, 1e-7, 1e-1, true))
+	local smoother = nil
+	if discType == "fvcr" then 
+		smoother = Vanka()
+	else
+		local smooth = util.smooth.parseParams()
+		smoother = util.smooth.create(smooth)
+	end
 	
-	CRILUT = CRILUT()
-	CRILUT:set_threshold(1e-0,1e-1,1e-1,1e-1)
-	-- CRILUT:set_threshold(1e-0)
-	CRILUT:set_damp(0.9)
-	CRILUT:set_info(true)
-	ilutSolver = LinearSolver()
-	ilutSolver:set_preconditioner(CRILUT)
-	ilutSolver:set_convergence_check(ConvCheck(10000, 1e-7, 1e-1, true))
-	
-	baseConvCheck = ConvCheck()
-	baseConvCheck:set_maximum_steps(10000)
-	baseConvCheck:set_minimum_defect(1e-7)
-	baseConvCheck:set_reduction(1e-1)
-	baseConvCheck:set_verbose(false)
-	
-	baseVanka = Vanka()
-	baseVanka:set_relax(0.9)
-	vankaBase = LinearSolver()
-	vankaBase:set_preconditioner(baseVanka)
-	vankaBase:set_convergence_check(baseConvCheck)
-	
-	gmg = GeometricMultiGrid(approxSpace)
-	gmg:set_discretization(domainDisc)
-	gmg:set_base_level(0)
-	gmg:set_base_linSolver(vankaBase)
-	gmg:set_smoother(CRILUT)
-	gmg:set_cycle_type(1)
-	gmg:set_damp(MinimalResiduumDamping())
-	gmg:set_num_presmooth(2)
-	gmg:set_num_postsmooth(2)
-	-- gmg:add_restriction_post_process(AverageComponent("p"))
-	-- gmg:add_prolongation_post_process(AverageComponent("p"))
-	
+	local numPreSmooth, numPostSmooth, baseLev, cycle, bRAP = util.gmg.parseParams()
+	local gmg = util.gmg.create(approxSpace, smoother, numPreSmooth, numPostSmooth,
+							 cycle, base, baseLev, bRAP)
+	--gmg:set_damp(MinimalResiduumDamping())
+	--gmg:set_damp(MinimalEnergyDamping())
+	gmg:add_prolongation_post_process(AverageComponent("p"))
 	--gmg:set_debug(dbgWriter)
-	-- create Linear Solver
-	BiCGStabSolver = BiCGStab()
-	BiCGStabSolver:set_preconditioner(gmg)
-	BiCGStabSolver:set_convergence_check(ConvCheck(100000, 1e-7, 1e-1, true))
 	
-	gmgSolver = LinearSolver()
-	gmgSolver:set_preconditioner(gmg)
-	gmgSolver:set_convergence_check(ConvCheck(10000, 1e-7, 1e-1, true))
 	
-	-- choose a linSolver
-	linSolver = gmgSolver
-	-- linSolver = ilutSolver
-	-- linSolver = vankaSolver
-else
-	gmg = GeometricMultiGrid(approxSpace)
-	gmg:set_discretization(domainDisc)
-	gmg:set_base_level(0)
-	gmg:set_base_linSolver(LU())
-	gmg:set_smoother(ILU())
-	gmg:set_cycle_type(1)
-	gmg:set_num_presmooth(2)
-	gmg:set_num_postsmooth(2)
+	local sol = util.solver.parseParams()
+	local solver = util.solver.create(sol, gmg)
+	if bStokes then
+		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-99, true))
+	else 
+		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-2, true))	
+	end
 	
-	-- create Linear Solver
-	BiCGStabSolver = BiCGStab()
-	BiCGStabSolver:set_preconditioner(gmg)
-	BiCGStabSolver:set_convergence_check(ConvCheck(1000, 1e-7, 1e-3, true))
+	local newtonSolver = NewtonSolver()
+	newtonSolver:set_linear_solver(solver)
+	newtonSolver:set_convergence_check(ConvCheck(500, 1e-11, 1e-99, true))
+	newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.85, true))
+	--newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 	
-	gmgSolver = LinearSolver()
-	gmgSolver:set_preconditioner(gmg)
-	gmgSolver:set_convergence_check(ConvCheck(1000, 1e-7, 1e-3, true))
-	
-	-- choose a linSolver
-	linSolver = gmgSolver
+	return newtonSolver
 end
 
--- Now we can set up the newton linSolver. We set the linear linSolver created above
--- as linSolver for the linearized problem and set the convergence check. If you
--- want to you can also set the line search.
-newtonSolver = NewtonSolver(domainDisc)
-newtonSolver:set_linear_linSolver(linSolver)
-newtonSolver:set_convergence_check(ConvCheck(50, 1e-5, 1e-10, true))
-newtonSolver:set_line_search(StandardLineSearch(20, 1.0, 0.5, true))
-newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
+function ComputeNonLinearSolution(u, domainDisc, solver)
 
--- Now we can apply the newton linSolver. A newton itertation is performed to find
--- the solution.
-if newtonSolver:apply(u) == false then
-	 print ("Newton linSolver apply failed."); exit();
+	util.rates.static.StdComputeNonLinearSolution(u, domainDisc, solver)
+	AdjustMeanValue(u, "p")
 end
 
--- Finally we're nearly done. The only thing left to do is to write the
--- solution to a file which can then be examined using e.g. Paraview.
--- (Open "Solution.vtu" in paraview to view the complete domain
-vtkWriter = VTKOutput()
-vtkWriter:select_all(false)
-vtkWriter:select(VelCmp, "velocity")
-vtkWriter:select("p", "p")
-vtkWriter:print("cylinder", u)
+--------------------------------------------------------------------------------
+-- Run Problem
+--------------------------------------------------------------------------------
+
+if bConvRates then
+	
+	local options = {	
+	
+		size = 				{12.5, 9.75}, -- the size of canvas (i.e. plot)
+		sizeunit =			"cm", -- one of: cm, mm, {in | inch}, {pt | pixel}
+		font = 				"Arial",
+		fontsize =			12,
+		fontscale = 		1.4,
+		
+		logscale = 			true,
+		grid = 				"lc rgb 'grey70' lt 0 lw 1", 
+		linestyle =			{colors = gnuplot.RGBbyLinearHUEandLightness(8, 1, 360+40, 85, 0.4, 0.4), 
+							linewidth = 3, pointsize = 1.3},
+		border = 			" back lc rgb 'grey40' lw 2",
+		decimalsign = 		",",
+		key =	 			"on box lc rgb 'grey40' right bottom Left reverse spacing 1.5 width 1 samplen 2 height 0.5",
+		tics =	 			{x = "nomirror out scale 0.75 format '%g' font ',8'",
+							 y = "10 nomirror out scale 0.75 format '%.te%01T' font ',8'"}, 
+		mtics =				5,
+		slope = 			{dy = 3, quantum = 0.5, at = "last"},
+		padrange = 			{ x = {0.8, 1.5}, y = {0.01, 1.5}},
+	}
+
+	if util.HasParamOption("-replot") then
+		util.rates.static.replot(options); exit()
+	end
+
+	util.rates.static.compute(
+	{	
+		PlotCmps = { v = {"u","v"}, p = {"p"}},
+		MeasLabel = function (disc, p) return disc.." $\\mathbb{Q}_{"..p.."}/\\mathbb{Q}_{"..(p-1).."}$" end,
+		
+		CreateDomain = CreateDomain,
+		CreateApproxSpace = CreateApproxSpace,
+		CreateDomainDisc = CreateDomainDisc,
+		CreateSolver = CreateSolver,
+		
+		ComputeSolution = ComputeNonLinearSolution,
+		
+		DiscTypes = 
+		{
+		  {type = "fv", pmin = 2, pmax = 2, lmin = 1, lmax = numRefs},
+		  --{type = "fe", pmin = 2, pmax = 5, lmin = 0, lmax = numRefs}
+		},
+
+		gpOptions = options,
+		noplot = true,
+		MaxLevelPadding = function(p) return math.floor((p+1)/2) end,
+		
+	})
+end
+
+if not(bConvRates) then
+
+	local p = vorder
+	local dom = CreateDomain()
+	local approxSpace = CreateApproxSpace(dom, discType, p)
+	local domainDisc = CreateDomainDisc(approxSpace, discType, p)
+	local solver = CreateSolver(approxSpace, discType, p)
+	print(solver:config_string())
+	
+	local u = GridFunction(approxSpace)
+	u:set(0)
+	
+	ComputeNonLinearSolution(u, domainDisc, solver)
+
+	local FctCmp = approxSpace:names()
+	local VelCmp = {}
+	for d = 1,#FctCmp-1 do VelCmp[d] = FctCmp[d] end
+	vtkWriter = VTKOutput()
+	vtkWriter:select(VelCmp, "velocity")
+	vtkWriter:select("p", "pressure")
+	vtkWriter:print("Cylinder", u)
+end
