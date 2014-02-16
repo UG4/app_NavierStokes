@@ -91,9 +91,9 @@ rhsv:=factor(diff(v,t)+simplify(-1/R*diff(diff(v,x),x)-1/R*diff(diff(v,y),y)+u*d
 --]]
 if bInstat then 
 
-	function usol2d(x, y, t) return math.sin(2*math.pi*(x+t))*math.cos(2*math.pi*y)	end
-	function vsol2d(x, y, t) return -math.cos(2*math.pi*(x+t))*math.sin(2*math.pi*y)end
-	function psol2d(x, y, t) return math.sin(x)*math.sin(y)*math.sin(t) end
+	function uSol2d(x, y, t) return math.sin(2*math.pi*(x+t))*math.cos(2*math.pi*y)	end
+	function vSol2d(x, y, t) return -math.cos(2*math.pi*(x+t))*math.sin(2*math.pi*y)end
+	function pSol2d(x, y, t) return math.sin(x)*math.sin(y)*math.sin(t) end
 
 	function source2d(x, y, t)
 		return 
@@ -135,27 +135,27 @@ else
 	if probID == 1 then
 		local s = 4*math.pi
 		local sp = 8*math.pi
-		function usol2d(x, y, t) return s*math.cos(s*y)  end
-		function vsol2d(x, y, t) return -s*math.cos(s*x) end
-		function psol2d(x, y, t) return math.sin(sp*x)+math.sin(sp*y)  end
+		function uSol2d(x, y, t) return s*math.cos(s*y)  end
+		function vSol2d(x, y, t) return -s*math.cos(s*x) end
+		function pSol2d(x, y, t) return math.sin(sp*x)+math.sin(sp*y)  end
 	
-		function ugrad2d(x, y, t) return 0, -s*s*math.sin(s*y)  end
-		function vgrad2d(x, y, t) return s*s*math.sin(s*x), 0 end
-		function pgrad2d(x, y, t) return sp*math.cos(sp*x),sp*math.cos(sp*y)  end
+		function uGrad2d(x, y, t) return 0, -s*s*math.sin(s*y)  end
+		function vGrad2d(x, y, t) return s*s*math.sin(s*x), 0 end
+		function pGrad2d(x, y, t) return sp*math.cos(sp*x),sp*math.cos(sp*y)  end
 	
 		if bStokes == true then
 			function source2d(x, y, t)
-				gradPx, gradPy = pgrad2d(x,y,t)
+				GradPx, GradPy = pGrad2d(x,y,t)
 				return 
-				s*s*s/R*math.cos(s*y)  + gradPx,
-				-s*s*s/R*math.cos(s*x) + gradPy
+				s*s*s/R*math.cos(s*y)  + GradPx,
+				-s*s*s/R*math.cos(s*x) + GradPy
 			end
 		else
 			function source2d(x, y, t)
-				gradPx, gradPy = pgrad2d(x,y,t)
+				GradPx, GradPy = pGrad2d(x,y,t)
 				return 
-				s*s*s/R*math.cos(s*y)+s*s*s*math.cos(s*x)*math.sin(s*y) + gradPx,
-	 			-s*s*s/R*math.cos(s*x)+s*s*s*math.cos(s*y)*math.sin(s*x)+ gradPy
+				s*s*s/R*math.cos(s*y)+s*s*s*math.cos(s*x)*math.sin(s*y) + GradPx,
+	 			-s*s*s/R*math.cos(s*x)+s*s*s*math.cos(s*y)*math.sin(s*x)+ GradPy
 			end	
 		end
 	end
@@ -163,27 +163,27 @@ else
 	if probID == 2 then
 		local s = 4*math.pi
 		local sp = 8*math.pi
-		function usol2d(x, y, t) return s*math.sin(s*x)*math.cos(s*y)  end
-		function vsol2d(x, y, t) return -s*math.cos(s*x)*math.sin(s*y) end
-		function psol2d(x, y, t) return math.sin(sp*x)+math.sin(sp*y)  end
+		function uSol2d(x, y, t) return s*math.sin(s*x)*math.cos(s*y)  end
+		function vSol2d(x, y, t) return -s*math.cos(s*x)*math.sin(s*y) end
+		function pSol2d(x, y, t) return math.sin(sp*x)+math.sin(sp*y)  end
 	
-		function ugrad2d(x, y, t) return s*s*math.cos(s*x)*math.cos(s*y), -s*s*math.sin(s*x)*math.sin(s*y)  end
-		function vgrad2d(x, y, t) return s*s*math.sin(s*x)*math.sin(s*y), -s*s*math.cos(s*x)*math.cos(s*y) end
-		function pgrad2d(x, y, t) return sp*math.cos(sp*x),sp*math.cos(sp*y)  end
+		function uGrad2d(x, y, t) return s*s*math.cos(s*x)*math.cos(s*y), -s*s*math.sin(s*x)*math.sin(s*y)  end
+		function vGrad2d(x, y, t) return s*s*math.sin(s*x)*math.sin(s*y), -s*s*math.cos(s*x)*math.cos(s*y) end
+		function pGrad2d(x, y, t) return sp*math.cos(sp*x),sp*math.cos(sp*y)  end
 	
 		if bStokes == true then
 			function source2d(x, y, t)
-				gradPx, gradPy = pgrad2d(x,y,t)
+				GradPx, GradPy = pGrad2d(x,y,t)
 				return 
-				2.0*s*s*s/R*math.sin(s*x)*math.cos(s*y) + gradPx,
-				-2.0*s*s*s/R*math.cos(s*x)*math.sin(s*y) + gradPy
+				2.0*s*s*s/R*math.sin(s*x)*math.cos(s*y) + GradPx,
+				-2.0*s*s*s/R*math.cos(s*x)*math.sin(s*y) + GradPy
 			end
 		else
 			function source2d(x, y, t)
-				gradPx, gradPy = pgrad2d(x,y,t)
+				GradPx, GradPy = pGrad2d(x,y,t)
 				return 
-				2.0*s*s*s/R*math.sin(s*x)*math.cos(s*y)+math.sin(s*x)*s*s*s*math.cos(s*x) + gradPx,
-				-2.0*s*s*s/R*math.cos(s*x)*math.sin(s*y)+math.cos(s*y)*s*s*s*math.sin(s*y) + gradPy
+				2.0*s*s*s/R*math.sin(s*x)*math.cos(s*y)+math.sin(s*x)*s*s*s*math.cos(s*x) + GradPx,
+				-2.0*s*s*s/R*math.cos(s*x)*math.sin(s*y)+math.cos(s*y)*s*s*s*math.sin(s*y) + GradPy
 			end	
 		end
 	end
@@ -192,13 +192,13 @@ else
 		local a=2   --vorder
 		local b=1   --porder
 	
-		function usol2d(x, y, t) return math.pow(y,(a-1))*a  end
-		function vsol2d(x, y, t) return -math.pow(x,(a-1))*a end
-		function psol2d(x, y, t) return math.pow(x,b)+math.pow(y,b)-(2/(b+1))  end
+		function uSol2d(x, y, t) return math.pow(y,(a-1))*a  end
+		function vSol2d(x, y, t) return -math.pow(x,(a-1))*a end
+		function pSol2d(x, y, t) return math.pow(x,b)+math.pow(y,b)-(2/(b+1))  end
 	
-		function ugrad2d(x, y, t) return 0,math.pow(y,(a-2))*a*(a-1)  end
-		function vgrad2d(x, y, t) return -math.pow(x,(a-2))*a*(a-1),0 end
-		function pgrad2d(x, y, t) return math.pow(x,(b-1))*b,math.pow(y,(b-1))*b  end
+		function uGrad2d(x, y, t) return 0,math.pow(y,(a-2))*a*(a-1)  end
+		function vGrad2d(x, y, t) return -math.pow(x,(a-2))*a*(a-1),0 end
+		function pGrad2d(x, y, t) return math.pow(x,(b-1))*b,math.pow(y,(b-1))*b  end
 	
 		if bStokes == true then
 			function source2d(x, y, t)
@@ -215,10 +215,10 @@ else
 		end
 	end
 	
-	function usol3d(x,y,z,t) return 2*x^2*y*z*(2*z-1)*(z-1)*(2*y-1)*(y-1)*(x-1)^2 end
-	function vsol3d(x,y,z,t) return -x*y^2*z*(2*z-1)*(z-1)*(y-1)^2*(2*x-1)*(x-1)end
-	function wsol3d(x,y,z,t) return -x*y*z^2*(z-1)^2*(2*y-1)*(y-1)*(2*x-1)*(x-1)end
-	function psol3d(x,y,z,t) return x^2+y^2+z^2 end
+	function uSol3d(x,y,z,t) return 2*x^2*y*z*(2*z-1)*(z-1)*(2*y-1)*(y-1)*(x-1)^2 end
+	function vSol3d(x,y,z,t) return -x*y^2*z*(2*z-1)*(z-1)*(y-1)^2*(2*x-1)*(x-1)end
+	function wSol3d(x,y,z,t) return -x*y*z^2*(z-1)^2*(2*y-1)*(y-1)*(2*x-1)*(x-1)end
+	function pSol3d(x,y,z,t) return x^2+y^2+z^2 end
 	
 	if bStokes == true then
 		function source3d(x, y,z, t)
@@ -249,11 +249,11 @@ else
 end
 
 function inletVel2d(x, y, t)
-	return usol2d(x, y, t), vsol2d(x, y, t)
+	return uSol2d(x, y, t), vSol2d(x, y, t)
 end
 
 function inletVel3d(x, y, z, t)
-	return usol3d(x,y,z,t), vsol3d(x,y,z,t), wsol3d(x,y,z,t)
+	return uSol3d(x,y,z,t), vSol3d(x,y,z,t), wSol3d(x,y,z,t)
 end
 
 --------------------------------------------------------------------------------
@@ -418,14 +418,14 @@ if not(bInstat) then
 		util.rates.static.compute(
 		{
 			ExactSol = {
-				["u"] = "usol"..dim.."d",
-				["v"] = "vsol"..dim.."d",
-				["p"] = "psol"..dim.."d"
+				["u"] = "uSol"..dim.."d",
+				["v"] = "vSol"..dim.."d",
+				["p"] = "pSol"..dim.."d"
 			},
 			ExactGrad =  {
-				["u"] = "ugrad"..dim.."d",
-				["v"] = "vgrad"..dim.."d",
-				["p"] = "pgrad"..dim.."d"
+				["u"] = "uGrad"..dim.."d",
+				["v"] = "vGrad"..dim.."d",
+				["p"] = "pGrad"..dim.."d"
 			},
 			
 			PlotCmps = { v = {"u","v"}, p = {"p"}},
@@ -446,9 +446,9 @@ if not(bInstat) then
 			
 			
 			PrepareInitialGuess = function (u, lev, minLev, maxLev, domainDisc, solver)
-				Interpolate("usol"..dim.."d", u[lev], "u");
-				Interpolate("vsol"..dim.."d", u[lev], "v");
-				Interpolate("psol"..dim.."d", u[lev], "p");
+				Interpolate("uSol"..dim.."d", u[lev], "u");
+				Interpolate("vSol"..dim.."d", u[lev], "v");
+				Interpolate("pSol"..dim.."d", u[lev], "p");
 			end,
 			
 			gpOptions = options,
@@ -480,11 +480,11 @@ if not(bInstat) then
 		local FctCmp = approxSpace:names()
 		for d = 1,#FctCmp do
 			print("L2Error in '"..FctCmp[d].. "' is ".. 
-					L2Error(FctCmp[d].."sol"..dim.."d", u, FctCmp[d], 0.0, 1, "Inner"))
+					L2Error(FctCmp[d].."Sol"..dim.."d", u, FctCmp[d], 0.0, 1, "Inner"))
 		end
 		for d = 1,#FctCmp do
 			print("Maximum error in '"..FctCmp[d].. "' is ".. 
-					 MaxError(FctCmp[d].."sol"..dim.."d", u, FctCmp[d]))
+					 MaxError(FctCmp[d].."Sol"..dim.."d", u, FctCmp[d]))
 		end
 		
 		local VelCmp = {}
@@ -552,13 +552,13 @@ if bInstat then
 
 		print("++++++ TIMESTEP " .. step .. "  END ++++++");
 		write("\n")
-		l2error = L2Error("usol"..dim.."d", u, "u", time, 1, "Inner")
+		l2error = L2Error("uSol"..dim.."d", u, "u", time, 1, "Inner")
 		write("L2Error in u component is "..l2error .."\n")
-		l2error = L2Error("vsol"..dim.."d", u, "v", time, 1, "Inner")
+		l2error = L2Error("vSol"..dim.."d", u, "v", time, 1, "Inner")
 		write("L2Error in v component is "..l2error .."\n")
-		maxerror = MaxError("usol"..dim.."d", u, "u",time)
+		maxerror = MaxError("uSol"..dim.."d", u, "u",time)
 		write("Maximum error in u component is "..maxerror .."\n")
-		maxerror = MaxError("vsol"..dim.."d", u, "v",time)
+		maxerror = MaxError("vSol"..dim.."d", u, "v",time)
 		write("Maximum error in v component is "..maxerror .."\n")
 		write("\n")
 		
