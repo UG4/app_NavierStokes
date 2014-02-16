@@ -15,6 +15,14 @@ function util.ns.parseParams()
 		vorder 		= util.GetParamNumber("-vorder", order, "Order of velocity-space")
 		porder 		= util.GetParamNumber("-porder", vorder-1, "Order of pressure-space")
 	end
+
+	if discType == "fecr" or discType == "fvcr" then
+		order, vorder, porder = 1,1,0
+	end
+
+	if discType == "fv1" then
+		order, vorder, porder = 1,1,1
+	end
 	
 	return discType, vorder, porder
 end
@@ -134,6 +142,8 @@ function util.solver.create(sol, precond)
 		if precond ~= nil then solver:set_preconditioner(precond) end
 	elseif 	sol == "bicgstab" 	then 
 		solver = BiCGStab();
+		--solver:set_min_orthogonality(1e-15)
+		--solver:set_restart(30)
 		if precond ~= nil then solver:set_preconditioner(precond) end
 	elseif 	sol == "gmres" 	then 
 		solver = GMRES(10);
