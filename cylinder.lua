@@ -287,6 +287,12 @@ if not(bConvRates) then
 	print("C_D: "..(2*DL[1]/(1*math.pow(2*Um/3, 2)*D)))
 	print("C_L: "..(2*DL[2]/(1*math.pow(2*Um/3, 2)*D)))
 
+	PEval = GlobalGridFunctionNumberData(u, "p")
+	Pa = PEval:evaluate({0.15, 0.2})
+	Pe = PEval:evaluate( {0.25, 0.2} )
+
+	print("Pa: "..Pa..", Pe: "..Pe..", DeltaP: "..Pa-Pe)
+
 	local FctCmp = approxSpace:names()
 	local VelCmp = {}
 	for d = 1,#FctCmp-1 do VelCmp[d] = FctCmp[d] end
