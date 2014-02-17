@@ -31,7 +31,8 @@ upwind      = util.GetParam("-upwind", "lps", "Upwind type")
 stab        = util.GetParam("-stab", "fields", "Stabilization type")
 diffLength  = util.GetParam("-difflength", "raw", "Diffusion length type")
 
-R   		= util.GetParamNumber("-R", 100)
+Viscosity	= util.GetParamNumber("-visco", 1e-3)
+Um = 0.3
 
 discType, vorder, porder = util.ns.parseParams()
 
@@ -55,7 +56,7 @@ print("    peclet blend     = " .. tostring(bPecletBlend))
 print("    upwind           = " .. upwind)
 print("    stab             = " .. stab)
 print("    diffLength       = " .. diffLength)
-print("    R 			    = " .. R)
+print("    Viscosity	    = " .. Viscosity)
 
 --------------------------------------------------------------------------------
 -- Loading Domain and Domain Refinement
@@ -95,7 +96,7 @@ function CreateDomainDisc(approxSpace, discType, p)
 	NavierStokesDisc:set_exact_jacobian(bExactJac)
 	NavierStokesDisc:set_stokes(bStokes)
 	NavierStokesDisc:set_laplace( not(bNoLaplace) )
-	NavierStokesDisc:set_kinematic_viscosity( 1/R );
+	NavierStokesDisc:set_kinematic_viscosity( Viscosity );
 	
 	--upwind if available
 	if discType == "fv1" or discType == "fvcr" then
@@ -121,17 +122,16 @@ function CreateDomainDisc(approxSpace, discType, p)
 	end
 	
 	-- setup Outlet
-	OutletDisc = NavierStokesNoNormalStressOutflow(NavierStokesDisc)
-	OutletDisc:add("Outlet")
+	--OutletDisc = NavierStokesNoNormalStressOutflow(NavierStokesDisc)
+	--OutletDisc:add("Outlet")
 	
 	-- setup Inlet
 	function inletVel2d(x, y, t)
 		local H = 0.41
-		local Um = 0.3
 		return 4 * Um * y * (H-y) / (H*H), 0.0
 	end
 	InletDisc = NavierStokesInflow(NavierStokesDisc)
-	InletDisc:add("inletVel"..dim.."d", "Inlet")
+	InletDisc:add("inletVel"..dim.."d", "Inlet, Outlet")
 	
 	--setup Walles
 	WallDisc = NavierStokesWall(NavierStokesDisc)
@@ -143,7 +143,7 @@ function CreateDomainDisc(approxSpace, discType, p)
 	domainDisc:add(NavierStokesDisc)
 	domainDisc:add(InletDisc)
 	domainDisc:add(WallDisc)
-	domainDisc:add(OutletDisc)
+	--domainDisc:add(OutletDisc)
 	
 	return domainDisc
 end
@@ -177,6 +177,7 @@ function CreateSolver(approxSpace, discType, p)
 	--gmg:set_damp(MinimalResiduumDamping())
 	--gmg:set_damp(MinimalEnergyDamping())
 	gmg:add_prolongation_post_process(AverageComponent("p"))
+	--gmg:add_restriction_post_process(AverageComponent("p"))
 	--gmg:set_debug(dbgWriter)
 	
 	
@@ -249,12 +250,17 @@ if bConvRates then
 		
 		DiscTypes = 
 		{
-		  {type = "fv", pmin = 2, pmax = 2, lmin = 1, lmax = numRefs},
+		  {type = "fv", pmin = 3, pmax = 3, lmin = 1, lmax = numRefs},
 		  --{type = "fe", pmin = 2, pmax = 5, lmin = 0, lmax = numRefs}
 		},
 
+		PrepareInitialGuess = function (u, lev, minLev, maxLev, domainDisc, solver)
+			u[lev]:set(0.0)
+		end,
+
 		gpOptions = options,
 		noplot = true,
+		plotSol = true,
 		MaxLevelPadding = function(p) return math.floor((p+1)/2) end,
 		
 	})
@@ -273,6 +279,13 @@ if not(bConvRates) then
 	u:set(0)
 	
 	ComputeNonLinearSolution(u, domainDisc, solver)
+
+	local D = 0.1
+	local DL = DragLift(u, "u,v,p", "CylinderWall", "Inner", Viscosity, 1.0, 3)
+	print("Drag-Force: "..DL[1])
+	print("Lift-Force: "..DL[2])
+	print("C_D: "..(2*DL[1]/(1*math.pow(2*Um/3, 2)*D)))
+	print("C_L: "..(2*DL[2]/(1*math.pow(2*Um/3, 2)*D)))
 
 	local FctCmp = approxSpace:names()
 	local VelCmp = {}
