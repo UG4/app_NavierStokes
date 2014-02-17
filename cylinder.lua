@@ -18,6 +18,7 @@ dim 		= util.GetParamNumber("-dim", 2, "world dimension")
 numRefs 	= util.GetParamNumber("-numRefs", 0, "number of grid refinements")
 numPreRefs 	= util.GetParamNumber("-numPreRefs", 0, "number of prerefinements (parallel)")
 bConvRates  = util.HasParamOption("-convRate", "compute convergence rates")
+bBenchmarkRates = util.HasParamOption("-benchRate", "compute benchmark rates")
 
 order 		= util.GetParamNumber("-order", 1, "order pressure and velocity space")
 vorder 		= util.GetParamNumber("-vorder", order, "order velocity space")
@@ -31,10 +32,17 @@ upwind      = util.GetParam("-upwind", "lps", "Upwind type")
 stab        = util.GetParam("-stab", "fields", "Stabilization type")
 diffLength  = util.GetParam("-difflength", "raw", "Diffusion length type")
 
-Viscosity	= util.GetParamNumber("-visco", 1e-3)
-Um = 0.3
-
 discType, vorder, porder = util.ns.parseParams()
+
+local Viscosity	= 1e-3
+local Um = 0.3
+local H = 0.41
+local L = 0.1
+local Umean2 = math.pow(2/3*Um, 2)
+
+local C_D_ref = 5.57953523384
+local C_L_ref = 0.010618948146
+local Delta_P_ref = 0.11752016697
 
 if 	dim == 2 then gridName = util.GetParam("-grid", "grids/cylinder.ugx")
 else print("Choosen Dimension not supported. Exiting."); exit(); end
@@ -56,7 +64,6 @@ print("    peclet blend     = " .. tostring(bPecletBlend))
 print("    upwind           = " .. upwind)
 print("    stab             = " .. stab)
 print("    diffLength       = " .. diffLength)
-print("    Viscosity	    = " .. Viscosity)
 
 --------------------------------------------------------------------------------
 -- Loading Domain and Domain Refinement
@@ -66,9 +73,67 @@ function CreateDomain()
 
 	InitUG(dim, AlgebraType("CPU", 1))
 	
-	local requiredSubsets = {}
-	local dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
+	-- create Instance of a Domain
+	local dom = Domain()
 	
+	-- load domain
+	write("Loading Domain "..gridName.." ... ") 
+	LoadDomain(dom, gridName)
+	write("done. ")
+	
+	-- create Refiner
+	if numPreRefs > numRefs then
+		print("numPreRefs must be smaller than numRefs. Aborting.");
+		exit();
+	end
+	
+	if numPreRefs > numRefs then
+		numPreRefs = numRefs
+	end
+	
+	-- Create a refiner instance. This is a factory method
+	-- which automatically creates a parallel refiner if required.
+	local refiner =  GlobalDomainRefiner(dom)
+	local refProjector = DomainRefinementProjectionHandler(dom)
+	refProjector:set_callback("CylinderWall", SphereProjector(dom, 0.2, 0.2, 0, 0.05))
+	refiner:set_refinement_callback(refProjector)
+	
+	write("Pre-Refining("..numPreRefs.."): ")
+	-- Performing pre-refines
+	for i=1,numPreRefs do
+		write(i .. " ")
+		refiner:refine()
+	end
+	write("done. Distributing...")
+	-- Distribute the domain to all involved processes
+	if util.DistributeDomain(dom, distributionMethod, verticalInterfaces, numTargetProcs, distributionLevel, wFct) == false then
+		print("Error while Distributing Grid. Aborting.")
+		exit();
+	end
+	write(" done. Post-Refining("..(numRefs-numPreRefs).."): ")
+	
+	-- Perform post-refine
+	for i=numPreRefs+1,numRefs do
+		refiner:refine()
+		write(i-numPreRefs .. " ")
+	end
+	write("done.\n")
+	
+	-- Now we loop all subsets an search for it in the SubsetHandler of the domain
+	if neededSubsets ~= nil then
+		if util.CheckSubsets(dom, neededSubsets) == false then 
+			print("Something wrong with required subsets. Aborting.");
+			exit();
+		end
+	end
+	
+	
+	--clean up
+	if refiner ~= nil then
+		delete(refiner)
+	end
+	
+	-- return the created domain
 	return dom
 end
 
@@ -127,7 +192,6 @@ function CreateDomainDisc(approxSpace, discType, p)
 	
 	-- setup Inlet
 	function inletVel2d(x, y, t)
-		local H = 0.41
 		return 4 * Um * y * (H-y) / (H*H), 0.0
 	end
 	InletDisc = NavierStokesInflow(NavierStokesDisc)
@@ -266,7 +330,67 @@ if bConvRates then
 	})
 end
 
-if not(bConvRates) then
+if bBenchmarkRates then
+
+	local p = vorder
+	local dom = CreateDomain()
+	local approxSpace = CreateApproxSpace(dom, discType, p)
+	local domainDisc = CreateDomainDisc(approxSpace, discType, p)
+	local solver = CreateSolver(approxSpace, discType, p)
+
+	local C_D, C_L, Delta_P = 	{meas = {}, diff = {}}, 
+								{meas = {}, diff = {}}, 
+								{meas = {}, diff = {}}
+	local h, DoFs, level = {}, {}, {}	
+	
+	
+	local minLev = 1
+	local maxLev = numRefs
+	for lev = minLev, maxLev do
+		write("\n>> Computing Level "..lev..", "..discType..", "..p..".\n")
+
+		local u = GridFunction(approxSpace, lev)
+		u:set(0)
+		
+		write(">> Start: Computing solution on level "..lev..".\n")
+		ComputeNonLinearSolution(u, domainDisc, solver)
+		write(">> End: Solver done.\n")
+
+		-- h/DoF statistic
+		DoFs[lev] = u:size()
+		h[lev] =  MaxElementDiameter(dom, lev) 
+		level[lev] = lev		
+		
+		-- C_D / C_L
+		local DL = DragLift(u, "u,v,p", "CylinderWall", "Inner", Viscosity, 1.0, p+3)
+		C_D.meas[lev] = 2*DL[1]/(Umean2*L)
+		C_D.diff[lev] = C_D.meas[lev] - C_D_ref
+		C_L.meas[lev] = 2*DL[2]/(Umean2*L)
+		C_L.diff[lev] = C_L.meas[lev] - C_L_ref
+	
+		-- Delta_P
+		local PEval = GlobalGridFunctionNumberData(u, "p")
+		Delta_P.meas[lev] = PEval:evaluate({0.15, 0.2}) - PEval:evaluate( {0.25, 0.2} )
+		Delta_P.diff[lev] = Delta_P.meas[lev] - Delta_P_ref
+	
+		-- plot
+		print(">> Errors on Level "..lev)
+		print(">> C_D error: "..string.format("%.3e", C_D.diff[lev]))
+		print(">> C_L error: "..string.format("%.3e", C_L.diff[lev]))
+		print(">> Delta_P - Delta_P_ref: "..string.format("%.3e", Delta_P.diff[lev]))	
+		
+	end
+	
+	approxSpace, domainDisc, solver = nil, nil, nil
+	collectgarbage()
+	
+	table.print(			{level, h, DoFs, C_D.meas, C_D.diff, C_L.meas, C_L.diff, Delta_P.meas, Delta_P.diff},
+				{heading =  {"L", "h", "#DoFs", "C_D", "C_D_diff", "C_L", "C_L_diff", "Delta_P", "Delta_P_diff"},
+				 format = 	{"%d", "%.2e", "%d", "%.8f", "%.3e", "%.8f", "%.3e", "%.8f", "%.3e"},
+				 hline = true, vline = true, forNIl = "--"})				 
+end
+
+if not(bConvRates) and not(bBenchmarkRates) then
 
 	local p = vorder
 	local dom = CreateDomain()
@@ -280,18 +404,17 @@ if not(bConvRates) then
 	
 	ComputeNonLinearSolution(u, domainDisc, solver)
 
-	local D = 0.1
-	local DL = DragLift(u, "u,v,p", "CylinderWall", "Inner", Viscosity, 1.0, 3)
-	print("Drag-Force: "..DL[1])
-	print("Lift-Force: "..DL[2])
-	print("C_D: "..(2*DL[1]/(1*math.pow(2*Um/3, 2)*D)))
-	print("C_L: "..(2*DL[2]/(1*math.pow(2*Um/3, 2)*D)))
+	local DL = DragLift(u, "u,v,p", "CylinderWall", "Inner", Viscosity, 1.0, p+3)
+	local C_D = 2*DL[1]/(Umean2*L)
+	local C_L = 2*DL[2]/(Umean2*L)
 
-	PEval = GlobalGridFunctionNumberData(u, "p")
-	Pa = PEval:evaluate({0.15, 0.2})
-	Pe = PEval:evaluate( {0.25, 0.2} )
+	local PEval = GlobalGridFunctionNumberData(u, "p")
+	local Delta_P = PEval:evaluate({0.15, 0.2}) - PEval:evaluate( {0.25, 0.2} )
 
-	print("Pa: "..Pa..", Pe: "..Pe..", DeltaP: "..Pa-Pe)
+	print("C_D - C_D_ref: "..string.format("%.3e", C_D - C_D_ref))
+	print("C_L - C_L_ref: "..string.format("%.3e", C_L - C_L_ref))
+	print("Delta_P - Delta_P_ref: "..string.format("%.3e", Delta_P - Delta_P_ref))
+	
 
 	local FctCmp = approxSpace:names()
 	local VelCmp = {}
