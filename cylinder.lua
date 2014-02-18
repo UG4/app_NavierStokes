@@ -40,11 +40,15 @@ local H = 0.41
 local L = 0.1
 local Umean2 = math.pow(2/3*Um, 2)
 
-local C_D_ref = 5.57953523384
-local C_L_ref = 0.010618948146
-local Delta_P_ref = 0.11752016697
+local ref = {}
+ref.CD = 5.57953523384
+ref.CL = 0.010618948146
+ref.DeltaP = 0.11752016697
 
-if 	dim == 2 then gridName = util.GetParam("-grid", "grids/cylinder.ugx")
+if 	dim == 2 then 
+	gridName = util.GetParam("-grid", "grids/cylinder.ugx")
+	--gridName = util.GetParam("-grid", "grids/cylinder_tri.ugx")
+	--gridName = util.GetParam("-grid", "grids/cylinder_box_tri.ugx")
 else print("Choosen Dimension not supported. Exiting."); exit(); end
 
 
@@ -256,7 +260,7 @@ function CreateSolver(approxSpace, discType, p)
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
 	newtonSolver:set_convergence_check(ConvCheck(500, 1e-11, 1e-99, true))
-	newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.85, true))
+	newtonSolver:set_line_search(StandardLineSearch(5, 1.0, 0.9, true, true))
 	--newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 	
 	return newtonSolver
@@ -338,13 +342,13 @@ if bBenchmarkRates then
 	local domainDisc = CreateDomainDisc(approxSpace, discType, p)
 	local solver = CreateSolver(approxSpace, discType, p)
 
-	local C_D, C_L, Delta_P = 	{meas = {}, diff = {}}, 
-								{meas = {}, diff = {}}, 
-								{meas = {}, diff = {}}
 	local h, DoFs, level = {}, {}, {}	
+	local meas = {CD = {}, CL = {}, DeltaP = {}}
+	for n, _ in pairs(meas) do
+		meas[n] = {value = {}, prev = {error = {}, rate = {}}, exact = {error = {}, rate = {}}}
+	end	
 	
-	
-	local minLev = 1
+	local minLev = 0
 	local maxLev = numRefs
 	for lev = minLev, maxLev do
 		write("\n>> Computing Level "..lev..", "..discType..", "..p..".\n")
@@ -363,31 +367,55 @@ if bBenchmarkRates then
 		
 		-- C_D / C_L
 		local DL = DragLift(u, "u,v,p", "CylinderWall", "Inner", Viscosity, 1.0, p+3)
-		C_D.meas[lev] = 2*DL[1]/(Umean2*L)
-		C_D.diff[lev] = C_D.meas[lev] - C_D_ref
-		C_L.meas[lev] = 2*DL[2]/(Umean2*L)
-		C_L.diff[lev] = C_L.meas[lev] - C_L_ref
+		meas.CD.value[lev] = 2*DL[1]/(Umean2*L)
+		meas.CL.value[lev] = 2*DL[2]/(Umean2*L)
 	
 		-- Delta_P
 		local PEval = GlobalGridFunctionNumberData(u, "p")
-		Delta_P.meas[lev] = PEval:evaluate({0.15, 0.2}) - PEval:evaluate( {0.25, 0.2} )
-		Delta_P.diff[lev] = Delta_P.meas[lev] - Delta_P_ref
-	
-		-- plot
-		print(">> Errors on Level "..lev)
-		print(">> C_D error: "..string.format("%.3e", C_D.diff[lev]))
-		print(">> C_L error: "..string.format("%.3e", C_L.diff[lev]))
-		print(">> Delta_P - Delta_P_ref: "..string.format("%.3e", Delta_P.diff[lev]))	
-		
+		meas.DeltaP.value[lev] = PEval:evaluate({0.15, 0.2}) - PEval:evaluate( {0.25, 0.2} )
+
+		for n, _ in pairs(meas) do
+			local quant = meas[n]
+			quant.exact.error[lev] = quant.value[lev] - ref[n]
+			
+			if lev > minLev then
+				quant.prev.error[lev-1] = quant.value[lev] - quant.value[lev-1]
+			end			
+			for _, t in ipairs({"exact", "prev"}) do
+				local type = quant[t]
+				if type.error[lev-2] ~= nil and type.error[lev-1] ~= nil then
+					local fac = type.error[lev-2] / type.error[lev-1]
+					type.rate[lev-1] = math.log(fac) / math.log(h[lev-2]/h[lev-1])
+				end			
+			end
+		end
+				
+		-- print
+		local values = {level, h, DoFs}
+		local heading = {"L", "h", "#DoFs"}
+		local format = {"%d", "%.2e", "%d"}
+
+		for n, _ in pairs(meas) do
+			local quant = meas[n]
+			table.append(values, {quant.value}) 
+			table.append(heading,{n})
+			table.append(format, {"%.8f"})
+
+			for _, t in ipairs({"prev", "exact"}) do
+				local type = quant[t]
+				table.append(values, {type.error, type.rate}) 
+				table.append(heading,{n.." "..t, "rate"})
+				table.append(format, {"%.3e", "%.3f"})
+			end
+		end
+
+		table.print(values, {heading = heading, format = format, 
+							 hline = true, vline = true, forNil = "--"})
 	end
 	
 	approxSpace, domainDisc, solver = nil, nil, nil
 	collectgarbage()
 	
-	table.print(			{level, h, DoFs, C_D.meas, C_D.diff, C_L.meas, C_L.diff, Delta_P.meas, Delta_P.diff},
-				{heading =  {"L", "h", "#DoFs", "C_D", "C_D_diff", "C_L", "C_L_diff", "Delta_P", "Delta_P_diff"},
-				 format = 	{"%d", "%.2e", "%d", "%.8f", "%.3e", "%.8f", "%.3e", "%.8f", "%.3e"},
-				 hline = true, vline = true, forNIl = "--"})				 
 end
 
 if not(bConvRates) and not(bBenchmarkRates) then
@@ -411,9 +439,9 @@ if not(bConvRates) and not(bBenchmarkRates) then
 	local PEval = GlobalGridFunctionNumberData(u, "p")
 	local Delta_P = PEval:evaluate({0.15, 0.2}) - PEval:evaluate( {0.25, 0.2} )
 
-	print("C_D - C_D_ref: "..string.format("%.3e", C_D - C_D_ref))
-	print("C_L - C_L_ref: "..string.format("%.3e", C_L - C_L_ref))
-	print("Delta_P - Delta_P_ref: "..string.format("%.3e", Delta_P - Delta_P_ref))
+	print("C_D - ref.CD: "..string.format("%.3e", C_D - ref.CD))
+	print("C_L - ref.CL: "..string.format("%.3e", C_L - ref.CL))
+	print("Delta_P - ref.DeltaP: "..string.format("%.3e", Delta_P - ref.DeltaP))
 	
 
 	local FctCmp = approxSpace:names()
