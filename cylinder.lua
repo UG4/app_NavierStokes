@@ -47,8 +47,13 @@ ref.DeltaP = 0.11752016697
 
 if 	dim == 2 then 
 	gridName = util.GetParam("-grid", "grids/cylinder.ugx")
+	--gridName = util.GetParam("-grid", "grids/cylinder-rims.ugx")
+	gridName = util.GetParam("-grid", "grids/cylinder-rims2.ugx")
+	--gridName = util.GetParam("-grid", "grids/box.ugx")
+	--gridName = util.GetParam("-grid", "grids/double-arrow-small.ugx")
 	--gridName = util.GetParam("-grid", "grids/cylinder_tri.ugx")
-	--gridName = util.GetParam("-grid", "grids/cylinder_box_tri.ugx")
+	--gridName = util.GetParam("-grid", "grids/cylinder_box_tri_fine.ugx")
+	--gridName = util.GetParam("-grid", "grids/cylinder_rotate_box_tri_fine.ugx")
 else print("Choosen Dimension not supported. Exiting."); exit(); end
 
 
@@ -100,6 +105,10 @@ function CreateDomain()
 	local refiner =  GlobalDomainRefiner(dom)
 	local refProjector = DomainRefinementProjectionHandler(dom)
 	refProjector:set_callback("CylinderWall", SphereProjector(dom, 0.2, 0.2, 0, 0.05))
+	--refProjector:set_callback("CylinderRim1", SphereProjector(dom, 0.2, 0.2, 0, 0.0525))
+	--refProjector:set_callback("CylinderRim2", SphereProjector(dom, 0.2, 0.2, 0, 0.05625))
+	--refProjector:set_callback("CylinderRim3", SphereProjector(dom, 0.2, 0.2, 0, 0.063367748))
+	--refProjector:set_callback("Inner", SubdivisionLoopProjector(dom))
 	refiner:set_refinement_callback(refProjector)
 	
 	write("Pre-Refining("..numPreRefs.."): ")
@@ -247,6 +256,9 @@ function CreateSolver(approxSpace, discType, p)
 	gmg:add_prolongation_post_process(AverageComponent("p"))
 	--gmg:add_restriction_post_process(AverageComponent("p"))
 	--gmg:set_debug(dbgWriter)
+	transfer = StdTransfer()
+	transfer:enable_p1_lagrange_optimization(false)
+	gmg:set_transfer(transfer)
 	
 	
 	local sol = util.solver.parseParams()
@@ -254,7 +266,7 @@ function CreateSolver(approxSpace, discType, p)
 	if bStokes then
 		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-99, true))
 	else 
-		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-2, true))	
+		solver:set_convergence_check(ConvCheck(10000, 5e-12, 5e-3, true))	
 	end
 	
 	local newtonSolver = NewtonSolver()
@@ -318,8 +330,8 @@ if bConvRates then
 		
 		DiscTypes = 
 		{
-		  {type = "fv", pmin = 3, pmax = 3, lmin = 1, lmax = numRefs},
-		  --{type = "fe", pmin = 2, pmax = 5, lmin = 0, lmax = numRefs}
+		  --{type = "fv", pmin = 3, pmax = 3, lmin = 1, lmax = numRefs},
+		  {type = "fe", pmin = 2, pmax = 2, lmin = 0, lmax = numRefs}
 		},
 
 		PrepareInitialGuess = function (u, lev, minLev, maxLev, domainDisc, solver)
@@ -329,7 +341,8 @@ if bConvRates then
 		gpOptions = options,
 		noplot = true,
 		plotSol = true,
-		MaxLevelPadding = function(p) return math.floor((p+1)/2) end,
+		--MaxLevelPadding = function(p) return math.floor((p+1)/2) end,
+		MaxLevelPadding = function(p) return 0 end,
 		
 	})
 end
@@ -348,13 +361,21 @@ if bBenchmarkRates then
 		meas[n] = {value = {}, prev = {error = {}, rate = {}}, exact = {error = {}, rate = {}}}
 	end	
 	
-	local minLev = 0
+	local uPrev = nil
+	local minLev = 1
 	local maxLev = numRefs
 	for lev = minLev, maxLev do
 		write("\n>> Computing Level "..lev..", "..discType..", "..p..".\n")
 
 		local u = GridFunction(approxSpace, lev)
-		u:set(0)
+		
+		if uPrev ~= nil then	
+			Prolongate(u, uPrev);
+			AdjustMeanValue(u, "p")
+		else
+			u:set(0)	
+		end
+			u:set(0)	
 		
 		write(">> Start: Computing solution on level "..lev..".\n")
 		ComputeNonLinearSolution(u, domainDisc, solver)
@@ -376,16 +397,20 @@ if bBenchmarkRates then
 
 		for n, _ in pairs(meas) do
 			local quant = meas[n]
-			quant.exact.error[lev] = quant.value[lev] - ref[n]
+			quant.exact.error[lev] = math.abs(quant.value[lev] - ref[n])
 			
 			if lev > minLev then
-				quant.prev.error[lev-1] = quant.value[lev] - quant.value[lev-1]
+				quant.prev.error[lev-1] = math.abs(quant.value[lev] - quant.value[lev-1])
 			end			
 			for _, t in ipairs({"exact", "prev"}) do
 				local type = quant[t]
 				if type.error[lev-2] ~= nil and type.error[lev-1] ~= nil then
 					local fac = type.error[lev-2] / type.error[lev-1]
 					type.rate[lev-1] = math.log(fac) / math.log(h[lev-2]/h[lev-1])
+				end			
+				if type.error[lev-1] ~= nil and type.error[lev] ~= nil then
+					local fac = type.error[lev-1] / type.error[lev]
+					type.rate[lev] = math.log(fac) / math.log(h[lev-1]/h[lev])
 				end			
 			end
 		end
@@ -401,7 +426,7 @@ if bBenchmarkRates then
 			table.append(heading,{n})
 			table.append(format, {"%.8f"})
 
-			for _, t in ipairs({"prev", "exact"}) do
+			for _, t in ipairs({"exact", "prev"}) do
 				local type = quant[t]
 				table.append(values, {type.error, type.rate}) 
 				table.append(heading,{n.." "..t, "rate"})
@@ -411,6 +436,9 @@ if bBenchmarkRates then
 
 		table.print(values, {heading = heading, format = format, 
 							 hline = true, vline = true, forNil = "--"})
+							 
+		 uPrev = u
+		collectgarbage()
 	end
 	
 	approxSpace, domainDisc, solver = nil, nil, nil

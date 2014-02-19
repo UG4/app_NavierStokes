@@ -142,7 +142,7 @@ function util.solver.create(sol, precond)
 		if precond ~= nil then solver:set_preconditioner(precond) end
 	elseif 	sol == "bicgstab" 	then 
 		solver = BiCGStab();
-		--solver:set_min_orthogonality(1e-15)
+		solver:set_min_orthogonality(1e-10)
 		--solver:set_restart(30)
 		if precond ~= nil then solver:set_preconditioner(precond) end
 	elseif 	sol == "gmres" 	then 
@@ -155,11 +155,14 @@ function util.solver.create(sol, precond)
 
 		local skeletonSolver = BiCGStab()
 		skeletonSolver:set_preconditioner(ILU())
-		skeletonSolver:set_convergence_check(ConvCheck(10000, 1e-12, 1e-10, true))	
+		--skeletonSolver:set_min_orthogonality(1e-15)
+		--skeletonSolver:set_restart(30)		
+		skeletonSolver:set_convergence_check(ConvCheck(10000, 1e-12, 1e-2, true))	
+
+		skeletonSolver = AgglomeratingSolver(SuperLU())
 
 		local schur = SchurComplement()
-		local lu = SuperLU()
-		schur:set_dirichlet_solver(lu)
+		schur:set_dirichlet_solver(SuperLU())
 		schur:set_skeleton_solver(SchurInverseWithFullMatrix(skeletonSolver))
 	
 		solver = LinearSolver()
