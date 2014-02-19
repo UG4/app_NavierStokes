@@ -48,8 +48,8 @@ ref.DeltaP = 0.11752016697
 if 	dim == 2 then 
 	gridName = util.GetParam("-grid", "grids/cylinder.ugx")
 	--gridName = util.GetParam("-grid", "grids/cylinder-rims.ugx")
-	gridName = util.GetParam("-grid", "grids/cylinder-rims2.ugx")
-	--gridName = util.GetParam("-grid", "grids/box.ugx")
+	--gridName = util.GetParam("-grid", "grids/cylinder-rims2.ugx")
+	gridName = util.GetParam("-grid", "grids/box.ugx")
 	--gridName = util.GetParam("-grid", "grids/double-arrow-small.ugx")
 	--gridName = util.GetParam("-grid", "grids/cylinder_tri.ugx")
 	--gridName = util.GetParam("-grid", "grids/cylinder_box_tri_fine.ugx")
@@ -104,7 +104,7 @@ function CreateDomain()
 	-- which automatically creates a parallel refiner if required.
 	local refiner =  GlobalDomainRefiner(dom)
 	local refProjector = DomainRefinementProjectionHandler(dom)
-	refProjector:set_callback("CylinderWall", SphereProjector(dom, 0.2, 0.2, 0, 0.05))
+	--refProjector:set_callback("CylinderWall", SphereProjector(dom, 0.2, 0.2, 0, 0.05))
 	--refProjector:set_callback("CylinderRim1", SphereProjector(dom, 0.2, 0.2, 0, 0.0525))
 	--refProjector:set_callback("CylinderRim2", SphereProjector(dom, 0.2, 0.2, 0, 0.05625))
 	--refProjector:set_callback("CylinderRim3", SphereProjector(dom, 0.2, 0.2, 0, 0.063367748))
@@ -260,18 +260,20 @@ function CreateSolver(approxSpace, discType, p)
 	transfer:enable_p1_lagrange_optimization(false)
 	gmg:set_transfer(transfer)
 	
-	
+--	LinearIteratorProduct({smoother, gmg})
 	local sol = util.solver.parseParams()
-	local solver = util.solver.create(sol, gmg)
+	local solver = util.solver.create(sol, LinearIteratorProduct({gmg, smoother}))
 	if bStokes then
 		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-99, true))
 	else 
 		solver:set_convergence_check(ConvCheck(10000, 5e-12, 5e-3, true))	
 	end
+		
+	local convCheck = ConvCheck(500, 1e-11, 1e-99, true)
 	
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
-	newtonSolver:set_convergence_check(ConvCheck(500, 1e-11, 1e-99, true))
+	newtonSolver:set_convergence_check(convCheck)
 	newtonSolver:set_line_search(StandardLineSearch(5, 1.0, 0.9, true, true))
 	--newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 	
@@ -362,7 +364,7 @@ if bBenchmarkRates then
 	end	
 	
 	local uPrev = nil
-	local minLev = 1
+	local minLev = 0
 	local maxLev = numRefs
 	for lev = minLev, maxLev do
 		write("\n>> Computing Level "..lev..", "..discType..", "..p..".\n")
@@ -375,9 +377,15 @@ if bBenchmarkRates then
 		else
 			u:set(0)	
 		end
-			u:set(0)	
+		u:set(0)	
 		
 		write(">> Start: Computing solution on level "..lev..".\n")
+		local convCheck = CompositeConvCheck(approxSpace, 500, 1e-11, 1e-99)
+		convCheck:set_all_component_check(1e-11, 1e-99)
+		convCheck:set_level(lev)
+		solver:set_convergence_check(convCheck)
+		--solver:set_debug(GridFunctionDebugWriter(approxSpace))
+			
 		ComputeNonLinearSolution(u, domainDisc, solver)
 		write(">> End: Solver done.\n")
 
@@ -406,11 +414,11 @@ if bBenchmarkRates then
 				local type = quant[t]
 				if type.error[lev-2] ~= nil and type.error[lev-1] ~= nil then
 					local fac = type.error[lev-2] / type.error[lev-1]
-					type.rate[lev-1] = math.log(fac) / math.log(h[lev-2]/h[lev-1])
+					type.rate[lev-1] = math.log(fac) / math.log(2) --math.log(h[lev-1]/h[lev])
 				end			
 				if type.error[lev-1] ~= nil and type.error[lev] ~= nil then
 					local fac = type.error[lev-1] / type.error[lev]
-					type.rate[lev] = math.log(fac) / math.log(h[lev-1]/h[lev])
+					type.rate[lev] = math.log(fac) / math.log(2) --math.log(h[lev-1]/h[lev])
 				end			
 			end
 		end
@@ -453,6 +461,8 @@ if not(bConvRates) and not(bBenchmarkRates) then
 	local approxSpace = CreateApproxSpace(dom, discType, p)
 	local domainDisc = CreateDomainDisc(approxSpace, discType, p)
 	local solver = CreateSolver(approxSpace, discType, p)
+	--solver:set_debug(GridFunctionDebugWriter(approxSpace))
+			
 	print(solver:config_string())
 	
 	local u = GridFunction(approxSpace)
@@ -466,6 +476,9 @@ if not(bConvRates) and not(bBenchmarkRates) then
 
 	local PEval = GlobalGridFunctionNumberData(u, "p")
 	local Delta_P = PEval:evaluate({0.15, 0.2}) - PEval:evaluate( {0.25, 0.2} )
+
+	print("p1: "..PEval:evaluate({0.15, 0.2}))
+	print("p2: "..PEval:evaluate({0.25, 0.2}))
 
 	print("C_D - ref.CD: "..string.format("%.3e", C_D - ref.CD))
 	print("C_L - ref.CL: "..string.format("%.3e", C_L - ref.CL))
