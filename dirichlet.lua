@@ -52,6 +52,13 @@ if dim~=2 and dim~=3 then
    print("Chosen Dimension " .. dim .. " not supported. Exiting.") exit() 
 end
 
+drivenCavity = true
+
+if drivenCavity then
+	gridName = util.GetParam("-grid", "grids/dc_quads.ugx")
+end
+
+
 discType, vorder, porder = util.ns.parseParams()
 
 print(" Chosen Parameters:")
@@ -268,7 +275,9 @@ function CreateDomainDisc(approxSpace, discType, p)
 	NavierStokesDisc:set_stokes(bStokes)
 	NavierStokesDisc:set_laplace( not(bNoLaplace) )
 	NavierStokesDisc:set_kinematic_viscosity(1.0/R);
+	if not drivenCavity then
 	NavierStokesDisc:set_source("source"..dim.."d")
+	end
 	
 	--upwind if available
 	if discType == "fv1" or discType == "fvcr" then
@@ -290,12 +299,18 @@ function CreateDomainDisc(approxSpace, discType, p)
 		NavierStokesDisc:set_quad_order(p*p+5)
 	end
 	if discType == "fv" then
-		NavierStokesDisc:set_quad_order(p*p+5)
+		NavierStokesDisc:set_quad_order(p*p+10)
 	end
 	
-	InletDisc = NavierStokesInflow(NavierStokesDisc)
-	InletDisc:add("inletVel"..dim.."d", "Boundary")
-	
+	if drivenCavity then
+		InletDisc = NavierStokesInflow(NavierStokesDisc)
+		InletDisc:add({1,0}, "Top")	
+		InletDisc:add({0,0}, "Left,Right,Bottom")	
+	else
+		InletDisc = NavierStokesInflow(NavierStokesDisc)
+		InletDisc:add("inletVel"..dim.."d", "Boundary")
+	end
+		
 	domainDisc = DomainDiscretization(approxSpace)
 	domainDisc:add(NavierStokesDisc)
 	domainDisc:add(InletDisc)
@@ -311,7 +326,7 @@ function CreateDomain()
 
 	InitUG(dim, AlgebraType("CPU", 1))
 	
-	local requiredSubsets = {"Inner", "Boundary"}
+	local requiredSubsets = {}
 	local dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
 	
 	return dom
@@ -363,13 +378,17 @@ function CreateSolver(approxSpace, discType, p)
 	
 	
 	local sol = util.solver.parseParams()
-	local solver = util.solver.create(sol, gmg)
-	solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-2, true))
+	local solver = util.solver.create(sol, LinearIteratorProduct({gmg, smoother}))
+	if bStokes then
+		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-99, true))
+	else 
+		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-3, true))	
+	end
 	
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
 	newtonSolver:set_convergence_check(ConvCheck(500, 1e-11, 1e-99, true))
-	newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.85, true))
+	newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.9, true, true))
 	--newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 	
 	return newtonSolver
@@ -475,18 +494,20 @@ if not(bInstat) then
 		timeEnd = os.clock()
 		print("Computation took " .. timeEnd-timeStart .. " seconds.")
 		
-		-- to make error computation for p reasonable
-		-- p would have to be adjusted by adding a reasonable constant
 		local FctCmp = approxSpace:names()
-		for d = 1,#FctCmp do
-			print("L2Error in '"..FctCmp[d].. "' is ".. 
-					L2Error(FctCmp[d].."Sol"..dim.."d", u, FctCmp[d], 0.0, 1, "Inner"))
-		end
-		for d = 1,#FctCmp do
-			print("Maximum error in '"..FctCmp[d].. "' is ".. 
-					 MaxError(FctCmp[d].."Sol"..dim.."d", u, FctCmp[d]))
-		end
-		
+		if drivenCavity then
+			DrivenCavityLinesEval(u, FctCmp, R)
+		else
+			for d = 1,#FctCmp do
+				print("L2Error in '"..FctCmp[d].. "' is ".. 
+						L2Error(FctCmp[d].."Sol"..dim.."d", u, FctCmp[d], 0.0, 1, "Inner"))
+			end
+			for d = 1,#FctCmp do
+				print("Maximum error in '"..FctCmp[d].. "' is ".. 
+						 MaxError(FctCmp[d].."Sol"..dim.."d", u, FctCmp[d]))
+			end
+		end	
+			
 		local VelCmp = {}
 		for d = 1,#FctCmp-1 do VelCmp[d] = FctCmp[d] end
 		vtkWriter = VTKOutput()
