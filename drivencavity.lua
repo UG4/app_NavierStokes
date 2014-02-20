@@ -428,7 +428,7 @@ if boolStat==1 then
 		NavierStokesDisc:set_source(pGradSource)
 		pGradSource:update()
 		
-		dcevaluation(u,reynoldsNr)
+		DrivenCavityLinesEval(u, approxSpace:names(), reynoldsNr)
 		
 		function zero(x,y,t) return 0 end
 		Interpolate("zero", u, "p")
@@ -495,7 +495,7 @@ else
 	end
 end
 tAfter = os.clock()
-dcevaluation(u,reynoldsNr)
+DrivenCavityLinesEval(u, approxSpace:names(), reynoldsNr)
 newtonSolver:print_average_convergence()
 print("Computation took " .. tAfter-tBefore .. " seconds.")
 print("Computation + ordering took " .. tAfter-tBefore+tOrder .. " seconds.")
