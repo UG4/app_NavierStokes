@@ -49,7 +49,7 @@ if 	dim == 2 then
 	gridName = util.GetParam("-grid", "grids/cylinder.ugx")
 	--gridName = util.GetParam("-grid", "grids/cylinder-rims.ugx")
 	--gridName = util.GetParam("-grid", "grids/cylinder-rims2.ugx")
-	gridName = util.GetParam("-grid", "grids/box.ugx")
+	--gridName = util.GetParam("-grid", "grids/box.ugx")
 	--gridName = util.GetParam("-grid", "grids/double-arrow-small.ugx")
 	--gridName = util.GetParam("-grid", "grids/cylinder_tri.ugx")
 	--gridName = util.GetParam("-grid", "grids/cylinder_box_tri_fine.ugx")
@@ -109,6 +109,11 @@ function CreateDomain()
 	--refProjector:set_callback("CylinderRim2", SphereProjector(dom, 0.2, 0.2, 0, 0.05625))
 	--refProjector:set_callback("CylinderRim3", SphereProjector(dom, 0.2, 0.2, 0, 0.063367748))
 	--refProjector:set_callback("Inner", SubdivisionLoopProjector(dom))
+	
+	falloffProjector = SphericalFalloffProjector(dom, 0.2, 0.2, 0, 0.05, 0.1)
+	refProjector:set_callback("CylinderWall", falloffProjector)
+	refProjector:set_callback("Inner", falloffProjector)
+	
 	refiner:set_refinement_callback(refProjector)
 	
 	write("Pre-Refining("..numPreRefs.."): ")
@@ -131,6 +136,8 @@ function CreateDomain()
 		write(i-numPreRefs .. " ")
 	end
 	write("done.\n")
+	
+	--SaveGridHierarchyTransformed(dom:grid(), dom:subset_handler(), "dom-p"..ProcRank()..".ugx", 0.1)
 	
 	-- Now we loop all subsets an search for it in the SubsetHandler of the domain
 	if neededSubsets ~= nil then
