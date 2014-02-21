@@ -104,13 +104,13 @@ function CreateDomain()
 	-- which automatically creates a parallel refiner if required.
 	local refiner =  GlobalDomainRefiner(dom)
 	local refProjector = DomainRefinementProjectionHandler(dom)
-	--refProjector:set_callback("CylinderWall", SphereProjector(dom, 0.2, 0.2, 0))
-	--refProjector:set_callback("CylinderRim1", SphereProjector(dom, 0.2, 0.2, 0))
-	--refProjector:set_callback("CylinderRim2", SphereProjector(dom, 0.2, 0.2, 0))
-	--refProjector:set_callback("CylinderRim3", SphereProjector(dom, 0.2, 0.2, 0))
+	--refProjector:set_callback("CylinderWall", SphereProjector(dom, {0.2, 0.2, 0}))
+	--refProjector:set_callback("CylinderRim1", SphereProjector(dom, {0.2, 0.2, 0}))
+	--refProjector:set_callback("CylinderRim2", SphereProjector(dom, {0.2, 0.2, 0}))
+	--refProjector:set_callback("CylinderRim3", SphereProjector(dom, {0.2, 0.2, 0}))
 	--refProjector:set_callback("Inner", SubdivisionLoopProjector(dom))
 	
-	falloffProjector = SphericalFalloffProjector(dom, 0.2, 0.2, 0, 0.05, 0.1)
+	falloffProjector = SphericalFalloffProjector(dom, {0.2, 0.2, 0}, 0.05, 0.1)
 	refProjector:set_callback("CylinderWall", falloffProjector)
 	refProjector:set_callback("Inner", falloffProjector)
 	
