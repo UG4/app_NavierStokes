@@ -19,6 +19,7 @@ dim 		= util.GetParamNumber("-dim", 2)
 numRefs 	= util.GetParamNumber("-numRefs",2)
 numPreRefs 	= util.GetParamNumber("-numPreRefs", 0)
 bConvRates  = util.HasParamOption("-convRate", "compute convergence rates")
+bDrivenCavityRates  = util.HasParamOption("-dcRate", "compute convergence rates")
 
 bInstat     = util.HasParamOption("-instat", "time-dependent solution")
 if bInstat then
@@ -52,7 +53,10 @@ if dim~=2 and dim~=3 then
    print("Chosen Dimension " .. dim .. " not supported. Exiting.") exit() 
 end
 
-drivenCavity = true
+if bDrivenCavityRates then
+	drivenCavity = true
+	R = 1000
+end
 
 if drivenCavity then
 	gridName = util.GetParam("-grid", "grids/dc_quads.ugx")
@@ -296,7 +300,7 @@ function CreateDomainDisc(approxSpace, discType, p)
 		--NavierStokesDisc:set_stabilization(3)
 	end
 	if discType == "fe" then
-		NavierStokesDisc:set_quad_order(p*p+5)
+		NavierStokesDisc:set_quad_order(p*p+10)
 	end
 	if discType == "fv" then
 		NavierStokesDisc:set_quad_order(p*p+10)
@@ -477,7 +481,165 @@ if not(bInstat) then
 		})
 	end
 	
-	if not(bConvRates) then
+	if bDrivenCavityRates then
+	
+		local vertX = 0.5;
+		local vertY = {0.0000,0.0547,0.0625,0.0703,0.1016,0.1719,0.2813,0.4531,0.5000,0.6172,0.7344,0.8516,0.9531,0.9609,0.9688,0.9766,1.0000};
+		local vertBotella_1000 = {0.0000000 , -0.1812881 , -0.2023300 , -0.2228955 , -0.3004561 , -0.3885691 , -0.2803696 , -0.1081999 , -0.0620561 , 0.0570178 , 0.1886747 , 0.3372212 , 0.4723329 , 0.5169277 , 0.5808359 , 0.6644227 , 1.0000000};
+
+		local horizX = {0.0000,0.0625,0.0703,0.0781,0.0938,0.1563,0.2266,0.2344,0.5000,0.8047,0.8594,0.9063,0.9453,0.9531,0.9609,0.9688,1.0000};
+		local horizY = 0.5;
+		local horizBotella_1000 = {0.0000000 , 0.2807056 , 0.2962703 , 0.3099097 , 0.3330442 , 0.3769189 , 0.3339924 , 0.3253592 , 0.0257995 , -0.3202137 , -0.4264545 , -0.5264392 , -0.4103754 , -0.3553213 , -0.2936869 , -0.2279225 , 0.0000000};
+
+		numRefs = 3
+
+		local dom = CreateDomain()
+	
+		local plots = {}	
+	
+		local function BotellaDifference(discType, p, minLev, maxLev)
+		
+			local file = table.concat({"dc",discType,p},"_")..".dat"
+			local discLabel = discType.." Q_"..p.."/Q_"..(p-1)
+			local vertYLabel = "max_i |u - u^{Botella}|"
+			local horizYLabel = "max_i |v - v^{Botella}|"
+			--[[
+			local discLabel = discType.." $\\mathbb{Q}_{"..p.."}/\\mathbb{Q}_{"..(p-1).."}$"
+			local vertYLabel = "$\max_i |\vec{u}_{h,1}(\vec{x}_i) - \vec{u}_1^{\text{Botella}}(\vec{x}_i)|$"
+			local horizYLabel = "$\max_i |\vec{u}_{h,2}(\vec{x}_i) - \vec{u}_2^{\text{Botella}}(\vec{x}_i)|$"
+			--]]
+			
+			local function addPlot(name, dataset, label)
+				plots[name] = plots[name] or {}
+				table.insert( plots[name], dataset)			
+				plots[name].label = label			
+			end
+			
+			addPlot("vert_DoF", {label=discLabel, file=file, style="linespoints", 1, 3},
+					{ x = "# Unbekannte", y = vertYLabel})
+
+			addPlot("horiz_DoF", {label=discLabel, file=file, style="linespoints", 1, 4},
+					{ x = "# Unbekannte", y = horizYLabel})
+
+			addPlot("vert_h", {label=discLabel, file=file, style="linespoints", 2, 3},
+					{ x = "h (Gitterweite)", y = vertYLabel})
+
+			addPlot("horiz_h", {label=discLabel, file=file, style="linespoints", 2, 4},
+					{ x = "h (Gitterweite)", y = horizYLabel})
+
+			
+			if not util.HasParamOption("-replot") then
+					
+				local approxSpace = CreateApproxSpace(dom, discType, p)
+				local domainDisc = CreateDomainDisc(approxSpace, discType, p)
+				local solver = CreateSolver(approxSpace, discType, p)
+	
+				local vertMax, horizMax = {}, {}
+				local level, h, DoFs = {}, {}, {}
+	
+				local uprev = nil
+				for lev = minLev, maxLev do
+					local u = GridFunction(approxSpace, lev)
+					
+					if uprev ~= nil then
+						Prolongate(u, uprev)
+					else
+						u:set(0)
+					end 
+									
+					ComputeNonLinearSolution(u, domainDisc, solver)
+			
+					local EvalU = GlobalGridFunctionNumberData(u, "u")
+					local EvalV = GlobalGridFunctionNumberData(u, "v")
+					
+					vertMax[lev], horizMax[lev] = 0, 0
+					for i = 1, #vertY do
+						local diff = math.abs(EvalU:evaluate({vertX, vertY[i]}) - vertBotella_1000[i])
+						vertMax[lev] = math.max(vertMax[lev], diff)				
+					end
+					for i = 1, #horizX do
+						local diff = math.abs(EvalV:evaluate({horizX[i], horizY}) - horizBotella_1000[i])
+						horizMax[lev] = math.max(horizMax[lev], diff)				
+					end
+					
+					level[lev] = lev
+					h[lev] = MaxElementDiameter(dom, lev) 
+					DoFs[lev] = u:num_dofs()
+					
+					print(" >> "..discType..", "..p..":")
+					table.print({level, h, DoFs, vertMax, horizMax}, 
+								{heading = {"L", "h", "#DoFs", "vert (max)", "horiz (max)"}, 
+								 format = {"%d", "%.2e", "%d", "%.3e", "%.3e"}, 
+								 hline = true, vline = true, forNil = "--"})
+								 
+	 				uprev = u	 
+				end
+							
+				local cols = {DoFs, h, vertMax, horizMax}
+				gnuplot.write_data(file, cols)	
+			end			
+		end
+
+		local texOptions = {	
+		
+			size = 				{12.5, 9.75}, -- the size of canvas (i.e. plot)
+			sizeunit =			"cm", -- one of: cm, mm, {in | inch}, {pt | pixel}
+			font = 				"Arial",
+			fontsize =			12,
+			fontscale = 		1.4,
+			
+			logscale = 			true,
+			grid = 				"lc rgb 'grey70' lt 0 lw 1", 
+			linestyle =			{colors = gnuplot.RGBbyLinearHUEandLightness(8, 1, 360+40, 85, 0.4, 0.4), 
+								linewidth = 3, pointsize = 1.3},
+			border = 			" back lc rgb 'grey40' lw 2",
+			decimalsign = 		",",
+			key =	 			"on box lc rgb 'grey40' left bottom Left reverse spacing 1.5 width 1 samplen 2 height 0.5",
+			tics =	 			{x = "nomirror out scale 0.75 format '%g' font ',8'",
+								 y = "10 nomirror out scale 0.75 format '%.te%01T' font ',8'"}, 
+			mtics =				5,
+			slope = 			{dy = 3, quantum = 0.5, at = "last"},
+			padrange = 			{ x = {0.8, 1.5}, y = {0.01, 1.5}},
+		}
+
+		local pdfOptions = {	
+		
+			size = 				{12.5, 9.75}, -- the size of canvas (i.e. plot)
+			sizeunit =			"cm", -- one of: cm, mm, {in | inch}, {pt | pixel}
+			font = 				"Arial",
+			fontsize =			8,
+			
+			logscale = 			true,
+			grid = 				"lc rgb 'grey70' lt 0 lw 1", 
+			linestyle =			{colors = gnuplot.RGBbyLinearHUEandLightness(8, 1, 360+40, 85, 0.4, 0.4), 
+								linewidth = 3, pointsize = 1.3},
+			border = 			" back lc rgb 'grey40' lw 2",
+			decimalsign = 		",",
+			key =	 			"on box lc rgb 'grey40' left bottom Left reverse spacing 1.5 width 1 samplen 2 height 0.5",
+			tics =	 			{x = "nomirror out scale 0.75 format '%g' font ',8'",
+								 y = "10 nomirror out scale 0.75 format '%.te%01T' font ',8'"}, 
+			mtics =				5,
+			slope = 			{dy = 3, quantum = 0.5, at = "last"},
+			padrange = 			{ x = {0.8, 1.5}, y = {0.01, 1.5}},
+		}
+								
+		BotellaDifference("fv", 2, 0, numRefs)		
+		BotellaDifference("fv", 3, 0, numRefs-1)		
+	 	BotellaDifference("fv", 4, 0, numRefs-2)		
+		BotellaDifference("fv", 5, 0, numRefs-3)		
+		
+		BotellaDifference("fe", 2, 0, numRefs)		
+		BotellaDifference("fe", 3, 0, numRefs-1)		
+		BotellaDifference("fe", 4, 0, numRefs-2)		
+		BotellaDifference("fe", 5, 0, numRefs-3)		
+			
+		for name,data in pairs(plots) do
+			gnuplot.plot(name..".pdf", data, pdfOptions)
+			gnuplot.plot(name..".tex", data, texOptions)
+		end
+	end
+	
+	if not(bConvRates) and not(bDrivenCavityRates) then
 	
 		local p = vorder
 		local dom = CreateDomain()
