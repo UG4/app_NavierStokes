@@ -491,7 +491,7 @@ if not(bInstat) then
 		local horizY = 0.5;
 		local horizBotella_1000 = {0.0000000 , 0.2807056 , 0.2962703 , 0.3099097 , 0.3330442 , 0.3769189 , 0.3339924 , 0.3253592 , 0.0257995 , -0.3202137 , -0.4264545 , -0.5264392 , -0.4103754 , -0.3553213 , -0.2936869 , -0.2279225 , 0.0000000};
 
-		numRefs = 3
+		numRefs = 1
 
 		local dom = CreateDomain()
 	
@@ -553,14 +553,22 @@ if not(bInstat) then
 					local EvalV = GlobalGridFunctionNumberData(u, "v")
 					
 					vertMax[lev], horizMax[lev] = 0, 0
+					print("Vertical Values: ")
 					for i = 1, #vertY do
-						local diff = math.abs(EvalU:evaluate({vertX, vertY[i]}) - vertBotella_1000[i])
+						local val = EvalU:evaluate({vertX, vertY[i]})
+						write(string.format("%.14f", val)..", ")
+						local diff = math.abs(val - vertBotella_1000[i])
 						vertMax[lev] = math.max(vertMax[lev], diff)				
 					end
+					print("")
+					print("Horizontal Values: ")
 					for i = 1, #horizX do
-						local diff = math.abs(EvalV:evaluate({horizX[i], horizY}) - horizBotella_1000[i])
+						local val = EvalV:evaluate({horizX[i], horizY})
+						write(string.format("%.14f", val)..", ")
+						local diff = math.abs(val - horizBotella_1000[i])
 						horizMax[lev] = math.max(horizMax[lev], diff)				
 					end
+					print("")
 					
 					level[lev] = lev
 					h[lev] = MaxElementDiameter(dom, lev) 
@@ -571,6 +579,8 @@ if not(bInstat) then
 								{heading = {"L", "h", "#DoFs", "vert (max)", "horiz (max)"}, 
 								 format = {"%d", "%.2e", "%d", "%.3e", "%.3e"}, 
 								 hline = true, vline = true, forNil = "--"})
+								 
+					DrivenCavityLinesEval(u, approxSpace:names(), R)
 								 
 	 				uprev = u	 
 				end
@@ -627,12 +637,12 @@ if not(bInstat) then
 		BotellaDifference("fv", 3, 0, numRefs-1)		
 	 	BotellaDifference("fv", 4, 0, numRefs-2)		
 		BotellaDifference("fv", 5, 0, numRefs-3)		
-		
+--[[		
 		BotellaDifference("fe", 2, 0, numRefs)		
 		BotellaDifference("fe", 3, 0, numRefs-1)		
 		BotellaDifference("fe", 4, 0, numRefs-2)		
 		BotellaDifference("fe", 5, 0, numRefs-3)		
-			
+--]]			
 		for name,data in pairs(plots) do
 			gnuplot.plot(name..".pdf", data, pdfOptions)
 			gnuplot.plot(name..".tex", data, texOptions)
