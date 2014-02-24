@@ -36,6 +36,7 @@ discType, vorder, porder = util.ns.parseParams()
 
 local Viscosity	= 1e-3
 local Um = 0.3
+if dim == 3 then Um = 0.45 end
 local H = 0.41
 local L = 0.1
 local Umean2 = math.pow(2/3*Um, 2)
@@ -54,6 +55,9 @@ if 	dim == 2 then
 	--gridName = util.GetParam("-grid", "grids/cylinder_tri.ugx")
 	--gridName = util.GetParam("-grid", "grids/cylinder_box_tri_fine.ugx")
 	--gridName = util.GetParam("-grid", "grids/cylinder_rotate_box_tri_fine.ugx")
+elseif dim == 3 then
+	gridName = util.GetParam("-grid", "grids/cylinder3d.ugx")
+--	gridName = util.GetParam("-grid", "grids/cylinder3d_fine.ugx")
 else print("Choosen Dimension not supported. Exiting."); exit(); end
 
 
@@ -110,8 +114,14 @@ function CreateDomain()
 	--refProjector:set_callback("CylinderRim3", SphereProjector(dom, {0.2, 0.2, 0}))
 	--refProjector:set_callback("Inner", SubdivisionLoopProjector(dom))
 	
-	falloffProjector = SphericalFalloffProjector(dom, {0.2, 0.2, 0}, 0.05, 0.1)
+	if dim == 2 then
+		falloffProjector = SphericalFalloffProjector(dom, {0.2, 0.2, 0}, 0.05, 0.1)
+	elseif dim == 3 then
+		falloffProjector = CylindricalFalloffProjector(dom, {0.5, 0.2, 0.0}, {0, 0, 1}, 0.04, 0.1)
+	end
 	refProjector:set_callback("CylinderWall", falloffProjector)
+--	refProjector:set_callback("BackWall", falloffProjector)
+--	refProjector:set_callback("FrontWall", falloffProjector)
 	refProjector:set_callback("Inner", falloffProjector)
 	
 	refiner:set_refinement_callback(refProjector)
@@ -200,10 +210,10 @@ function CreateDomainDisc(approxSpace, discType, p)
 		--NavierStokesDisc:set_stabilization(3)
 	end
 	if discType == "fe" then
-		NavierStokesDisc:set_quad_order(p*p+5)
+		NavierStokesDisc:set_quad_order(math.pow(p, dim)+5)
 	end
 	if discType == "fv" then
-		NavierStokesDisc:set_quad_order(p*p+5)
+		NavierStokesDisc:set_quad_order(math.pow(p, dim)+5)
 	end
 	
 	-- setup Outlet
@@ -214,12 +224,19 @@ function CreateDomainDisc(approxSpace, discType, p)
 	function inletVel2d(x, y, t)
 		return 4 * Um * y * (H-y) / (H*H), 0.0
 	end
+	function inletVel3d(x, y, z, t)
+		return 16 * Um * y * z * (H-y) * (H-z) / (H*H*H*H), 0.0, 0.0
+	end
 	InletDisc = NavierStokesInflow(NavierStokesDisc)
 	InletDisc:add("inletVel"..dim.."d", "Inlet, Outlet")
 	
 	--setup Walles
 	WallDisc = NavierStokesWall(NavierStokesDisc)
-	WallDisc:add("UpperWall,LowerWall,CylinderWall")
+	if dim == 2 then
+		WallDisc:add("UpperWall,LowerWall,CylinderWall")
+	elseif dim == 3 then
+		WallDisc:add("UpperWall,LowerWall,CylinderWall,FrontWall,BackWall")	
+	end
 	
 	-- Finally we create the discretization object which combines all the
 	-- separate discretizations into one domain discretization.
@@ -267,9 +284,10 @@ function CreateSolver(approxSpace, discType, p)
 	transfer:enable_p1_lagrange_optimization(false)
 	gmg:set_transfer(transfer)
 	
---	LinearIteratorProduct({smoother, gmg})
+	smoother:set_damp(1)
+	
 	local sol = util.solver.parseParams()
-	local solver = util.solver.create(sol, LinearIteratorProduct({gmg, smoother}))
+	local solver = util.solver.create(sol, LinearIteratorProduct({gmg}))
 	if bStokes then
 		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-99, true))
 	else 
@@ -475,28 +493,33 @@ if not(bConvRates) and not(bBenchmarkRates) then
 	local u = GridFunction(approxSpace)
 	u:set(0)
 	
-	ComputeNonLinearSolution(u, domainDisc, solver)
-
-	local DL = DragLift(u, "u,v,p", "CylinderWall", "Inner", Viscosity, 1.0, p+3)
-	local C_D = 2*DL[1]/(Umean2*L)
-	local C_L = 2*DL[2]/(Umean2*L)
-
-	local PEval = GlobalGridFunctionNumberData(u, "p")
-	local Delta_P = PEval:evaluate({0.15, 0.2}) - PEval:evaluate( {0.25, 0.2} )
-
-	print("p1: "..PEval:evaluate({0.15, 0.2}))
-	print("p2: "..PEval:evaluate({0.25, 0.2}))
-
-	print("C_D - ref.CD: "..string.format("%.3e", C_D - ref.CD))
-	print("C_L - ref.CL: "..string.format("%.3e", C_L - ref.CL))
-	print("Delta_P - ref.DeltaP: "..string.format("%.3e", Delta_P - ref.DeltaP))
+	print("Mesh size: "..MaxElementDiameter(dom, numRefs))
+	print("DoFs: "..u:num_dofs())
 	
+	ComputeNonLinearSolution(u, domainDisc, solver)
 
 	local FctCmp = approxSpace:names()
 	local VelCmp = {}
+	
 	for d = 1,#FctCmp-1 do VelCmp[d] = FctCmp[d] end
 	vtkWriter = VTKOutput()
 	vtkWriter:select(VelCmp, "velocity")
 	vtkWriter:select("p", "pressure")
 	vtkWriter:print("Cylinder", u)
+
+	if dim == 2 then
+		local DL = DragLift(u, "u,v,p", "CylinderWall", "Inner", Viscosity, 1.0, p+3)
+		local C_D = 2*DL[1]/(Umean2*L)
+		local C_L = 2*DL[2]/(Umean2*L)
+	
+		local PEval = GlobalGridFunctionNumberData(u, "p")
+		local Delta_P = PEval:evaluate({0.15, 0.2}) - PEval:evaluate( {0.25, 0.2} )
+	
+		print("p1: "..PEval:evaluate({0.15, 0.2}))
+		print("p2: "..PEval:evaluate({0.25, 0.2}))
+	
+		print("C_D - ref.CD: "..string.format("%.3e", C_D - ref.CD))
+		print("C_L - ref.CL: "..string.format("%.3e", C_L - ref.CL))
+		print("Delta_P - ref.DeltaP: "..string.format("%.3e", Delta_P - ref.DeltaP))
+	end	
 end
