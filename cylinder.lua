@@ -415,7 +415,7 @@ if bBenchmarkRates then
 		write(">> End: Solver done.\n")
 
 		-- h/DoF statistic
-		DoFs[lev] = u:size()
+		DoFs[lev] = u:num_dofs()
 		h[lev] =  MaxElementDiameter(dom, lev) 
 		level[lev] = lev		
 		
@@ -492,9 +492,6 @@ if not(bConvRates) and not(bBenchmarkRates) then
 	
 	local u = GridFunction(approxSpace)
 	u:set(0)
-	
-	print("Mesh size: "..MaxElementDiameter(dom, numRefs))
-	print("DoFs: "..u:num_dofs())
 	
 	ComputeNonLinearSolution(u, domainDisc, solver)
 
