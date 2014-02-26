@@ -491,7 +491,7 @@ if not(bInstat) then
 		local horizY = 0.5;
 		local horizBotella_1000 = {0.0000000 , 0.2807056 , 0.2962703 , 0.3099097 , 0.3330442 , 0.3769189 , 0.3339924 , 0.3253592 , 0.0257995 , -0.3202137 , -0.4264545 , -0.5264392 , -0.4103754 , -0.3553213 , -0.2936869 , -0.2279225 , 0.0000000};
 
-		numRefs = 1
+--		numRefs = 0
 
 		local dom = CreateDomain()
 	
@@ -634,9 +634,10 @@ if not(bInstat) then
 		}
 								
 		BotellaDifference("fv", 2, 0, numRefs)		
-		BotellaDifference("fv", 3, 0, numRefs-1)		
-	 	BotellaDifference("fv", 4, 0, numRefs-2)		
-		BotellaDifference("fv", 5, 0, numRefs-3)		
+--		BotellaDifference("fv", 3, 0, numRefs-1)		
+--	 	BotellaDifference("fv", 4, 0, numRefs)		
+--		BotellaDifference("fv", 5, 0, numRefs-1)		
+--	 	BotellaDifference("fv", 6, 0, numRefs)		
 --[[		
 		BotellaDifference("fe", 2, 0, numRefs)		
 		BotellaDifference("fe", 3, 0, numRefs-1)		
