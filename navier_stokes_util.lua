@@ -142,7 +142,7 @@ function util.solver.create(sol, precond)
 		if precond ~= nil then solver:set_preconditioner(precond) end
 	elseif 	sol == "bicgstab" 	then 
 		solver = BiCGStab();
-		solver:set_min_orthogonality(1e-10)
+		solver:set_min_orthogonality(1e-20)
 		--solver:set_restart(30)
 		if precond ~= nil then solver:set_preconditioner(precond) end
 	elseif 	sol == "gmres" 	then 
