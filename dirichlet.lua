@@ -14,6 +14,7 @@ ug_load_script("ug_util.lua")
 ug_load_script("util/domain_disc_util.lua")
 ug_load_script("navier_stokes_util.lua")
 ug_load_script("util/conv_rates_static.lua")
+ug_load_script("util/load_balancing_util.lua")
 
 dim 		= util.GetParamNumber("-dim", 2)
 numRefs 	= util.GetParamNumber("-numRefs",2)
@@ -332,7 +333,14 @@ function CreateDomain()
 	InitUG(dim, AlgebraType("CPU", 1))
 	
 	local requiredSubsets = {}
-	local dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
+--	local dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
+	
+	balancer.ParseParameters()
+	balancer.PrintParameters()
+	local dom = util.CreateDomain(gridName, 0, neededSubsets)
+	balancer.RefineAndRebalanceDomain(dom, numRefs)
+	print("\ndomain-info:")
+	print(dom:domain_info():to_string())
 	
 	return dom
 end
@@ -363,9 +371,9 @@ function CreateSolver(approxSpace, discType, p)
 		base:set_convergence_check(ConvCheck(10000, 1e-7, 1e-3, false))
 	else
 		base = SuperLU()
-		base = BiCGStab()
-		base:set_preconditioner(ILUT(1e-2))
-		base:set_convergence_check(ConvCheck(10000, 5e-15, 1e-2, true))	
+		--base = BiCGStab()
+		--base:set_preconditioner(ILUT(1e-2))
+		--base:set_convergence_check(ConvCheck(10000, 5e-15, 1e-2, true))	
 	end
 	
 	local smoother = nil
@@ -383,7 +391,7 @@ function CreateSolver(approxSpace, discType, p)
 	--gmg:set_damp(MinimalEnergyDamping())
 	gmg:add_prolongation_post_process(AverageComponent("p"))
 	--gmg:set_debug(dbgWriter)
-	gmg:set_gathered_base_solver_if_ambiguous(true)
+	--gmg:set_gathered_base_solver_if_ambiguous(true)
 	--gmg:set_rap(true)
 	
 	
