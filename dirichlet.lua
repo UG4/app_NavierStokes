@@ -60,6 +60,7 @@ end
 
 if drivenCavity then
 	gridName = util.GetParam("-grid", "grids/dc_quads.ugx")
+--	gridName = util.GetParam("-grid", "grids/dc_quads_coarse.ugx")
 end
 
 
@@ -382,16 +383,16 @@ function CreateSolver(approxSpace, discType, p)
 	
 	
 	local sol = util.solver.parseParams()
-	local solver = util.solver.create(sol, LinearIteratorProduct({gmg, smoother}))
+	local solver = util.solver.create(sol, gmg)
 	if bStokes then
 		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-99, true))
 	else 
-		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-3, true))	
+		solver:set_convergence_check(ConvCheck(10000, 5e-14, 1e-3, true))	
 	end
 	
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
-	newtonSolver:set_convergence_check(ConvCheck(500, 1e-11, 1e-99, true))
+	newtonSolver:set_convergence_check(ConvCheck(500, 1e-13, 1e-99, true))
 	newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.9, true, true))
 	--newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 	
@@ -633,7 +634,7 @@ if not(bInstat) then
 			padrange = 			{ x = {0.8, 1.5}, y = {0.01, 1.5}},
 		}
 								
-		BotellaDifference("fv", 2, 0, numRefs)		
+		BotellaDifference("fv", 4, numPreRefs, numRefs)		
 --		BotellaDifference("fv", 3, 0, numRefs-1)		
 --	 	BotellaDifference("fv", 4, 0, numRefs)		
 --		BotellaDifference("fv", 5, 0, numRefs-1)		
@@ -645,8 +646,8 @@ if not(bInstat) then
 		BotellaDifference("fe", 5, 0, numRefs-3)		
 --]]			
 		for name,data in pairs(plots) do
-			gnuplot.plot(name..".pdf", data, pdfOptions)
-			gnuplot.plot(name..".tex", data, texOptions)
+		--	gnuplot.plot(name..".pdf", data, pdfOptions)
+		--	gnuplot.plot(name..".tex", data, texOptions)
 		end
 	end
 	
