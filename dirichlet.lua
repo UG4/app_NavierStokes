@@ -363,6 +363,9 @@ function CreateSolver(approxSpace, discType, p)
 		base:set_convergence_check(ConvCheck(10000, 1e-7, 1e-3, false))
 	else
 		base = SuperLU()
+		base = BiCGStab()
+		base:set_preconditioner(ILUT(1e-2))
+		base:set_convergence_check(ConvCheck(10000, 5e-15, 1e-2, true))	
 	end
 	
 	local smoother = nil
@@ -380,6 +383,8 @@ function CreateSolver(approxSpace, discType, p)
 	--gmg:set_damp(MinimalEnergyDamping())
 	gmg:add_prolongation_post_process(AverageComponent("p"))
 	--gmg:set_debug(dbgWriter)
+	gmg:set_gathered_base_solver_if_ambiguous(true)
+	--gmg:set_rap(true)
 	
 	
 	local sol = util.solver.parseParams()
