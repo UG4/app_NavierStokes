@@ -28,8 +28,8 @@ bStokes 	= util.HasParamOption("-stokes", "If defined, only Stokes Eq. computed"
 bNoLaplace 	= util.HasParamOption("-nolaplace", "If defined, only laplace term used")
 bExactJac 	= util.HasParamOption("-exactjac", "If defined, exact jacobian used")
 bPecletBlend= util.HasParamOption("-pecletblend", "If defined, Peclet Blend used")
-upwind      = util.GetParam("-upwind", "lps", "Upwind type")
-stab        = util.GetParam("-stab", "fields", "Stabilization type")
+upwind      = util.GetParam("-upwind", "full", "Upwind type")
+stab        = util.GetParam("-stab", "flow", "Stabilization type")
 diffLength  = util.GetParam("-difflength", "raw", "Diffusion length type")
 
 discType, vorder, porder = util.ns.parseParams()
@@ -85,85 +85,33 @@ print("    diffLength       = " .. diffLength)
 function CreateDomain()
 
 	InitUG(dim, AlgebraType("CPU", 1))
-	
-	-- create Instance of a Domain
 	local dom = Domain()
-	
-	-- load domain
-	write("Loading Domain "..gridName.." ... ") 
 	LoadDomain(dom, gridName)
-	write("done. ")
-	
-	-- create Refiner
-	if numPreRefs > numRefs then
-		print("numPreRefs must be smaller than numRefs. Aborting.");
-		exit();
-	end
-	
-	if numPreRefs > numRefs then
-		numPreRefs = numRefs
-	end
 	
 	-- Create a refiner instance. This is a factory method
 	-- which automatically creates a parallel refiner if required.
 	local refiner =  GlobalDomainRefiner(dom)
-	local refProjector = DomainRefinementProjectionHandler(dom)
-	--refProjector:set_callback("CylinderWall", SphereProjector(dom, {0.2, 0.2, 0}))
-	--refProjector:set_callback("CylinderRim1", SphereProjector(dom, {0.2, 0.2, 0}))
-	--refProjector:set_callback("CylinderRim2", SphereProjector(dom, {0.2, 0.2, 0}))
-	--refProjector:set_callback("CylinderRim3", SphereProjector(dom, {0.2, 0.2, 0}))
-	--refProjector:set_callback("Inner", SubdivisionLoopProjector(dom))
-	
-	if dim == 2 then
-		falloffProjector = SphericalFalloffProjector(dom, {0.2, 0.2, 0}, 0.05, 0.1)
-	elseif dim == 3 then
-		falloffProjector = CylindricalFalloffProjector(dom, {0.5, 0.2, 0.0}, {0, 0, 1}, 0.04, 0.1)
+	if     dim == 2 then falloffProjector = SphericalFalloffProjector(dom, {0.2, 0.2, 0}, 0.05, 0.1)
+	elseif dim == 3 then falloffProjector = CylindricalFalloffProjector(dom, {0.5, 0.2, 0.0}, {0, 0, 1}, 0.04, 0.1)
 	end
+	local refProjector = DomainRefinementProjectionHandler(dom)
+	refProjector:set_callback("Inner", falloffProjector)
 	refProjector:set_callback("CylinderWall", falloffProjector)
 --	refProjector:set_callback("BackWall", falloffProjector)
 --	refProjector:set_callback("FrontWall", falloffProjector)
-	refProjector:set_callback("Inner", falloffProjector)
-	
 	refiner:set_refinement_callback(refProjector)
 	
 	write("Pre-Refining("..numPreRefs.."): ")
-	-- Performing pre-refines
-	for i=1,numPreRefs do
-		write(i .. " ")
-		refiner:refine()
-	end
+	for i=1,numPreRefs do write(i .. " ");	refiner:refine(); end
 	write("done. Distributing...")
-	-- Distribute the domain to all involved processes
 	if util.DistributeDomain(dom, distributionMethod, verticalInterfaces, numTargetProcs, distributionLevel, wFct) == false then
 		print("Error while Distributing Grid. Aborting.")
 		exit();
 	end
 	write(" done. Post-Refining("..(numRefs-numPreRefs).."): ")
-	
-	-- Perform post-refine
-	for i=numPreRefs+1,numRefs do
-		refiner:refine()
-		write(i-numPreRefs .. " ")
-	end
+	for i=numPreRefs+1,numRefs do refiner:refine(); write(i-numPreRefs .. " "); end
 	write("done.\n")
 	
-	--SaveGridHierarchyTransformed(dom:grid(), dom:subset_handler(), "dom-p"..ProcRank()..".ugx", 0.1)
-	
-	-- Now we loop all subsets an search for it in the SubsetHandler of the domain
-	if neededSubsets ~= nil then
-		if util.CheckSubsets(dom, neededSubsets) == false then 
-			print("Something wrong with required subsets. Aborting.");
-			exit();
-		end
-	end
-	
-	
-	--clean up
-	if refiner ~= nil then
-		delete(refiner)
-	end
-	
-	-- return the created domain
 	return dom
 end
 
@@ -193,6 +141,10 @@ function CreateDomainDisc(approxSpace, discType, p)
 	NavierStokesDisc:set_laplace( not(bNoLaplace) )
 	NavierStokesDisc:set_kinematic_viscosity( Viscosity );
 	
+				
+	local porder = approxSpace:lfeid(dim):order()
+	local vorder = approxSpace:lfeid(0):order()
+	
 	--upwind if available
 	if discType == "fv1" or discType == "fvcr" then
 		NavierStokesDisc:set_upwind(upwind)
@@ -202,12 +154,12 @@ function CreateDomainDisc(approxSpace, discType, p)
 	-- fv1 must be stablilized
 	if discType == "fv1" then
 		NavierStokesDisc:set_stabilization(stab, diffLength)
-		--NavierStokesDisc:set_pac_upwind(bPac)
+		NavierStokesDisc:set_pac_upwind(true)
 	end
 	
 	-- fe must be stabilized for (Pk, Pk) space
 	if discType == "fe" and porder == vorder then
-		--NavierStokesDisc:set_stabilization(3)
+		NavierStokesDisc:set_stabilization(3)
 	end
 	if discType == "fe" then
 		NavierStokesDisc:set_quad_order(math.pow(p, dim)+5)
@@ -255,39 +207,27 @@ end
 
 function CreateSolver(approxSpace, discType, p)
 
-	local base = nil
-	if discType == "fvcr" then
-		base =  LinearSolver()
-		base:set_preconditioner(DiagVanka())
-		base:set_convergence_check(ConvCheck(10000, 1e-7, 1e-3, false))
-	else
-		base = SuperLU()
-	end
+	local base = SuperLU()
 	
 	local smoother = nil
-	if discType == "fvcr" then 
-		smoother = Vanka()
+	if discType == "fvcr" or discType == "fecr" then 
+		smoother = ComponentGaussSeidel(0.1, {"p"}, {1,2}, {1})
+	elseif discType == "fv1" then 
+		smoother = ComponentGaussSeidel(0.1, {"p"}, {0}, {1})
 	else
-		local smooth = util.smooth.parseParams()
-		smoother = util.smooth.create(smooth)
+		smoother = ComponentGaussSeidel(0.1, {"p"}, {0}, {1})
 	end
 	
 	local numPreSmooth, numPostSmooth, baseLev, cycle, bRAP = util.gmg.parseParams()
 	local gmg = util.gmg.create(approxSpace, smoother, numPreSmooth, numPostSmooth,
 							 cycle, base, baseLev, bRAP)
-	--gmg:set_damp(MinimalResiduumDamping())
-	--gmg:set_damp(MinimalEnergyDamping())
 	gmg:add_prolongation_post_process(AverageComponent("p"))
-	--gmg:add_restriction_post_process(AverageComponent("p"))
-	--gmg:set_debug(dbgWriter)
 	transfer = StdTransfer()
 	transfer:enable_p1_lagrange_optimization(false)
 	gmg:set_transfer(transfer)
 	
-	--smoother:set_damp(1)
-	
 	local sol = util.solver.parseParams()
-	local solver = util.solver.create(sol, LinearIteratorProduct({gmg}))
+	local solver = util.solver.create(sol, gmg)
 	if bStokes then
 		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-99, true))
 	else 
@@ -379,10 +319,10 @@ if bBenchmarkRates then
 	local dom = CreateDomain()
 	local plots = {}	
 
-	local function ComputeSpace(discType, p, minLev, maxLev)
+	local function ComputeSpace(discType, p, ppress, minLev, maxLev)
 
-		local file = table.concat({"dc",discType,p},"_")..".dat"
-		local discLabel = discType.." Q_"..p.."/Q_"..(p-1)
+		local file = table.concat({"dc",discType,p,ppress},"_")..".dat"
+		local discLabel = discType.." Q_"..p.."/Q_"..(ppress)
 		local CDLabel = "|C_D - C_D_h|"
 		local CLLabel = "|C_L - C_L_h|"
 		--[[
@@ -411,7 +351,7 @@ if bBenchmarkRates then
 
 		if not util.HasParamOption("-replot") then
 
-			local approxSpace = CreateApproxSpace(dom, discType, p)
+			local approxSpace = util.ns.CreateApproxSpace(dom, discType, p, ppress)
 			local domainDisc = CreateDomainDisc(approxSpace, discType, p)
 			local solver = CreateSolver(approxSpace, discType, p)
 		
@@ -426,13 +366,15 @@ if bBenchmarkRates then
 				write("\n>> Computing Level "..lev..", "..discType..", "..p..".\n")
 		
 				local u = GridFunction(approxSpace, lev)
-				
+--[[				
 				if uPrev ~= nil then	
 					Prolongate(u, uPrev);
 					AdjustMeanValue(u, "p")
 				else
 					u:set(0)	
 				end
+--]]
+				u:set(0)	
 				
 				ComputeNonLinearSolution(u, domainDisc, solver)
 		
@@ -489,12 +431,12 @@ if bBenchmarkRates then
 					end
 				end
 		
-				write("\n>> Stats: lev "..lev..", "..discType..", "..p..".\n")
+				write("\n>> Stats: lev "..lev..", "..discType..", "..p..", "..ppress..".\n")
 				table.print(values, {heading = heading, format = format, 
 									 hline = true, vline = true, forNil = "--"})
 									 
 				uPrev = u
-				collectgarbage()
+				--collectgarbage()
 			end
 			
 			local cols = {DoFs, h, meas.CD.exact.error, meas.CL.exact.error, meas.DeltaP.exact.error}
@@ -505,10 +447,14 @@ if bBenchmarkRates then
 		end
 	end
 	
-	ComputeSpace("fe", 2, numPreRefs, numRefs)	
-	ComputeSpace("fe", 3, numPreRefs, numRefs)	
-	ComputeSpace("fv", 2, numPreRefs, numRefs)	
-	ComputeSpace("fv", 3, numPreRefs, numRefs)	
+	ComputeSpace("fv1", 1, 1, numPreRefs, numRefs)	
+	ComputeSpace("fecr", 1, 0, numPreRefs, numRefs)	
+	ComputeSpace("fvcr", 1, 0, numPreRefs, numRefs)	
+	ComputeSpace("fe", 1, 1, numPreRefs, numRefs)	
+	ComputeSpace("fe", 2, 1, numPreRefs, numRefs)	
+	ComputeSpace("fe", 2, 2, numPreRefs, numRefs)	
+	ComputeSpace("fv", 2, 1, numPreRefs, numRefs)	
+	ComputeSpace("fv", 3, 2, numPreRefs, numRefs)	
 	
 	local texOptions = {	
 	
