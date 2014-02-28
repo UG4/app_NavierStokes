@@ -284,7 +284,7 @@ function CreateSolver(approxSpace, discType, p)
 	transfer:enable_p1_lagrange_optimization(false)
 	gmg:set_transfer(transfer)
 	
-	smoother:set_damp(1)
+	--smoother:set_damp(1)
 	
 	local sol = util.solver.parseParams()
 	local solver = util.solver.create(sol, LinearIteratorProduct({gmg}))
@@ -299,7 +299,7 @@ function CreateSolver(approxSpace, discType, p)
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
 	newtonSolver:set_convergence_check(convCheck)
-	newtonSolver:set_line_search(StandardLineSearch(5, 1.0, 0.9, true, true))
+	newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.9, true, true))
 	--newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 	
 	return newtonSolver
@@ -376,107 +376,187 @@ end
 
 if bBenchmarkRates then
 
-	local p = vorder
 	local dom = CreateDomain()
-	local approxSpace = CreateApproxSpace(dom, discType, p)
-	local domainDisc = CreateDomainDisc(approxSpace, discType, p)
-	local solver = CreateSolver(approxSpace, discType, p)
+	local plots = {}	
 
-	local h, DoFs, level = {}, {}, {}	
-	local meas = {CD = {}, CL = {}, DeltaP = {}}
-	for n, _ in pairs(meas) do
-		meas[n] = {value = {}, prev = {error = {}, rate = {}}, exact = {error = {}, rate = {}}}
-	end	
-	
-	local uPrev = nil
-	local minLev = 0
-	local maxLev = numRefs
-	for lev = minLev, maxLev do
-		write("\n>> Computing Level "..lev..", "..discType..", "..p..".\n")
+	local function ComputeSpace(discType, p, minLev, maxLev)
 
-		local u = GridFunction(approxSpace, lev)
+		local file = table.concat({"dc",discType,p},"_")..".dat"
+		local discLabel = discType.." Q_"..p.."/Q_"..(p-1)
+		local CDLabel = "|C_D - C_D_h|"
+		local CLLabel = "|C_L - C_L_h|"
+		--[[
+		local discLabel = discType.." $\\mathbb{Q}_{"..p.."}/\\mathbb{Q}_{"..(p-1).."}$"
+		local vertYLabel = "$\max_i |\vec{u}_{h,1}(\vec{x}_i) - \vec{u}_1^{\text{Botella}}(\vec{x}_i)|$"
+		local horizYLabel = "$\max_i |\vec{u}_{h,2}(\vec{x}_i) - \vec{u}_2^{\text{Botella}}(\vec{x}_i)|$"
+		--]]
 		
-		if uPrev ~= nil then	
-			Prolongate(u, uPrev);
-			AdjustMeanValue(u, "p")
-		else
-			u:set(0)	
+		local function addPlot(name, dataset, label)
+			plots[name] = plots[name] or {}
+			table.insert( plots[name], dataset)			
+			plots[name].label = label			
 		end
-		u:set(0)	
 		
-		write(">> Start: Computing solution on level "..lev..".\n")
-		local convCheck = CompositeConvCheck(approxSpace, 500, 1e-11, 1e-99)
-		convCheck:set_all_component_check(1e-11, 1e-99)
-		convCheck:set_level(lev)
-		solver:set_convergence_check(convCheck)
-		--solver:set_debug(GridFunctionDebugWriter(approxSpace))
-			
-		ComputeNonLinearSolution(u, domainDisc, solver)
-		write(">> End: Solver done.\n")
+		addPlot("CD_DoF", {label=discLabel, file=file, style="linespoints", 1, 3},
+				{ x = "# Unbekannte", y = CDLabel})
 
-		-- h/DoF statistic
-		DoFs[lev] = u:num_dofs()
-		h[lev] =  MaxElementDiameter(dom, lev) 
-		level[lev] = lev		
+		addPlot("CL_DoF", {label=discLabel, file=file, style="linespoints", 1, 4},
+				{ x = "# Unbekannte", y = CLLabel})
+
+		addPlot("CD_h", {label=discLabel, file=file, style="linespoints", 2, 3},
+				{ x = "h (Gitterweite)", y = CDLabel})
+
+		addPlot("CL_h", {label=discLabel, file=file, style="linespoints", 2, 4},
+				{ x = "h (Gitterweite)", y = CLLabel})
+
+		if not util.HasParamOption("-replot") then
+
+			local approxSpace = CreateApproxSpace(dom, discType, p)
+			local domainDisc = CreateDomainDisc(approxSpace, discType, p)
+			local solver = CreateSolver(approxSpace, discType, p)
 		
-		-- C_D / C_L
-		local DL = DragLift(u, "u,v,p", "CylinderWall", "Inner", Viscosity, 1.0, p+3)
-		meas.CD.value[lev] = 2*DL[1]/(Umean2*L)
-		meas.CL.value[lev] = 2*DL[2]/(Umean2*L)
-	
-		-- Delta_P
-		local PEval = GlobalGridFunctionNumberData(u, "p")
-		meas.DeltaP.value[lev] = PEval:evaluate({0.15, 0.2}) - PEval:evaluate( {0.25, 0.2} )
-
-		for n, _ in pairs(meas) do
-			local quant = meas[n]
-			quant.exact.error[lev] = math.abs(quant.value[lev] - ref[n])
+			local h, DoFs, level = {}, {}, {}	
+			local meas = {CD = {}, CL = {}, DeltaP = {}}
+			for n, _ in pairs(meas) do
+				meas[n] = {value = {}, prev = {error = {}, rate = {}}, exact = {error = {}, rate = {}}}
+			end	
 			
-			if lev > minLev then
-				quant.prev.error[lev-1] = math.abs(quant.value[lev] - quant.value[lev-1])
-			end			
-			for _, t in ipairs({"exact", "prev"}) do
-				local type = quant[t]
-				if type.error[lev-2] ~= nil and type.error[lev-1] ~= nil then
-					local fac = type.error[lev-2] / type.error[lev-1]
-					type.rate[lev-1] = math.log(fac) / math.log(2) --math.log(h[lev-1]/h[lev])
-				end			
-				if type.error[lev-1] ~= nil and type.error[lev] ~= nil then
-					local fac = type.error[lev-1] / type.error[lev]
-					type.rate[lev] = math.log(fac) / math.log(2) --math.log(h[lev-1]/h[lev])
-				end			
-			end
-		end
+			local uPrev = nil
+			for lev = minLev, maxLev do
+				write("\n>> Computing Level "..lev..", "..discType..", "..p..".\n")
+		
+				local u = GridFunction(approxSpace, lev)
 				
-		-- print
-		local values = {level, h, DoFs}
-		local heading = {"L", "h", "#DoFs"}
-		local format = {"%d", "%.2e", "%d"}
-
-		for n, _ in pairs(meas) do
-			local quant = meas[n]
-			table.append(values, {quant.value}) 
-			table.append(heading,{n})
-			table.append(format, {"%.8f"})
-
-			for _, t in ipairs({"exact", "prev"}) do
-				local type = quant[t]
-				table.append(values, {type.error, type.rate}) 
-				table.append(heading,{n.." "..t, "rate"})
-				table.append(format, {"%.3e", "%.3f"})
+				if uPrev ~= nil then	
+					Prolongate(u, uPrev);
+					AdjustMeanValue(u, "p")
+				else
+					u:set(0)	
+				end
+				
+				ComputeNonLinearSolution(u, domainDisc, solver)
+		
+				-- h/DoF statistic
+				DoFs[lev] = u:num_dofs()
+				h[lev] =  MaxElementDiameter(dom, lev) 
+				level[lev] = lev		
+				
+				-- C_D / C_L
+				local DL = DragLift(u, "u,v,p", "CylinderWall", "Inner", Viscosity, 1.0, p+3)
+				meas.CD.value[lev] = 2*DL[1]/(Umean2*L)
+				meas.CL.value[lev] = 2*DL[2]/(Umean2*L)
+			
+				-- Delta_P
+				local PEval = GlobalGridFunctionNumberData(u, "p")
+				meas.DeltaP.value[lev] = PEval:evaluate({0.15, 0.2}) - PEval:evaluate( {0.25, 0.2} )
+		
+				for n, _ in pairs(meas) do
+					local quant = meas[n]
+					quant.exact.error[lev] = math.abs(quant.value[lev] - ref[n])
+					
+					if lev > minLev then
+						quant.prev.error[lev-1] = math.abs(quant.value[lev] - quant.value[lev-1])
+					end			
+					for _, t in ipairs({"exact", "prev"}) do
+						local type = quant[t]
+						if type.error[lev-2] ~= nil and type.error[lev-1] ~= nil then
+							local fac = type.error[lev-2] / type.error[lev-1]
+							type.rate[lev-1] = math.log(fac) / math.log(2) --math.log(h[lev-1]/h[lev])
+						end			
+						if type.error[lev-1] ~= nil and type.error[lev] ~= nil then
+							local fac = type.error[lev-1] / type.error[lev]
+							type.rate[lev] = math.log(fac) / math.log(2) --math.log(h[lev-1]/h[lev])
+						end			
+					end
+				end
+						
+				-- print
+				local values = {level, h, DoFs}
+				local heading = {"L", "h", "#DoFs"}
+				local format = {"%d", "%.2e", "%d"}
+		
+				for n, _ in pairs(meas) do
+					local quant = meas[n]
+					table.append(values, {quant.value}) 
+					table.append(heading,{n})
+					table.append(format, {"%.8f"})
+		
+					for _, t in ipairs({"exact", "prev"}) do
+						local type = quant[t]
+						table.append(values, {type.error, type.rate}) 
+						table.append(heading,{n.." "..t, "rate"})
+						table.append(format, {"%.3e", "%.3f"})
+					end
+				end
+		
+				write("\n>> Stats: lev "..lev..", "..discType..", "..p..".\n")
+				table.print(values, {heading = heading, format = format, 
+									 hline = true, vline = true, forNil = "--"})
+									 
+				uPrev = u
+				collectgarbage()
 			end
+			
+			local cols = {DoFs, h, meas.CD.exact.error, meas.CL.exact.error, meas.DeltaP.exact.error}
+			gnuplot.write_data(file, cols)	
+			
+			approxSpace, domainDisc, solver = nil, nil, nil
+			collectgarbage()
 		end
-
-		table.print(values, {heading = heading, format = format, 
-							 hline = true, vline = true, forNil = "--"})
-							 
-		 uPrev = u
-		collectgarbage()
 	end
 	
-	approxSpace, domainDisc, solver = nil, nil, nil
-	collectgarbage()
+	ComputeSpace("fe", 2, numPreRefs, numRefs)	
+	ComputeSpace("fe", 3, numPreRefs, numRefs)	
+	ComputeSpace("fv", 2, numPreRefs, numRefs)	
+	ComputeSpace("fv", 3, numPreRefs, numRefs)	
 	
+	local texOptions = {	
+	
+		size = 				{12.5, 9.75}, -- the size of canvas (i.e. plot)
+		sizeunit =			"cm", -- one of: cm, mm, {in | inch}, {pt | pixel}
+		font = 				"Arial",
+		fontsize =			12,
+		fontscale = 		1.4,
+		
+		logscale = 			true,
+		grid = 				"lc rgb 'grey70' lt 0 lw 1", 
+		linestyle =			{colors = gnuplot.RGBbyLinearHUEandLightness(8, 1, 360+40, 85, 0.4, 0.4), 
+							linewidth = 3, pointsize = 1.3},
+		border = 			" back lc rgb 'grey40' lw 2",
+		decimalsign = 		",",
+		key =	 			"on box lc rgb 'grey40' left bottom Left reverse spacing 1.5 width 1 samplen 2 height 0.5",
+		tics =	 			{x = "nomirror out scale 0.75 format '%g' font ',8'",
+							 y = "10 nomirror out scale 0.75 format '%.te%01T' font ',8'"}, 
+		mtics =				5,
+		slope = 			{dy = 3, quantum = 0.5, at = "last"},
+		padrange = 			{ x = {0.8, 1.5}, y = {0.01, 1.5}},
+	}
+		
+	local pdfOptions = {	
+
+		size = 				{12.5, 9.75}, -- the size of canvas (i.e. plot)
+		sizeunit =			"cm", -- one of: cm, mm, {in | inch}, {pt | pixel}
+		font = 				"Arial",
+		fontsize =			8,
+		
+		logscale = 			true,
+		grid = 				"lc rgb 'grey70' lt 0 lw 1", 
+		linestyle =			{colors = gnuplot.RGBbyLinearHUEandLightness(8, 1, 360+40, 85, 0.4, 0.4), 
+							linewidth = 3, pointsize = 1.3},
+		border = 			" back lc rgb 'grey40' lw 2",
+		decimalsign = 		",",
+		key =	 			"on box lc rgb 'grey40' left bottom Left reverse spacing 1.5 width 1 samplen 2 height 0.5",
+		tics =	 			{x = "nomirror out scale 0.75 format '%g' font ',8'",
+							 y = "10 nomirror out scale 0.75 format '%.te%01T' font ',8'"}, 
+		mtics =				5,
+		slope = 			{dy = 3, quantum = 0.5, at = "last"},
+		padrange = 			{ x = {0.8, 1.5}, y = {0.01, 1.5}},
+	}
+
+	for name,data in pairs(plots) do
+		gnuplot.plot(name..".pdf", data, pdfOptions)
+		gnuplot.plot(name..".tex", data, texOptions)
+	end
 end
 
 if not(bConvRates) and not(bBenchmarkRates) then
