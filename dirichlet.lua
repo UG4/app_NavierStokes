@@ -355,7 +355,7 @@ function CreateDomain()
 	
 	local procH = ProcessHierarchy()
 	
-	local firstDistProcs = 4
+	local firstDistProcs = 256
 	local stepDistProcs = 4
 	procH:add_hierarchy_level(0, firstDistProcs)
 	
@@ -371,8 +371,8 @@ function CreateDomain()
 	local refiner = GlobalDomainRefiner(dom)
 	for i = 1, numRefs do
 		write(i.." ")
-	    refiner:refine()
 	    loadBalancer:rebalance()
+	    refiner:refine()
 	    loadBalancer:create_quality_record("redist")
 	end
 	print("done.")
