@@ -325,6 +325,7 @@ if bBenchmarkRates then
 		local discLabel = discType.." Q_"..p.."/Q_"..(ppress)
 		local CDLabel = "|C_D - C_D_h|"
 		local CLLabel = "|C_L - C_L_h|"
+		local DeltaPLabel = "|P - P_L_h|"
 		--[[
 		local discLabel = discType.." $\\mathbb{Q}_{"..p.."}/\\mathbb{Q}_{"..(p-1).."}$"
 		local vertYLabel = "$\max_i |\vec{u}_{h,1}(\vec{x}_i) - \vec{u}_1^{\text{Botella}}(\vec{x}_i)|$"
@@ -343,11 +344,17 @@ if bBenchmarkRates then
 		addPlot("CL_DoF", {label=discLabel, file=file, style="linespoints", 1, 4},
 				{ x = "# Unbekannte", y = CLLabel})
 
+		addPlot("DeltaP_DoF", {label=discLabel, file=file, style="linespoints", 1, 5},
+				{ x = "# Unbekannte", y = DeltaPLabel})
+
 		addPlot("CD_h", {label=discLabel, file=file, style="linespoints", 2, 3},
 				{ x = "h (Gitterweite)", y = CDLabel})
 
 		addPlot("CL_h", {label=discLabel, file=file, style="linespoints", 2, 4},
 				{ x = "h (Gitterweite)", y = CLLabel})
+
+		addPlot("DeltaP_h", {label=discLabel, file=file, style="linespoints", 2, 5},
+				{ x = "h (Gitterweite)", y = DeltaPLabel})
 
 		if not util.HasParamOption("-replot") then
 
@@ -454,7 +461,7 @@ if bBenchmarkRates then
 	ComputeSpace("fe", 2, 1, numPreRefs, numRefs)	
 	ComputeSpace("fe", 2, 2, numPreRefs, numRefs)	
 	ComputeSpace("fv", 2, 1, numPreRefs, numRefs)	
-	ComputeSpace("fv", 3, 2, numPreRefs, numRefs)	
+--	ComputeSpace("fv", 3, 2, numPreRefs, numRefs)	
 	
 	local texOptions = {	
 	
