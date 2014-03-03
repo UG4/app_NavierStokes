@@ -334,12 +334,54 @@ function CreateDomain()
 	
 	local requiredSubsets = {}
 --	local dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
-	
+--[[	
 	balancer.ParseParameters()
 	balancer.PrintParameters()
 	local dom = util.CreateDomain(gridName, 0, neededSubsets)
 	balancer.RefineAndRebalanceDomain(dom, numRefs)
 	print("\ndomain-info:")
+	print(dom:domain_info():to_string())
+--]]
+
+	local dom = util.CreateDomain(gridName, 0, requiredSubsets)
+
+	local loadBalancer = DomainLoadBalancer(dom)
+	
+	local partitioner = Partitioner_DynamicBisection(dom)
+	partitioner:set_verbose(false)
+	partitioner:enable_static_partitioning(true)
+	partitioner:enable_clustered_siblings(false)
+	loadBalancer:set_partitioner(partitioner)
+	
+	local procH = ProcessHierarchy()
+	
+	local firstDistProcs = 4
+	local stepDistProcs = 4
+	procH:add_hierarchy_level(0, firstDistProcs)
+	
+	numLvls = math.pow((NumProcs() / firstDistProcs), 1/stepDistProcs)
+	print(" Distribute numLvls ".. numLvls)
+	for i = 1, numLvls do
+	    procH:add_hierarchy_level(i, stepDistProcs)
+	end
+	
+	loadBalancer:set_next_process_hierarchy(procH)
+	
+	write("Refine...")
+	local refiner = GlobalDomainRefiner(dom)
+	for i = 1, numRefs do
+		write(i.." ")
+	    refiner:refine()
+	    loadBalancer:rebalance()
+	    loadBalancer:create_quality_record("redist")
+	end
+	print("done.")
+	
+	if loadBalancer ~= nil then
+		print("Distribution quality statistics:")
+		loadBalancer:print_quality_records()
+	end
+
 	print(dom:domain_info():to_string())
 	
 	return dom
