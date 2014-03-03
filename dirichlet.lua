@@ -359,8 +359,10 @@ function CreateDomain()
 	local stepDistProcs = 4
 	procH:add_hierarchy_level(0, firstDistProcs)
 	
-	numLvls = math.pow((NumProcs() / firstDistProcs), 1/stepDistProcs)
+	numLvls = math.log((NumProcs() / firstDistProcs)) / math.log(stepDistProcs)
+	numLvls = math.floor(numLvls + 0.5)	
 	print(" Distribute numLvls ".. numLvls)
+	
 	for i = 1, numLvls do
 	    procH:add_hierarchy_level(i, stepDistProcs)
 	end
