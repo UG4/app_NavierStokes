@@ -373,15 +373,13 @@ if bBenchmarkRates then
 				write("\n>> Computing Level "..lev..", "..discType..", "..p..".\n")
 		
 				local u = GridFunction(approxSpace, lev)
---[[				
-				if uPrev ~= nil then	
+
+				if uPrev ~= nil and discType ~= "fvcr" and discType ~= "fecr" then	
 					Prolongate(u, uPrev);
 					AdjustMeanValue(u, "p")
 				else
 					u:set(0)	
 				end
---]]
-				u:set(0)	
 				
 				ComputeNonLinearSolution(u, domainDisc, solver)
 		
@@ -454,12 +452,12 @@ if bBenchmarkRates then
 		end
 	end
 	
-	ComputeSpace("fv1", 1, 1, numPreRefs, numRefs)	
-	ComputeSpace("fecr", 1, 0, numPreRefs, numRefs)	
-	ComputeSpace("fvcr", 1, 0, numPreRefs, numRefs)	
-	ComputeSpace("fe", 1, 1, numPreRefs, numRefs)	
+--	ComputeSpace("fv1", 1, 1, numPreRefs, numRefs)	
+--	ComputeSpace("fecr", 1, 0, numPreRefs, numRefs)	
+--	ComputeSpace("fvcr", 1, 0, numPreRefs, numRefs)	
+--	ComputeSpace("fe", 1, 1, numPreRefs, numRefs)	
 	ComputeSpace("fe", 2, 1, numPreRefs, numRefs)	
-	ComputeSpace("fe", 2, 2, numPreRefs, numRefs)	
+--	ComputeSpace("fe", 2, 2, numPreRefs, numRefs)	
 	ComputeSpace("fv", 2, 1, numPreRefs, numRefs)	
 --	ComputeSpace("fv", 3, 2, numPreRefs, numRefs)	
 	
