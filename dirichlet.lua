@@ -54,6 +54,7 @@ if dim~=2 and dim~=3 then
    print("Chosen Dimension " .. dim .. " not supported. Exiting.") exit() 
 end
 
+	drivenCavity = true
 if bDrivenCavityRates then
 	drivenCavity = true
 	--R = 1000
@@ -355,8 +356,8 @@ function CreateDomain()
 	
 	local procH = ProcessHierarchy()
 	
-	local firstDistProcs = 256
-	local stepDistProcs = 4
+	local firstDistProcs = 1
+	local stepDistProcs = 92
 	procH:add_hierarchy_level(0, firstDistProcs)
 	
 	numLvls = math.log((NumProcs() / firstDistProcs)) / math.log(stepDistProcs)
@@ -373,8 +374,8 @@ function CreateDomain()
 	local refiner = GlobalDomainRefiner(dom)
 	for i = 1, numRefs do
 		write(i.." ")
-	    loadBalancer:rebalance()
 	    refiner:refine()
+	    loadBalancer:rebalance()
 	    loadBalancer:create_quality_record("redist")
 	end
 	print("done.")
@@ -444,7 +445,7 @@ function CreateSolver(approxSpace, discType, p)
 	if bStokes then
 		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-99, true))
 	else 
-		solver:set_convergence_check(ConvCheck(10000, 5e-14, 1e-3, true))	
+		solver:set_convergence_check(ConvCheck(10000, 5e-13, 1e-3, true))	
 	end
 	
 	local newtonSolver = NewtonSolver()
@@ -544,15 +545,19 @@ if not(bInstat) then
 		local vertX = 0.5;
 		local vertY = {0.0000,0.0547,0.0625,0.0703,0.1016,0.1719,0.2813,0.4531,0.5000,0.6172,0.7344,0.8516,0.9531,0.9609,0.9688,0.9766,1.0000};
 		local vertBotella_1000 = {0.0000000 , -0.1812881 , -0.2023300 , -0.2228955 , -0.3004561 , -0.3885691 , -0.2803696 , -0.1081999 , -0.0620561 , 0.0570178 , 0.1886747 , 0.3372212 , 0.4723329 , 0.5169277 , 0.5808359 , 0.6644227 , 1.0000000};
-
+		local vertUG4_1 = { -0.00000000000000, -0.03422577175670, -0.03852768982034, -0.04271620423133, -0.05855352363098, -0.09029919767250, -0.13514976399361, -0.19577294502392, -0.20519143075967, -0.18966930169896, -0.06244802820332, 0.26153218648957, 0.73419333399213, 0.77685063637106, 0.82076306888305, 0.86476291740071, 1.00000000000000}
+		local vertUG4_1000 = {-0.00000000000000, -0.18128815022035, -0.20232999102238, -0.22289547311537, -0.30045606072569, -0.38856906466114, -0.28036966252200, -0.10819995161914, -0.06205614252317, 0.05701776610746, 0.18867467366632, 0.33722125595534, 0.47233289301989, 0.51692774842817, 0.58083588611137, 0.66442272608022, 1.00000000000000}
+	
 		local horizX = {0.0000,0.0625,0.0703,0.0781,0.0938,0.1563,0.2266,0.2344,0.5000,0.8047,0.8594,0.9063,0.9453,0.9531,0.9609,0.9688,1.0000};
 		local horizY = 0.5;
 		local horizBotella_1000 = {0.0000000 , 0.2807056 , 0.2962703 , 0.3099097 , 0.3330442 , 0.3769189 , 0.3339924 , 0.3253592 , 0.0257995 , -0.3202137 , -0.4264545 , -0.5264392 , -0.4103754 , -0.3553213 , -0.2936869 , -0.2279225 , 0.0000000};
+		local horizUG4_1 = {0.00000000000000, 0.09440335975385, 0.10395495676627, 0.11297062835532, 0.12946654424707, 0.17310585996761, 0.18307524395080, 0.18196653290688, 0.00063676336802, -0.18410956572760, -0.16620754468535, -0.12992978360623, -0.08461440809722, -0.07396590675632, -0.06281632352673, -0.05102919007870, -0.00000000000000}
+		local horizUG4_1000 = {0.00000000000000, 0.28070557333909, 0.29627033695977, 0.30990967043230, 0.33304424062059, 0.37691888579589, 0.33399240702946, 0.32535921567747, 0.02579946116541, -0.32021375738837, -0.42645449444484, -0.52643918584331, -0.41037540672763, -0.35532134860138, -0.29368689389149, -0.22792251561841, -0.00000000000000}
 
---		numRefs = 0
+		local vertRef = vertUG4_1
+		local horizRef = horizUG4_1
 
 		local dom = CreateDomain()
-	
 		local plots = {}	
 	
 		local function BotellaDifference(discType, p, minLev, maxLev)
@@ -615,7 +620,7 @@ if not(bInstat) then
 					for i = 1, #vertY do
 						local val = EvalU:evaluate({vertX, vertY[i]})
 						write(string.format("%.14f", val)..", ")
-						local diff = math.abs(val - vertBotella_1000[i])
+						local diff = math.abs(val - vertRef[i])
 						vertMax[lev] = math.max(vertMax[lev], diff)				
 					end
 					print("")
@@ -623,7 +628,7 @@ if not(bInstat) then
 					for i = 1, #horizX do
 						local val = EvalV:evaluate({horizX[i], horizY})
 						write(string.format("%.14f", val)..", ")
-						local diff = math.abs(val - horizBotella_1000[i])
+						local diff = math.abs(val - horizRef[i])
 						horizMax[lev] = math.max(horizMax[lev], diff)				
 					end
 					print("")
@@ -690,18 +695,18 @@ if not(bInstat) then
 			slope = 			{dy = 3, quantum = 0.5, at = "last"},
 			padrange = 			{ x = {0.8, 1.5}, y = {0.01, 1.5}},
 		}
-								
-		BotellaDifference("fv", 4, numPreRefs, numRefs)		
---		BotellaDifference("fv", 3, 0, numRefs-1)		
---	 	BotellaDifference("fv", 4, 0, numRefs)		
---		BotellaDifference("fv", 5, 0, numRefs-1)		
---	 	BotellaDifference("fv", 6, 0, numRefs)		
---[[		
-		BotellaDifference("fe", 2, 0, numRefs)		
-		BotellaDifference("fe", 3, 0, numRefs-1)		
-		BotellaDifference("fe", 4, 0, numRefs-2)		
-		BotellaDifference("fe", 5, 0, numRefs-3)		
---]]			
+--[[								
+		BotellaDifference("fv", 2, numPreRefs, numRefs)		
+		BotellaDifference("fv", 3, numPreRefs, numRefs-1)		
+	 	BotellaDifference("fv", 4, numPreRefs, numRefs-1)		
+		BotellaDifference("fv", 5, numPreRefs, numRefs-2)		
+	 	BotellaDifference("fv", 6, numPreRefs, numRefs-3)		
+--]]
+--		BotellaDifference("fe", 2, numPreRefs, numRefs)		
+--		BotellaDifference("fe", 3, numPreRefs, numRefs-1)		
+		BotellaDifference("fe", 4, numPreRefs, numRefs-1)		
+		BotellaDifference("fe", 5, numPreRefs, numRefs-2)		
+
 		for name,data in pairs(plots) do
 		--	gnuplot.plot(name..".pdf", data, pdfOptions)
 		--	gnuplot.plot(name..".tex", data, texOptions)
