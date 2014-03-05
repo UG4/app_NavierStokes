@@ -28,9 +28,9 @@ bStokes 	= util.HasParamOption("-stokes", "If defined, only Stokes Eq. computed"
 bNoLaplace 	= util.HasParamOption("-nolaplace", "If defined, only laplace term used")
 bExactJac 	= util.HasParamOption("-exactjac", "If defined, exact jacobian used")
 bPecletBlend= util.HasParamOption("-pecletblend", "If defined, Peclet Blend used")
-upwind      = util.GetParam("-upwind", "full", "Upwind type")
+upwind      = util.GetParam("-upwind", "lps", "Upwind type")
 stab        = util.GetParam("-stab", "flow", "Stabilization type")
-diffLength  = util.GetParam("-difflength", "raw", "Diffusion length type")
+diffLength  = util.GetParam("-difflength", "cor", "Diffusion length type")
 
 discType, vorder, porder = util.ns.parseParams()
 
@@ -213,7 +213,8 @@ function CreateSolver(approxSpace, discType, p)
 	if discType == "fvcr" or discType == "fecr" then 
 		smoother = ComponentGaussSeidel(0.1, {"p"}, {1,2}, {1})
 	elseif discType == "fv1" then 
-		smoother = ComponentGaussSeidel(0.1, {"p"}, {0}, {1})
+		smoother = ILU()
+		smoother:set_damp(0.7)
 	else
 		smoother = ComponentGaussSeidel(0.1, {"p"}, {0}, {1})
 	end
@@ -456,11 +457,12 @@ if bBenchmarkRates then
 --	ComputeSpace("fv1", 1, 1, numPreRefs, numRefs)	
 --	ComputeSpace("fecr", 1, 0, numPreRefs, numRefs)	
 --	ComputeSpace("fvcr", 1, 0, numPreRefs, numRefs)	
-	ComputeSpace("fe", 1, 1, numPreRefs, numRefs)	
-	ComputeSpace("fe", 2, 1, numPreRefs, numRefs)	
-	ComputeSpace("fe", 2, 2, numPreRefs, numRefs-1)	
-	ComputeSpace("fv", 2, 1, numPreRefs, numRefs)	
-	ComputeSpace("fv", 3, 2, numPreRefs, numRefs-1)	
+--	ComputeSpace("fe", 1, 1, numPreRefs, numRefs)	
+--	ComputeSpace("fe", 2, 1, numPreRefs, numRefs)	
+--	ComputeSpace("fe", 2, 2, numPreRefs, numRefs-1)	
+	ComputeSpace("fe", 3, 2, numPreRefs, numRefs-1)	
+--	ComputeSpace("fv", 2, 1, numPreRefs, numRefs)	
+--	ComputeSpace("fv", 3, 2, numPreRefs, numRefs-1)	
 	
 	if util.HasParamOption("-replot") then
 		local texOptions = {	
