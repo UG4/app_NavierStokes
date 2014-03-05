@@ -224,14 +224,14 @@ function CreateSolver(approxSpace, discType, p)
 	gmg:add_prolongation_post_process(AverageComponent("p"))
 	transfer = StdTransfer()
 	transfer:enable_p1_lagrange_optimization(false)
-	gmg:set_transfer(transfer)
+	--gmg:set_transfer(transfer)
 	
 	local sol = util.solver.parseParams()
 	local solver = util.solver.create(sol, gmg)
 	if bStokes then
 		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-99, true))
 	else 
-		solver:set_convergence_check(ConvCheck(10000, 5e-12, 5e-3, true))	
+		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-3, true))	
 	end
 		
 	local convCheck = ConvCheck(500, 1e-11, 1e-99, true)
@@ -370,7 +370,7 @@ if bBenchmarkRates then
 			
 			local uPrev = nil
 			for lev = minLev, maxLev do
-				write("\n>> Computing Level "..lev..", "..discType..", "..p..".\n")
+				write("\n>> Computing Level "..lev..", "..discType..", "..p..", "..ppress..".\n")
 		
 				local u = GridFunction(approxSpace, lev)
 
@@ -380,6 +380,7 @@ if bBenchmarkRates then
 				else
 					u:set(0)	
 				end
+				u:set(0)	
 				
 				ComputeNonLinearSolution(u, domainDisc, solver)
 		
@@ -455,58 +456,60 @@ if bBenchmarkRates then
 --	ComputeSpace("fv1", 1, 1, numPreRefs, numRefs)	
 --	ComputeSpace("fecr", 1, 0, numPreRefs, numRefs)	
 --	ComputeSpace("fvcr", 1, 0, numPreRefs, numRefs)	
---	ComputeSpace("fe", 1, 1, numPreRefs, numRefs)	
+	ComputeSpace("fe", 1, 1, numPreRefs, numRefs)	
 	ComputeSpace("fe", 2, 1, numPreRefs, numRefs)	
---	ComputeSpace("fe", 2, 2, numPreRefs, numRefs)	
+	ComputeSpace("fe", 2, 2, numPreRefs, numRefs-1)	
 	ComputeSpace("fv", 2, 1, numPreRefs, numRefs)	
---	ComputeSpace("fv", 3, 2, numPreRefs, numRefs)	
+	ComputeSpace("fv", 3, 2, numPreRefs, numRefs-1)	
 	
-	local texOptions = {	
+	if util.HasParamOption("-replot") then
+		local texOptions = {	
+		
+			size = 				{12.5, 9.75}, -- the size of canvas (i.e. plot)
+			sizeunit =			"cm", -- one of: cm, mm, {in | inch}, {pt | pixel}
+			font = 				"Arial",
+			fontsize =			12,
+			fontscale = 		1.4,
+			
+			logscale = 			true,
+			grid = 				"lc rgb 'grey70' lt 0 lw 1", 
+			linestyle =			{colors = gnuplot.RGBbyLinearHUEandLightness(8, 1, 360+40, 85, 0.4, 0.4), 
+								linewidth = 3, pointsize = 1.3},
+			border = 			" back lc rgb 'grey40' lw 2",
+			decimalsign = 		",",
+			key =	 			"on box lc rgb 'grey40' left bottom Left reverse spacing 1.5 width 1 samplen 2 height 0.5",
+			tics =	 			{x = "nomirror out scale 0.75 format '%g' font ',8'",
+								 y = "10 nomirror out scale 0.75 format '%.te%01T' font ',8'"}, 
+			mtics =				5,
+			slope = 			{dy = 3, quantum = 0.5, at = "last"},
+			padrange = 			{ x = {0.8, 1.5}, y = {0.01, 1.5}},
+		}
+			
+		local pdfOptions = {	
 	
-		size = 				{12.5, 9.75}, -- the size of canvas (i.e. plot)
-		sizeunit =			"cm", -- one of: cm, mm, {in | inch}, {pt | pixel}
-		font = 				"Arial",
-		fontsize =			12,
-		fontscale = 		1.4,
-		
-		logscale = 			true,
-		grid = 				"lc rgb 'grey70' lt 0 lw 1", 
-		linestyle =			{colors = gnuplot.RGBbyLinearHUEandLightness(8, 1, 360+40, 85, 0.4, 0.4), 
-							linewidth = 3, pointsize = 1.3},
-		border = 			" back lc rgb 'grey40' lw 2",
-		decimalsign = 		",",
-		key =	 			"on box lc rgb 'grey40' left bottom Left reverse spacing 1.5 width 1 samplen 2 height 0.5",
-		tics =	 			{x = "nomirror out scale 0.75 format '%g' font ',8'",
-							 y = "10 nomirror out scale 0.75 format '%.te%01T' font ',8'"}, 
-		mtics =				5,
-		slope = 			{dy = 3, quantum = 0.5, at = "last"},
-		padrange = 			{ x = {0.8, 1.5}, y = {0.01, 1.5}},
-	}
-		
-	local pdfOptions = {	
-
-		size = 				{12.5, 9.75}, -- the size of canvas (i.e. plot)
-		sizeunit =			"cm", -- one of: cm, mm, {in | inch}, {pt | pixel}
-		font = 				"Arial",
-		fontsize =			8,
-		
-		logscale = 			true,
-		grid = 				"lc rgb 'grey70' lt 0 lw 1", 
-		linestyle =			{colors = gnuplot.RGBbyLinearHUEandLightness(8, 1, 360+40, 85, 0.4, 0.4), 
-							linewidth = 3, pointsize = 1.3},
-		border = 			" back lc rgb 'grey40' lw 2",
-		decimalsign = 		",",
-		key =	 			"on box lc rgb 'grey40' left bottom Left reverse spacing 1.5 width 1 samplen 2 height 0.5",
-		tics =	 			{x = "nomirror out scale 0.75 format '%g' font ',8'",
-							 y = "10 nomirror out scale 0.75 format '%.te%01T' font ',8'"}, 
-		mtics =				5,
-		slope = 			{dy = 3, quantum = 0.5, at = "last"},
-		padrange = 			{ x = {0.8, 1.5}, y = {0.01, 1.5}},
-	}
-
-	for name,data in pairs(plots) do
-		gnuplot.plot(name..".pdf", data, pdfOptions)
-		gnuplot.plot(name..".tex", data, texOptions)
+			size = 				{12.5, 9.75}, -- the size of canvas (i.e. plot)
+			sizeunit =			"cm", -- one of: cm, mm, {in | inch}, {pt | pixel}
+			font = 				"Arial",
+			fontsize =			8,
+			
+			logscale = 			true,
+			grid = 				"lc rgb 'grey70' lt 0 lw 1", 
+			linestyle =			{colors = gnuplot.RGBbyLinearHUEandLightness(8, 1, 360+40, 85, 0.4, 0.4), 
+								linewidth = 3, pointsize = 1.3},
+			border = 			" back lc rgb 'grey40' lw 2",
+			decimalsign = 		",",
+			key =	 			"on box lc rgb 'grey40' left bottom Left reverse spacing 1.5 width 1 samplen 2 height 0.5",
+			tics =	 			{x = "nomirror out scale 0.75 format '%g' font ',8'",
+								 y = "10 nomirror out scale 0.75 format '%.te%01T' font ',8'"}, 
+			mtics =				5,
+			slope = 			{dy = 3, quantum = 0.5, at = "last"},
+			padrange = 			{ x = {0.8, 1.5}, y = {0.01, 1.5}},
+		}
+	
+		for name,data in pairs(plots) do
+			gnuplot.plot(name..".pdf", data, pdfOptions)
+			gnuplot.plot(name..".tex", data, texOptions)
+		end
 	end
 end
 
