@@ -48,8 +48,6 @@ ref.DeltaP = 0.11752016697
 
 if 	dim == 2 then 
 	gridName = util.GetParam("-grid", "grids/cylinder.ugx")
-	--gridName = util.GetParam("-grid", "grids/cylinder-rims.ugx")
-	--gridName = util.GetParam("-grid", "grids/cylinder-rims2.ugx")
 	--gridName = util.GetParam("-grid", "grids/box.ugx")
 	--gridName = util.GetParam("-grid", "grids/double-arrow-small.ugx")
 	--gridName = util.GetParam("-grid", "grids/cylinder_tri.ugx")
@@ -87,11 +85,12 @@ function CreateDomain()
 	InitUG(dim, AlgebraType("CPU", 1))
 	local dom = Domain()
 	LoadDomain(dom, gridName)
+	ProjectVerticesToSphere(dom, {0.2, 0.2}, 0.05, 0.001)
 	
 	-- Create a refiner instance. This is a factory method
 	-- which automatically creates a parallel refiner if required.
 	local refiner =  GlobalDomainRefiner(dom)
-	if     dim == 2 then falloffProjector = SphericalFalloffProjector(dom, {0.2, 0.2, 0}, 0.05, 0.1)
+	if     dim == 2 then falloffProjector = SphericalFalloffProjector(dom, {0.2, 0.2}, 0.1, 0.15)
 	elseif dim == 3 then falloffProjector = CylindricalFalloffProjector(dom, {0.5, 0.2, 0.0}, {0, 0, 1}, 0.04, 0.1)
 	end
 	local refProjector = DomainRefinementProjectionHandler(dom)
@@ -133,8 +132,8 @@ end
 --------------------------------------------------------------------------------
 -- Discretization
 --------------------------------------------------------------------------------
-
-function CreateDomainDisc(approxSpace, discType, p)
+globalNSDisc = nil
+function CreateDomainDisc(approxSpace, discType, vorder, porder)
 
 	local FctCmp = approxSpace:names()
 	NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discType)
@@ -142,7 +141,7 @@ function CreateDomainDisc(approxSpace, discType, p)
 	NavierStokesDisc:set_stokes(bStokes)
 	NavierStokesDisc:set_laplace( not(bNoLaplace) )
 	NavierStokesDisc:set_kinematic_viscosity( Viscosity );
-	
+	globalNSDisc = NavierStokesDisc
 				
 	local porder = approxSpace:lfeid(dim):order()
 	local vorder = approxSpace:lfeid(0):order()
@@ -164,10 +163,10 @@ function CreateDomainDisc(approxSpace, discType, p)
 		NavierStokesDisc:set_stabilization(3)
 	end
 	if discType == "fe" then
-		NavierStokesDisc:set_quad_order(math.pow(p, dim)+5)
+		NavierStokesDisc:set_quad_order(math.pow(vorder, dim)+10)
 	end
 	if discType == "fv" then
-		NavierStokesDisc:set_quad_order(math.pow(p, dim)+5)
+		NavierStokesDisc:set_quad_order(math.pow(vorder, dim)+10)
 	end
 	
 	-- setup Outlet
@@ -242,7 +241,7 @@ function CreateSolver(approxSpace, discType, p)
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
 	newtonSolver:set_convergence_check(convCheck)
-	newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.9, true, true))
+	newtonSolver:set_line_search(StandardLineSearch(10, 1.0, 0.9, true, true))
 	--newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 	
 	return newtonSolver
@@ -363,7 +362,7 @@ if bBenchmarkRates then
 		if not util.HasParamOption("-replot") then
 
 			local approxSpace = util.ns.CreateApproxSpace(dom, discType, p, ppress)
-			local domainDisc = CreateDomainDisc(approxSpace, discType, p)
+			local domainDisc = CreateDomainDisc(approxSpace, discType, p, ppress)
 			local solver = CreateSolver(approxSpace, discType, p)
 		
 			local h, DoFs, level = {}, {}, {}	
@@ -381,15 +380,27 @@ if bBenchmarkRates then
 				if uPrev ~= nil and discType ~= "fvcr" and discType ~= "fecr" then	
 					Prolongate(u, uPrev);
 					AdjustMeanValue(u, "p")
-					u:check_storage_type()
 					u:enforce_consistent_type()
 					u:check_storage_type()
 				else
 					u:set(0)	
 				end
 				
+				if lev > minLev + 2 then globalNSDisc:set_exact_jacobian(true) end
+				
 				ComputeNonLinearSolution(u, domainDisc, solver)
 				u:check_storage_type()
+
+				local FctCmp = approxSpace:names()
+				local VelCmp = {}
+				
+				for d = 1,#FctCmp-1 do VelCmp[d] = FctCmp[d] end
+				vtkWriter = VTKOutput()
+				vtkWriter:select(VelCmp, "velocity")
+				vtkWriter:select("u", "u")
+				vtkWriter:select("v", "v")
+				vtkWriter:select("p", "pressure")
+				vtkWriter:print("Cylinder"..table.concat({discType,p,ppress,"lev",lev},"_"), u)
 		
 				-- h/DoF statistic
 				DoFs[lev] = u:num_dofs()
@@ -397,7 +408,7 @@ if bBenchmarkRates then
 				level[lev] = lev		
 				
 				-- C_D / C_L
-				local DL = DragLift(u, "u,v,p", "CylinderWall", "Inner", Viscosity, 1.0, p+3)
+				local DL = DragLift(u, "u,v,p", "CylinderWall", "Inner", Viscosity, 1.0, p*p+5)
 				meas.CD.value[lev] = 2*DL[1]/(Umean2*L)
 				meas.CL.value[lev] = 2*DL[2]/(Umean2*L)
 			
@@ -460,15 +471,14 @@ if bBenchmarkRates then
 		end
 	end
 	
-	ComputeSpace("fv1", 1, 1, numPreRefs, numRefs)	
 --	ComputeSpace("fecr", 1, 0, numPreRefs, numRefs)	
 --	ComputeSpace("fvcr", 1, 0, numPreRefs, numRefs)	
-	ComputeSpace("fe", 1, 1, numPreRefs, numRefs)	
-	ComputeSpace("fe", 2, 1, numPreRefs, numRefs)	
---	ComputeSpace("fe", 2, 2, numPreRefs, numRefs-1)	
-	ComputeSpace("fe", 3, 2, numPreRefs, numRefs-1)	
-	ComputeSpace("fv", 2, 1, numPreRefs, numRefs)	
-	ComputeSpace("fv", 3, 2, numPreRefs, numRefs-1)	
+--	ComputeSpace("fe", 1, 1, numPreRefs, numRefs)	
+--	ComputeSpace("fe", 2, 1, numPreRefs, numRefs-1)	
+--	ComputeSpace("fe", 3, 2, numPreRefs, numRefs-2)	
+	ComputeSpace("fv1", 1, 1, numPreRefs, numRefs)	
+--	ComputeSpace("fv", 2, 1, numPreRefs, numRefs-1)	
+--	ComputeSpace("fv", 3, 2, numPreRefs, numRefs-2)	
 	
 	if util.HasParamOption("-replot") then
 		local texOptions = {	
