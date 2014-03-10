@@ -112,6 +112,8 @@ function CreateDomain()
 	for i=numPreRefs+1,numRefs do refiner:refine(); write(i-numPreRefs .. " "); end
 	write("done.\n")
 	
+	--SaveGridHierarchyTransformed(dom:grid(), dom:subset_handler(), "grid_p"..ProcRank()..".ugx", 0.5)
+	
 	return dom
 end
 
@@ -378,12 +380,15 @@ if bBenchmarkRates then
 				if uPrev ~= nil and discType ~= "fvcr" and discType ~= "fecr" then	
 					Prolongate(u, uPrev);
 					AdjustMeanValue(u, "p")
+					u:check_storage_type()
+					u:enforce_consistent_type()
+					u:check_storage_type()
 				else
 					u:set(0)	
 				end
-				u:set(0)	
 				
 				ComputeNonLinearSolution(u, domainDisc, solver)
+				u:check_storage_type()
 		
 				-- h/DoF statistic
 				DoFs[lev] = u:num_dofs()
