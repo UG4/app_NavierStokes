@@ -325,15 +325,16 @@ if bBenchmarkRates then
 	local function ComputeSpace(discType, p, ppress, minLev, maxLev)
 
 		local file = table.concat({"dc",discType,p,ppress},"_")..".dat"
+		--[[
 		local discLabel = discType.." Q_"..p.."/Q_"..(ppress)
 		local CDLabel = "|C_D - C_D_h|"
 		local CLLabel = "|C_L - C_L_h|"
 		local DeltaPLabel = "|P - P_L_h|"
-		--[[
-		local discLabel = discType.." $\\mathbb{Q}_{"..p.."}/\\mathbb{Q}_{"..(p-1).."}$"
-		local vertYLabel = "$\max_i |\vec{u}_{h,1}(\vec{x}_i) - \vec{u}_1^{\text{Botella}}(\vec{x}_i)|$"
-		local horizYLabel = "$\max_i |\vec{u}_{h,2}(\vec{x}_i) - \vec{u}_2^{\text{Botella}}(\vec{x}_i)|$"
 		--]]
+		local discLabel = discType.." $\\mathbb{Q}_{"..p.."}/\\mathbb{Q}_{"..(ppress).."}$"
+		local CDLabel = "$|c_{w,h} - c_w^{\\text{Ref}}|$"
+		local CLLabel = "$|c_{a,h} - c_a^{\\text{Ref}}|$"
+		local DeltaPLabel = "$|\\Delta_{p,h} - \\Delta_p^{\\text{Ref}}|$"
 		
 		local function addPlot(name, dataset, label)
 			plots[name] = plots[name] or {}
@@ -342,13 +343,13 @@ if bBenchmarkRates then
 		end
 		
 		addPlot("CD_DoF", {label=discLabel, file=file, style="linespoints", 1, 3},
-				{ x = "# Unbekannte", y = CDLabel})
+				{ x = "Anzahl Unbekannte", y = CDLabel})
 
 		addPlot("CL_DoF", {label=discLabel, file=file, style="linespoints", 1, 4},
-				{ x = "# Unbekannte", y = CLLabel})
+				{ x = "Anzahl Unbekannte", y = CLLabel})
 
 		addPlot("DeltaP_DoF", {label=discLabel, file=file, style="linespoints", 1, 5},
-				{ x = "# Unbekannte", y = DeltaPLabel})
+				{ x = "Anzahl Unbekannte", y = DeltaPLabel})
 
 		addPlot("CD_h", {label=discLabel, file=file, style="linespoints", 2, 3},
 				{ x = "h (Gitterweite)", y = CDLabel})
@@ -459,24 +460,24 @@ if bBenchmarkRates then
 		end
 	end
 	
---	ComputeSpace("fv1", 1, 1, numPreRefs, numRefs)	
+	ComputeSpace("fv1", 1, 1, numPreRefs, numRefs)	
 --	ComputeSpace("fecr", 1, 0, numPreRefs, numRefs)	
 --	ComputeSpace("fvcr", 1, 0, numPreRefs, numRefs)	
---	ComputeSpace("fe", 1, 1, numPreRefs, numRefs)	
---	ComputeSpace("fe", 2, 1, numPreRefs, numRefs)	
+	ComputeSpace("fe", 1, 1, numPreRefs, numRefs)	
+	ComputeSpace("fe", 2, 1, numPreRefs, numRefs)	
 --	ComputeSpace("fe", 2, 2, numPreRefs, numRefs-1)	
 	ComputeSpace("fe", 3, 2, numPreRefs, numRefs-1)	
---	ComputeSpace("fv", 2, 1, numPreRefs, numRefs)	
---	ComputeSpace("fv", 3, 2, numPreRefs, numRefs-1)	
+	ComputeSpace("fv", 2, 1, numPreRefs, numRefs)	
+	ComputeSpace("fv", 3, 2, numPreRefs, numRefs-1)	
 	
 	if util.HasParamOption("-replot") then
 		local texOptions = {	
 		
-			size = 				{12.5, 9.75}, -- the size of canvas (i.e. plot)
+			size = 				{12.5, 6.75}, -- the size of canvas (i.e. plot)
 			sizeunit =			"cm", -- one of: cm, mm, {in | inch}, {pt | pixel}
 			font = 				"Arial",
 			fontsize =			12,
-			fontscale = 		1.4,
+			fontscale = 		0.7,
 			
 			logscale = 			true,
 			grid = 				"lc rgb 'grey70' lt 0 lw 1", 
@@ -484,16 +485,16 @@ if bBenchmarkRates then
 								linewidth = 3, pointsize = 1.3},
 			border = 			" back lc rgb 'grey40' lw 2",
 			decimalsign = 		",",
-			key =	 			"on box lc rgb 'grey40' left bottom Left reverse spacing 1.5 width 1 samplen 2 height 0.5",
-			tics =	 			{x = "nomirror out scale 0.75 format '%g' font ',8'",
+			key =	 			"on box lc rgb 'grey40' left bottom Left reverse spacing 2 width 1.1 samplen 2 height 0.5",
+			tics =	 			{x = "nomirror out scale 0.75 format '%.te%01T' font ',8'",
 								 y = "10 nomirror out scale 0.75 format '%.te%01T' font ',8'"}, 
 			mtics =				5,
 			slope = 			{dy = 3, quantum = 0.5, at = "last"},
-			padrange = 			{ x = {0.8, 1.5}, y = {0.01, 1.5}},
+			padrange = 			{ x = {0.6, 2}, y = {0.6, 2}},
 		}
-			
+
 		local pdfOptions = {	
-	
+		
 			size = 				{12.5, 9.75}, -- the size of canvas (i.e. plot)
 			sizeunit =			"cm", -- one of: cm, mm, {in | inch}, {pt | pixel}
 			font = 				"Arial",
@@ -505,12 +506,12 @@ if bBenchmarkRates then
 								linewidth = 3, pointsize = 1.3},
 			border = 			" back lc rgb 'grey40' lw 2",
 			decimalsign = 		",",
-			key =	 			"on box lc rgb 'grey40' left bottom Left reverse spacing 1.5 width 1 samplen 2 height 0.5",
+			key =	 			"on box lc rgb 'grey40' left bottom Left reverse spacing 2 width 1.1 samplen 2 height 0.5",
 			tics =	 			{x = "nomirror out scale 0.75 format '%g' font ',8'",
 								 y = "10 nomirror out scale 0.75 format '%.te%01T' font ',8'"}, 
 			mtics =				5,
-			slope = 			{dy = 3, quantum = 0.5, at = "last"},
-			padrange = 			{ x = {0.8, 1.5}, y = {0.01, 1.5}},
+			slope = 			{dy = 3, quantum = 0.25, at = "last"},
+			padrange = 			{ x = {0.6, 10}, y = {0.1, 1.1}},
 		}
 	
 		for name,data in pairs(plots) do
