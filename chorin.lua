@@ -263,7 +263,7 @@ gpOpt =
 						  y = "offset graph 0.1,0,0",
 						  z = "offset graph 0.1,0,0.8" },
 	key =	 			"on box lc rgb 'grey40' bmargin horizontal maxrows 1 Left reverse spacing 1 width 1.1 samplen 1 height 0.5",
-	key = "off",
+	key = "on",
 	"set xrange [] reverse"
 }
 
@@ -306,7 +306,7 @@ util.rates.kinetic.compute(
 	
 	SpaceDiscs = 
 	{
-	  {type = "fv", pmin = 2, pmax = 3, lmin = 4, lmax = numRefs} 
+	  {type = "fv", pmin = 2, pmax = 3, lmin = 3, lmax = numRefs} 
 	},
 	
 	
@@ -319,6 +319,6 @@ util.rates.kinetic.compute(
 	MaxLevelPadding = util.rates.kinetic.NoMaxLevelPadding,
 	best = false,
 	noplot = true,
-	plotSol = true,	
+	plotSol = false,	
 })
 				  
