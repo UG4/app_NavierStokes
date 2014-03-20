@@ -13,7 +13,7 @@ ug_load_script("navier_stokes_util.lua")
 ug_load_script("util/conv_rates_kinetic.lua")
 
 dim 		= util.GetParamNumber("-dim", 2)
-numRefs 	= util.GetParamNumber("-numRefs",2)
+numRefs 	= util.GetParamNumber("-numRefs",4)
 numPreRefs 	= util.GetParamNumber("-numPreRefs", 0)
 
 startTime  = util.GetParamNumber("-start", 0.0, "start time")
@@ -36,7 +36,7 @@ nlinred     = util.GetParam("-nlinred", nlintol*0.1, "Nonlinear reduction")
 if 	dim == 2 then
 	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2.ugx")
 --	gridName = util.GetParam("-grid", "grids/unit_square_01_tri_unstruct_fine.ugx")
---	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_1x1.ugx")
+	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_1x1.ugx")
 else
 	gridName = util.GetParam("-grid", "unit_square_01/unit_cube_01_tets.ugx")
 	gridName = util.GetParam("-grid", "unit_square_01/unit_cube_01_hex_1x1x1.ugx")
@@ -76,14 +76,44 @@ end
 --------------------------------------------------------------------------------
 -- Problem
 --------------------------------------------------------------------------------
+--[[ This problem is adapted after Chorin, 1967
+The analytical solution can be constructed e.g. via maple:
+with(codegen,C):
+# choose divergence free velocity (using g) and pressure p 
+g:=-1/s*cos(s*x)*cos(s*y)*exp(-2*s*s*t/R);
+u:=-diff(g,y);
+v:=diff(g,x); 
+p:=-1/4*(cos(2*s*x)+cos(2*s*y))*exp(-4*s*s*t/R);
 
-local n = 1
-local tau = 1
+# rhs is chosen so that (Navier)-Stokes system is fulfilled
+
+time_u := factor(simplify(diff(u,t)));
+laplace_u := factor(simplify(-1/R*(diff(u,x,x)+diff(u,y,y)))); 
+nonlin_u := factor(simplify(u*diff(u,x)+v*diff(u,y))); 
+press_u := factor(simplify(diff(p,x)));
+
+time_v := factor(simplify(diff(v,t)));
+laplace_v := factor(simplify(-1/R*(diff(v,x,x)+diff(v,y,y))));
+nonlin_v := factor(simplify(u*diff(v,x)+v*diff(v,y)));
+press_v := factor(simplify(diff(p,y)));
+
+rhs_u := factor(simplify(time_u + laplace_u + nonlin_u + press_u));
+rhs_v := factor(simplify(time_v + laplace_v + nonlin_v + press_v));
+C( u ); 
+C( v ); 
+C( p ); 
+C( time_u + laplace_u + nonlin_u + press_u );
+C( time_v + laplace_v + nonlin_v + press_v );
+--]]
+
+local n = 4
+local tau = 1000
 local s = n * math.pi
 
 function uSol2d(x, y, t) return -math.cos(s*x)*math.sin(s*y)*math.exp(-2*s*s*t/tau)  end
 function vSol2d(x, y, t) return  math.sin(s*x)*math.cos(s*y)*math.exp(-2*s*s*t/tau) end
 function pSol2d(x, y, t) return -1/4*(math.cos(2*s*x)+math.cos(2*s*y))*math.exp(-4*s*s*t/tau)  end
+--function pSol2d(x, y, t) return 0  end
 
 function uGrad2d(x, y, t) return s*math.sin(s*x)*math.sin(s*y)*math.exp(-2*s*s*t/tau),
 								 -s*math.cos(s*x)*math.cos(s*y)*math.exp(-2*s*s*t/tau) end
@@ -91,6 +121,7 @@ function vGrad2d(x, y, t) return s*math.cos(s*x)*math.cos(s*y)*math.exp(-2*s*s*t
 								 -s*math.sin(s*x)*math.sin(s*y)*math.exp(-2*s*s*t/tau) end
 function pGrad2d(x, y, t) return 2*s/4*(math.sin(2*s*x))*math.exp(-4*s*s*t/tau),
 								2*s/4*(math.sin(2*s*y))*math.exp(-4*s*s*t/tau)  end
+--function pGrad2d(x, y, t) return 0, 0 end
 
 
 function inletVel2d(x, y, t)
@@ -135,12 +166,12 @@ function CreateDomainDisc(approxSpace, discType, p)
 	DirichletDisc = DirichletBoundary()
 	DirichletDisc:add("uSol2d", "u", "Boundary")
 	DirichletDisc:add("vSol2d", "v", "Boundary")
-	DirichletDisc:add("pSol2d", "p", "Boundary, Inner")
+	DirichletDisc:add("pSol2d", "p", "Boundary")
 		
 	domainDisc = DomainDiscretization(approxSpace)
 	domainDisc:add(NavierStokesDisc)
---	domainDisc:add(InletDisc)
-	domainDisc:add(DirichletDisc)
+	domainDisc:add(InletDisc)
+--	domainDisc:add(DirichletDisc)
 	
 	return domainDisc
 end
@@ -176,7 +207,7 @@ function CreateSolver(approxSpace, discType, p)
 							 cycle, base, baseLev, bRAP)
 	--gmg:set_damp(MinimalResiduumDamping())
 	--gmg:set_damp(MinimalEnergyDamping())
-	--gmg:add_prolongation_post_process(AverageComponent("p"))
+	gmg:add_prolongation_post_process(AverageComponent("p"))
 	--gmg:set_debug(dbgWriter)
 	--gmg:set_gathered_base_solver_if_ambiguous(true)
 	--gmg:set_rap(true)
@@ -189,7 +220,7 @@ function CreateSolver(approxSpace, discType, p)
 	else 
 		solver:set_convergence_check(ConvCheck(10000, 5e-13, 1e-3, true))	
 	end
-	solver = SuperLU()
+	--solver = SuperLU()
 	
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
@@ -275,13 +306,13 @@ util.rates.kinetic.compute(
 	
 	SpaceDiscs = 
 	{
-	  {type = "fv", pmin = 2, pmax = 2, lmin = numRefs, lmax = numRefs} 
+	  {type = "fv", pmin = 3, pmax = 3, lmin = numRefs, lmax = numRefs} 
 	},
 	
 	
 	TimeDiscs =
 	{
-	  {type = "alexander", orderOrTheta = 3, dt = dt, sub = 2, refs = 0}
+	  {type = "impleuler", orderOrTheta = 3, dt = dt, sub = 2, refs = 0}
 	},
 	
 	gpOptions = gpOpt,

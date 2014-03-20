@@ -67,11 +67,11 @@ function util.gmg.parseParams()
 
 	local numPreSmooth, numPostSmooth
 	if util.HasParamOption("-numSmooth") then
-		numPreSmooth  = util.GetParamNumber("-numSmooth", 2, "Number pre/post-smoothing")
+		numPreSmooth  = util.GetParamNumber("-numSmooth", 8, "Number pre/post-smoothing")
 		numPostSmooth = numPreSmooth
 	else
-		numPreSmooth  = util.GetParamNumber("-numPreSmooth", 2, "Number pre-smoothing")
-		numPostSmooth = util.GetParamNumber("-numPostSmooth", 2, "Number post-smoothing")
+		numPreSmooth  = util.GetParamNumber("-numPreSmooth", 8, "Number pre-smoothing")
+		numPostSmooth = util.GetParamNumber("-numPostSmooth", 8, "Number post-smoothing")
 	end
 	
 	local baseLev = util.GetParamNumber("-baseLev", 0, "Base level")
@@ -102,7 +102,7 @@ end
 util.smooth = util.smooth or {}
 
 function util.smooth.parseParams()
-	local smooth = util.GetParam("-smooth", "jac", "Smoother Type", 
+	local smooth = util.GetParam("-smooth", "cgs", "Smoother Type", 
 					{"jac","ilu","ilut","egs","gs","sgs", "cgs"})
 	
 	return smooth
