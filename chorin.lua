@@ -306,13 +306,13 @@ util.rates.kinetic.compute(
 	
 	SpaceDiscs = 
 	{
-	  {type = "fv", pmin = 3, pmax = 3, lmin = numRefs, lmax = numRefs} 
+	  {type = "fv", pmin = 2, pmax = 3, lmin = 4, lmax = numRefs} 
 	},
 	
 	
 	TimeDiscs =
 	{
-	  {type = "impleuler", orderOrTheta = 3, dt = dt, sub = 2, refs = 0}
+	  {type = "alexander", orderOrTheta = 3, dt = dt, sub = 2, refs = 0}
 	},
 	
 	gpOptions = gpOpt,
