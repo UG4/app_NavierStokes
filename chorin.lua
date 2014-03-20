@@ -306,14 +306,15 @@ util.rates.kinetic.compute(
 	
 	SpaceDiscs = 
 	{
-	  {type = "fv", pmin = 2, pmax = 3, lmin = 3, lmax = numRefs} 
+	  {type = "fv", pmin = 2, pmax = 4, lmin = 4, lmax = numRefs} 
 	},
 	
+	AutoStepSize = function (lev, h) return h end,
 	
-	TimeDiscs =
-	{
-	  {type = "alexander", orderOrTheta = 3, dt = dt, sub = 2, refs = 0}
-	},
+--	TimeDiscs =
+--	{
+--	  {type = "alexander", orderOrTheta = 3, dt = dt, sub = 2, refs = 0}
+--	},
 	
 	gpOptions = gpOpt,
 	MaxLevelPadding = util.rates.kinetic.NoMaxLevelPadding,
