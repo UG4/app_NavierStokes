@@ -55,7 +55,7 @@ function CreateDomain()
 		
 	-- Create, Load, Refine and Distribute Domain
 	local neededSubsets = {}
-	local dom = util.CreateAndDistributeDomain(gridName, numRefs, 0, neededSubsets)
+	local dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, neededSubsets)
 
 	return dom
 end
