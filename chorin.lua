@@ -306,10 +306,11 @@ util.rates.kinetic.compute(
 	
 	SpaceDiscs = 
 	{
-	  {type = "fv", pmin = 2, pmax = 4, lmin = 4, lmax = numRefs} 
+	  {type = "fe", pmin = 3, pmax = 3, lmin = numRefs, lmax = numRefs} 
 	},
 	
-	AutoStepSize = function (lev, h) return h end,
+	AutoStepSize = function (lev, h) return h/1000 end,
+	AutoTimeDisc = "sdirk",
 	
 --	TimeDiscs =
 --	{
