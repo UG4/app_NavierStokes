@@ -306,21 +306,23 @@ util.rates.kinetic.compute(
 	
 	SpaceDiscs = 
 	{
-	  {type = "fe", pmin = 3, pmax = 3, lmin = numRefs, lmax = numRefs} 
+	  {type = "fv", pmin = 3, pmax = 3, lmin = numRefs, lmax = numRefs} 
 	},
 	
-	AutoStepSize = function (lev, h) return h/1000 end,
+	AutoStepSize = function (lev, h) return h/10 end,
 	AutoTimeDisc = "sdirk",
-	
---	TimeDiscs =
---	{
---	  {type = "alexander", orderOrTheta = 3, dt = dt, sub = 2, refs = 0}
---	},
+
+--[[	
+	TimeDiscs =
+	{
+	  {type = "sdirk", orderOrTheta = 4, dt = dt, sub = 2, refs = 0}
+	},
+--]]
 	
 	gpOptions = gpOpt,
 	MaxLevelPadding = util.rates.kinetic.NoMaxLevelPadding,
 	best = false,
 	noplot = true,
-	plotSol = false,	
+	plotSol = true,	
 })
 				  
