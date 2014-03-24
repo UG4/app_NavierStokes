@@ -34,9 +34,10 @@ lintol      = util.GetParam("-lintol", nlintol*0.5, "Linear tolerance")
 nlinred     = util.GetParam("-nlinred", nlintol*0.1, "Nonlinear reduction")
 
 if 	dim == 2 then
-	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2.ugx")
+--	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2.ugx")
 --	gridName = util.GetParam("-grid", "grids/unit_square_01_tri_unstruct_fine.ugx")
 	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_1x1.ugx")
+	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_2x2_four_bnd.ugx")
 else
 	gridName = util.GetParam("-grid", "unit_square_01/unit_cube_01_tets.ugx")
 	gridName = util.GetParam("-grid", "unit_square_01/unit_cube_01_hex_1x1x1.ugx")
@@ -56,6 +57,9 @@ function CreateDomain()
 	-- Create, Load, Refine and Distribute Domain
 	local neededSubsets = {}
 	local dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, neededSubsets)
+
+	IdentifySubsets(dom, "Top", "Bottom")
+	IdentifySubsets(dom, "Left", "Right")
 
 	return dom
 end
@@ -84,6 +88,7 @@ g:=-1/s*cos(s*x)*cos(s*y)*exp(-2*s*s*t/R);
 u:=-diff(g,y);
 v:=diff(g,x); 
 p:=-1/4*(cos(2*s*x)+cos(2*s*y))*exp(-4*s*s*t/R);
+int(int(p, x=0..1), y=0..1);
 
 # rhs is chosen so that (Navier)-Stokes system is fulfilled
 
@@ -113,7 +118,55 @@ local s = n * math.pi
 function uSol2d(x, y, t) return -math.cos(s*x)*math.sin(s*y)*math.exp(-2*s*s*t/tau)  end
 function vSol2d(x, y, t) return  math.sin(s*x)*math.cos(s*y)*math.exp(-2*s*s*t/tau) end
 function pSol2d(x, y, t) return -1/4*(math.cos(2*s*x)+math.cos(2*s*y))*math.exp(-4*s*s*t/tau)  end
---function pSol2d(x, y, t) return 0  end
+
+-- instationäry ns (läuft)
+--[[
+function uSol2d(x, y, t) return -y + t  end
+function vSol2d(x, y, t) return x + t end
+function pSol2d(x, y, t) return 1/2*x*x+t*x-x+1/2*y*y-t*y-y +2/3  end
+--]]
+
+-- instationäry ns (läuft)
+--[[
+function uSol2d(x, y, t) return -y + t  end
+function vSol2d(x, y, t) return x + t end
+function pSol2d(x, y, t) return 1/2*x*x+t*x-x+1/2*y*y-t*y-y +2/3  end
+--]]
+
+-- instationäry stokes (läuft)
+--[[
+function uSol2d(x, y, t) return -3*y*y + 7/tau*t  end
+function vSol2d(x, y, t) return 3*x*x + 7/tau*t end
+function pSol2d(x, y, t) return (-7*x+5*y)/tau + 1/tau  end
+--]]
+
+-- instationary stokes (läuft)
+--[[
+function uSol2d(x, y, t) return -1/2*y*y  - t end
+function vSol2d(x, y, t) return 1/2*x*x   + t end
+function pSol2d(x, y, t) return 0 end
+--]]
+
+-- stationary stokes (läuft)
+--[[
+function uSol2d(x, y, t) return -1/2*y*y end
+function vSol2d(x, y, t) return 1/2*x*x end
+function pSol2d(x, y, t) return 1/tau* (-x+y) end
+--]]
+
+-- stationary stokes (läuft)
+--[[
+function uSol2d(x, y, t) return -y end
+function vSol2d(x, y, t) return x end
+function pSol2d(x, y, t) return 0 end
+--]]
+
+-- pure time (läuft)
+--[[
+function uSol2d(x, y, t) return t  end
+function vSol2d(x, y, t) return t end
+function pSol2d(x, y, t) return -(x+y) + 1  end
+--]]
 
 function uGrad2d(x, y, t) return s*math.sin(s*x)*math.sin(s*y)*math.exp(-2*s*s*t/tau),
 								 -s*math.cos(s*x)*math.cos(s*y)*math.exp(-2*s*s*t/tau) end
@@ -125,6 +178,7 @@ function pGrad2d(x, y, t) return 2*s/4*(math.sin(2*s*x))*math.exp(-4*s*s*t/tau),
 
 
 function inletVel2d(x, y, t)
+	--print("NEUMANN: t: "..t)
 	return uSol2d(x, y, t), vSol2d(x, y, t)
 end
 
@@ -160,18 +214,25 @@ function CreateDomainDisc(approxSpace, discType, p)
 		NavierStokesDisc:set_quad_order(p*p+10)
 	end
 	
+	local BND = "Boundary"
+	BND = "Top, Bottom, Right, Left"
 	InletDisc = NavierStokesInflow(NavierStokesDisc)
-	InletDisc:add("inletVel"..dim.."d", "Boundary")
+	InletDisc:add("inletVel"..dim.."d", BND)
 		
 	DirichletDisc = DirichletBoundary()
-	DirichletDisc:add("uSol2d", "u", "Boundary")
-	DirichletDisc:add("vSol2d", "v", "Boundary")
-	DirichletDisc:add("pSol2d", "p", "Boundary")
+	DirichletDisc:add("uSol2d", "u", BND)
+	DirichletDisc:add("vSol2d", "v", BND)
+--	DirichletDisc:add("pSol2d", "p", BND)
+
+	NeumannDisc = NeumannBoundary("p")
+	NeumannDisc:add("inletVel2d", BND, "Inner")
+	NeumannDisc:set_stationary()
 		
 	domainDisc = DomainDiscretization(approxSpace)
 	domainDisc:add(NavierStokesDisc)
-	domainDisc:add(InletDisc)
+--	domainDisc:add(InletDisc)
 --	domainDisc:add(DirichletDisc)
+--	domainDisc:add(NeumannDisc)
 	
 	return domainDisc
 end
@@ -220,12 +281,18 @@ function CreateSolver(approxSpace, discType, p)
 	else 
 		solver:set_convergence_check(ConvCheck(10000, 5e-13, 1e-3, true))	
 	end
-	--solver = SuperLU()
+	solver = SuperLU()
 	
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
-	newtonSolver:set_convergence_check(ConvCheck(50, 5e-12, 1e-99, true))
-	--newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.9, true, true))
+	newtonSolver:set_convergence_check(ConvCheck(50, 1e-12, 1e-12, true))
+	
+	newtonConvCheck = CompositeConvCheck(approxSpace, 200, 1e-16, 1e-99)
+	newtonConvCheck:set_component_check({"u", "v"}, 1e-14, 1e-99)
+	newtonConvCheck:set_component_check({"p"}, 1e-17, 1e-99)
+	--newtonSolver:set_convergence_check(newtonConvCheck)
+	
+	--newtonSolver:set_line_search(StandardLineSearch(50, 1.0, 0.95, true, false))
 	--newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 	
 	return newtonSolver
@@ -306,10 +373,10 @@ util.rates.kinetic.compute(
 	
 	SpaceDiscs = 
 	{
-	  {type = "fv", pmin = 2, pmax = 4, lmin = 4, lmax = numRefs} 
+	  {type = "fv", pmin = 2, pmax = 3, lmin = 4, lmax = numRefs} 
 	},
 	
-	AutoStepSize = function (lev, h) return h end,
+	AutoStepSize = function (lev, h, p, t) return h / (math.sqrt(2) * p * math.exp(-2*s*s*t/tau))  end,
 	AutoTimeDisc = "sdirk",
 
 --[[	
@@ -320,7 +387,7 @@ util.rates.kinetic.compute(
 --]]
 	
 	gpOptions = gpOpt,
-	MaxLevelPadding = util.rates.kinetic.StdMaxLevelPadding,
+	MaxLevelPadding = util.rates.kinetic.NoMaxLevelPadding,
 	best = false,
 	noplot = true,
 	plotSol = true,	
