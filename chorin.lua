@@ -224,7 +224,7 @@ function CreateSolver(approxSpace, discType, p)
 	
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
-	newtonSolver:set_convergence_check(ConvCheck(500, 5e-12, 1e-99, true))
+	newtonSolver:set_convergence_check(ConvCheck(50, 5e-12, 1e-99, true))
 	--newtonSolver:set_line_search(StandardLineSearch(30, 1.0, 0.9, true, true))
 	--newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 	
