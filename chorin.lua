@@ -268,7 +268,7 @@ function CreateSolver(approxSpace, discType, p)
 							 cycle, base, baseLev, bRAP)
 	--gmg:set_damp(MinimalResiduumDamping())
 	--gmg:set_damp(MinimalEnergyDamping())
-	gmg:add_prolongation_post_process(AverageComponent("p"))
+	--gmg:add_prolongation_post_process(AverageComponent("p"))
 	--gmg:set_debug(dbgWriter)
 	--gmg:set_gathered_base_solver_if_ambiguous(true)
 	--gmg:set_rap(true)
@@ -281,7 +281,7 @@ function CreateSolver(approxSpace, discType, p)
 	else 
 		solver:set_convergence_check(ConvCheck(10000, 5e-13, 1e-3, true))	
 	end
-	solver = SuperLU()
+	--solver = SuperLU()
 	
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
