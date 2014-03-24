@@ -306,10 +306,10 @@ util.rates.kinetic.compute(
 	
 	SpaceDiscs = 
 	{
-	  {type = "fv", pmin = 3, pmax = 3, lmin = numRefs, lmax = numRefs} 
+	  {type = "fv", pmin = 2, pmax = 5, lmin = numRefs, lmax = numRefs} 
 	},
 	
-	AutoStepSize = function (lev, h) return h/10 end,
+	AutoStepSize = function (lev, h) return h end,
 	AutoTimeDisc = "sdirk",
 
 --[[	
@@ -320,7 +320,7 @@ util.rates.kinetic.compute(
 --]]
 	
 	gpOptions = gpOpt,
-	MaxLevelPadding = util.rates.kinetic.NoMaxLevelPadding,
+	MaxLevelPadding = util.rates.kinetic.StdMaxLevelPadding,
 	best = false,
 	noplot = true,
 	plotSol = true,	
