@@ -377,7 +377,7 @@ util.rates.kinetic.compute(
 	
 	SpaceDiscs = 
 	{
-	  {type = "fv", pmin = 2, pmax = 2, lmin = 4, lmax = numRefs} 
+	  {type = "fv", pmin = 2, pmax = 4, lmin = 4, lmax = numRefs} 
 	},
 	
 	AutoStepSize = function (lev, h, p, t) return h / (math.sqrt(2) * p * math.exp(-0*s*s*t/tau))  end,
