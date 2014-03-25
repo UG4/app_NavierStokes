@@ -285,7 +285,7 @@ function CreateSolver(approxSpace, discType, p)
 	else 
 		solver:set_convergence_check(ConvCheck(10000, 5e-13, 1e-3, true))	
 	end
-	solver = SuperLU()
+	--solver = SuperLU()
 	
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
