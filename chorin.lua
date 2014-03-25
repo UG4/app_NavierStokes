@@ -272,7 +272,7 @@ function CreateSolver(approxSpace, discType, p)
 							 cycle, base, baseLev, bRAP)
 	--gmg:set_damp(MinimalResiduumDamping())
 	--gmg:set_damp(MinimalEnergyDamping())
-	--gmg:add_prolongation_post_process(AverageComponent("p"))
+	gmg:add_prolongation_post_process(AverageComponent("p"))
 	--gmg:set_debug(dbgWriter)
 	--gmg:set_gathered_base_solver_if_ambiguous(true)
 	--gmg:set_rap(true)
@@ -380,7 +380,7 @@ util.rates.kinetic.compute(
 	  {type = "fv", pmin = 2, pmax = 2, lmin = 4, lmax = numRefs} 
 	},
 	
-	AutoStepSize = function (lev, h, p, t) return h / (math.sqrt(2) * math.exp(-0*s*s*t/tau))  end,
+	AutoStepSize = function (lev, h, p, t) return h / (math.sqrt(2) * p * math.exp(-0*s*s*t/tau))  end,
 	AutoTimeDisc = "sdirk",
 
 --[[	
@@ -391,7 +391,7 @@ util.rates.kinetic.compute(
 --]]
 	
 	gpOptions = gpOpt,
-	MaxLevelPadding = util.rates.kinetic.NoMaxLevelPadding,
+	MaxLevelPadding = util.rates.kinetic.StdMaxLevelPadding,
 	best = false,
 	noplot = true,
 	plotSol = true,	
