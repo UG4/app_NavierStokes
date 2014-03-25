@@ -380,7 +380,7 @@ util.rates.kinetic.compute(
 	  {type = "fv", pmin = 2, pmax = 4, lmin = 4, lmax = numRefs} 
 	},
 	
-	AutoStepSize = function (lev, h, p, t) return h / (math.sqrt(2) * p * math.exp(-0*s*s*t/tau))  end,
+	AutoStepSize = function (lev, h, p, t) return h / (math.sqrt(2) end,
 	AutoTimeDisc = "sdirk",
 
 --[[	
