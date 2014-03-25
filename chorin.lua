@@ -32,12 +32,13 @@ linred      = util.GetParam("-linred", 1e-2 , "Linear reduction")
 nlintol     = util.GetParam("-nlintol", 1e-10, "Nonlinear tolerance")
 lintol      = util.GetParam("-lintol", nlintol*0.5, "Linear tolerance")
 nlinred     = util.GetParam("-nlinred", nlintol*0.1, "Nonlinear reduction")
+bPeriodic   = util.HasParamOption("-periodic")
 
 if 	dim == 2 then
 --	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_tri_2x2.ugx")
 --	gridName = util.GetParam("-grid", "grids/unit_square_01_tri_unstruct_fine.ugx")
-	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_1x1.ugx")
-	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_2x2_four_bnd.ugx")
+--	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_1x1.ugx"); 	BND = "Boundary"
+	gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_2x2_four_bnd.ugx"); 	BND = "Top, Bottom, Right, Left"
 else
 	gridName = util.GetParam("-grid", "unit_square_01/unit_cube_01_tets.ugx")
 	gridName = util.GetParam("-grid", "unit_square_01/unit_cube_01_hex_1x1x1.ugx")
@@ -58,9 +59,12 @@ function CreateDomain()
 	local neededSubsets = {}
 	local dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, neededSubsets)
 
-	IdentifySubsets(dom, "Top", "Bottom")
-	IdentifySubsets(dom, "Left", "Right")
-
+	if bPeriodic then
+		print(">> Using PERIODIC Boundary")
+		IdentifySubsets(dom, "Top", "Bottom")
+		IdentifySubsets(dom, "Left", "Right")
+	end
+	
 	return dom
 end
 
@@ -119,6 +123,14 @@ function uSol2d(x, y, t) return -math.cos(s*x)*math.sin(s*y)*math.exp(-2*s*s*t/t
 function vSol2d(x, y, t) return  math.sin(s*x)*math.cos(s*y)*math.exp(-2*s*s*t/tau) end
 function pSol2d(x, y, t) return -1/4*(math.cos(2*s*x)+math.cos(2*s*y))*math.exp(-4*s*s*t/tau)  end
 
+function uGrad2d(x, y, t) return s*math.sin(s*x)*math.sin(s*y)*math.exp(-2*s*s*t/tau),
+								 -s*math.cos(s*x)*math.cos(s*y)*math.exp(-2*s*s*t/tau) end
+function vGrad2d(x, y, t) return s*math.cos(s*x)*math.cos(s*y)*math.exp(-2*s*s*t/tau),
+								 -s*math.sin(s*x)*math.sin(s*y)*math.exp(-2*s*s*t/tau) end
+function pGrad2d(x, y, t) return 2*s/4*(math.sin(2*s*x))*math.exp(-4*s*s*t/tau),
+								2*s/4*(math.sin(2*s*y))*math.exp(-4*s*s*t/tau)  end
+--function pGrad2d(x, y, t) return 0, 0 end
+
 -- instationäry ns (läuft)
 --[[
 function uSol2d(x, y, t) return -y + t  end
@@ -168,14 +180,6 @@ function vSol2d(x, y, t) return t end
 function pSol2d(x, y, t) return -(x+y) + 1  end
 --]]
 
-function uGrad2d(x, y, t) return s*math.sin(s*x)*math.sin(s*y)*math.exp(-2*s*s*t/tau),
-								 -s*math.cos(s*x)*math.cos(s*y)*math.exp(-2*s*s*t/tau) end
-function vGrad2d(x, y, t) return s*math.cos(s*x)*math.cos(s*y)*math.exp(-2*s*s*t/tau),
-								 -s*math.sin(s*x)*math.sin(s*y)*math.exp(-2*s*s*t/tau) end
-function pGrad2d(x, y, t) return 2*s/4*(math.sin(2*s*x))*math.exp(-4*s*s*t/tau),
-								2*s/4*(math.sin(2*s*y))*math.exp(-4*s*s*t/tau)  end
---function pGrad2d(x, y, t) return 0, 0 end
-
 
 function inletVel2d(x, y, t)
 	--print("NEUMANN: t: "..t)
@@ -214,8 +218,6 @@ function CreateDomainDisc(approxSpace, discType, p)
 		NavierStokesDisc:set_quad_order(p*p+10)
 	end
 	
-	local BND = "Boundary"
-	BND = "Top, Bottom, Right, Left"
 	InletDisc = NavierStokesInflow(NavierStokesDisc)
 	InletDisc:add("inletVel"..dim.."d", BND)
 		
@@ -230,10 +232,12 @@ function CreateDomainDisc(approxSpace, discType, p)
 		
 	domainDisc = DomainDiscretization(approxSpace)
 	domainDisc:add(NavierStokesDisc)
---	domainDisc:add(InletDisc)
---	domainDisc:add(DirichletDisc)
---	domainDisc:add(NeumannDisc)
-	
+	if not bPeriodic then
+		domainDisc:add(InletDisc)
+	--	domainDisc:add(DirichletDisc)
+	--	domainDisc:add(NeumannDisc)
+	end
+		
 	return domainDisc
 end
 
@@ -281,7 +285,7 @@ function CreateSolver(approxSpace, discType, p)
 	else 
 		solver:set_convergence_check(ConvCheck(10000, 5e-13, 1e-3, true))	
 	end
-	--solver = SuperLU()
+	solver = SuperLU()
 	
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
@@ -368,15 +372,15 @@ util.rates.kinetic.compute(
 		Interpolate("uSol"..dim.."d", u, "u", time);
 		Interpolate("vSol"..dim.."d", u, "v", time);
 		Interpolate("pSol"..dim.."d", u, "p", time);
-		--AdjustMeanValue(u, "p")
+		AdjustMeanValue(u, "p")
 	end,
 	
 	SpaceDiscs = 
 	{
-	  {type = "fv", pmin = 2, pmax = 3, lmin = 4, lmax = numRefs} 
+	  {type = "fv", pmin = 2, pmax = 2, lmin = numRefs, lmax = numRefs} 
 	},
 	
-	AutoStepSize = function (lev, h, p, t) return h / (math.sqrt(2) * p * math.exp(-2*s*s*t/tau))  end,
+	AutoStepSize = function (lev, h, p, t) return h / (math.sqrt(2) * math.exp(-0*s*s*t/tau))  end,
 	AutoTimeDisc = "sdirk",
 
 --[[	
