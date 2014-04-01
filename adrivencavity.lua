@@ -566,6 +566,7 @@ else
 			print("vertex number after coarsening " .. vertexNumber)
 			
 			--	mark for refinement
+			--refiner:set_adjusted_marks_debug_filename("adjmarks-"..step..".ugx")
 			if(refTol >= 0) then
 				print("Estimating error")
 				refiner:clear_marks()
@@ -591,7 +592,7 @@ else
 			
 			MarkForRefinement_VerticesInSphere(dom, refiner, MakeVec(-0.5, 0) , 0.6 )
 			refiner:refine()
-		
+			--SaveGridHierarchyTransformed(dom:grid(), "gh-"..step..".ugx", 0.1)
 			-- 8. defragment approximation space
 			
 			vertexNumber = ParallelSum(dom:grid():num_vertices())
