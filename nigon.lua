@@ -155,7 +155,7 @@ u = GridFunction(approxSpace)
 LUSolver = LU()
 LUSolver:set_minimum_for_sparse(100000)
 
-cmpGS = ComponentGaussSeidel(0.8, "p", {0,1,2,1,0}, {1,1,1,1})
+cmpGS = ComponentGaussSeidel(0.8, {"p"}, {0,1,2,1,0}, {1,1,1,1})
 
 transfer = StdTransfer()
 transfer:set_restriction_damping(0.25)
