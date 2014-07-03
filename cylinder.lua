@@ -85,19 +85,24 @@ function CreateDomain()
 	InitUG(dim, AlgebraType("CPU", 1))
 	local dom = Domain()
 	LoadDomain(dom, gridName)
-	ProjectVerticesToSphere(dom, {0.2, 0.2}, 0.05, 0.001)
+	
 	
 	-- Create a refiner instance. This is a factory method
 	-- which automatically creates a parallel refiner if required.
 	local refiner =  GlobalDomainRefiner(dom)
-	if     dim == 2 then falloffProjector = SphericalFalloffProjector(dom, {0.2, 0.2}, 0.1, 0.15)
-	elseif dim == 3 then falloffProjector = CylindricalFalloffProjector(dom, {0.5, 0.2, 0.0}, {0, 0, 1}, 0.04, 0.1)
+	if     dim == 2 then 
+		ProjectVerticesToSphere(dom, {0.2, 0.2}, 0.05, 0.001)
+		falloffProjector = SphericalFalloffProjector(dom, {0.2, 0.2}, 0.1, 0.15)
+	elseif dim == 3 then 
+		falloffProjector = CylindricalFalloffProjector(dom, {0.5, 0.2, 0.0}, {0, 0, 1}, 0.04, 0.1)
 	end
 	local refProjector = DomainRefinementProjectionHandler(dom)
 	refProjector:set_callback("Inner", falloffProjector)
 	refProjector:set_callback("CylinderWall", falloffProjector)
---	refProjector:set_callback("BackWall", falloffProjector)
---	refProjector:set_callback("FrontWall", falloffProjector)
+	if dim == 3 then
+	refProjector:set_callback("BackWall", falloffProjector)
+	refProjector:set_callback("FrontWall", falloffProjector)
+	end
 	refiner:set_refinement_callback(refProjector)
 	
 	write("Pre-Refining("..numPreRefs.."): ")
@@ -163,10 +168,10 @@ function CreateDomainDisc(approxSpace, discType, vorder, porder)
 		NavierStokesDisc:set_stabilization(3)
 	end
 	if discType == "fe" then
-		NavierStokesDisc:set_quad_order(math.pow(vorder, dim)+10)
+		NavierStokesDisc:set_quad_order(math.pow(vorder, dim)+2)
 	end
 	if discType == "fv" then
-		NavierStokesDisc:set_quad_order(math.pow(vorder, dim)+10)
+		NavierStokesDisc:set_quad_order(math.pow(vorder, dim)+2)
 	end
 	
 	-- setup Outlet
@@ -229,11 +234,11 @@ function CreateSolver(approxSpace, discType, p)
 	--gmg:set_transfer(transfer)
 	
 	local sol = util.solver.parseParams()
-	local solver = util.solver.create(sol, gmg)
+	local solver = util.solver.create(sol, smoother)
 	if bStokes then
 		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-99, true))
 	else 
-		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-3, true))	
+		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-2, true))	
 	end
 		
 	local convCheck = ConvCheck(500, 1e-11, 1e-99, true)
@@ -545,6 +550,7 @@ if not(bConvRates) and not(bBenchmarkRates) then
 	local u = GridFunction(approxSpace)
 	u:set(0)
 	
+--	ComputeNonLinearSolution(u, CreateDomainDisc(approxSpace, "fe", p), solver)
 	ComputeNonLinearSolution(u, domainDisc, solver)
 
 	local FctCmp = approxSpace:names()
