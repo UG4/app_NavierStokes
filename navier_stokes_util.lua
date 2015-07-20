@@ -7,7 +7,7 @@ util.ns = util.ns or {}
 
 function util.ns.parseParams()
 
-	local discType = util.GetParam("-type", "fvcr", "Disc type", {"fv1","fv","fe","fecr","fvcr"})
+	local discType = util.GetParam("-type", "fv1", "Disc type", {"fv1","fv","fe","fecr","fvcr"})
 	
 	local order, vorder, porder
 	if discType == "fe" or discType == "fv" then
