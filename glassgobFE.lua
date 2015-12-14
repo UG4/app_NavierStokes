@@ -16,6 +16,7 @@ dim 		= util.GetParamNumber("-dim", 2, "world dimension")
 order 		= util.GetParamNumber("-order", 1, "order pressure and velocity space")
 dt 			= util.GetParamNumber("-dt", 0.01)
 numTimeSteps =  util.GetParamNumber("-numTimeSteps", 109)
+numRefs    = util.GetParamNumber("-numRefs",    0, "number of refinements")
 
 -- Material constants
 TRinne = 120.0
@@ -111,12 +112,12 @@ end
 
 function sourceY(x, y, t)
 	if t > 0.5-1e-8 and t < 0.6+1e-8 then
-		return -9.81*6*0.886*density--math.sin(30)
+		return -9.81*6*0.886--math.sin(30)
 	else
 		if t < 0.99+1e-8 and t > 0.6+1e-8 then
-			return -9.81*0.886*density--*math.sin(30)
+			return -9.81*0.886--*math.sin(30)
 		else
-			if t > 0.99+1e-8 then	return -9.81*5*0.886*density--*math.sin(30)
+			if t > 0.99+1e-8 then	return -9.81*5*0.886 --*math.sin(30)
 			else return 0.0 end
 		end
 	end
@@ -132,8 +133,10 @@ end
 
 InitUG(dim, AlgebraType("CPU", 1))
 	
-dom = Domain()
-LoadDomain(dom, gridName)
+--dom = Domain()
+--LoadDomain(dom, gridName)
+
+dom = util.CreateAndDistributeDomain(gridName, numRefs, 0, {})
 
 -- create Approximation Space
 print("Create ApproximationSpace")
@@ -156,7 +159,7 @@ print(rhs)
 print(approxSpaceVel:names())
 NavierStokesDisc = NavierStokes(approxSpaceVel:names(), {"inner"}, discType)
 NavierStokesDisc:set_source(rhs)
-NavierStokesDisc:set_density(2350.0)
+NavierStokesDisc:set_density( density )
 NavierStokesDisc:set_stokes(true)
 NavierStokesDisc:set_exact_jacobian(true)	--??
 NavierStokesDisc:set_kinematic_viscosity("VogelFulcherTammannEquation");
@@ -182,6 +185,7 @@ InletDisc:add("velSol"..dim.."d", "top")
 --setup Walles
 WallDisc = NavierStokesWall(NavierStokesDisc)
 WallDisc:add("bottom")
+
 Wall1Disc = DirichletBoundary()
 Wall1Disc:add(0.0, "u", "bottom")
 
@@ -233,7 +237,7 @@ opTemp:init()
 
 newtonSolverTemp = NewtonSolver()
 newtonSolverTemp:set_linear_solver(LU())
-newtonSolverTemp:set_convergence_check(ConvCheck(500, 1e-11, 1e-99, true))
+newtonSolverTemp:set_convergence_check(ConvCheck(500, 1e-10, 1e-99, true))
 
 newtonSolverTemp:init(opTemp)
 
@@ -295,7 +299,7 @@ for step = 1, numTimeSteps do
 	timeDiscVel:prepare_step(solTimeSeriesVel, do_dt)
 
 	-- prepare newton solver
-	if newtonSolverTemp:prepare(u) == false then 
+	if newtonSolverVel:prepare(u) == false then 
 		print ("Newton solver failed at step "..step.."."); exit(); 
 	end 
 	
