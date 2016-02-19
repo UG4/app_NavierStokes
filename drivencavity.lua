@@ -39,6 +39,8 @@ reynoldsNr 	= util.GetParamNumber("-R",100)
 numTimeSteps=  util.GetParamNumber("-numTimeSteps", 5)
 numPreRefs 	= util.GetParamNumber("-numPreRefs", 0)
 numRefs 	= util.GetParamNumber("-numRefs",2)
+structGrid	= util.HasParamOption("-structGrid", "To use a structured (equidistant) grid")
+debugNewton	= util.HasParamOption("-debugNewton", "To switch on the debugging output for the Newton method")
 
 if discrType == "fv1" then 	InitUG(dim, AlgebraType("CPU", dim+1));
 else						InitUG(dim, AlgebraType("CPU", 1));
@@ -84,11 +86,18 @@ if bPLinDefect==false then
 end
 
 if dim == 2 then
-	if elemType == "tri" then 
-		gridName = util.GetParam("-grid", "grids/unit_square_01_tri_unstruct_4bnd.ugx")
+	if elemType == "tri" then
+		if not structGrid then
+			gridName = util.GetParam("-grid", "grids/unit_square_01_tri_unstruct_4bnd.ugx")
+		else
+			gridName = util.GetParam("-grid", "grids/unit_square_01_tri_struct_2x2_4bnd.ugx")
+		end
 	else 
-		gridName = util.GetParam("-grid", "grids/dc_quads.ugx")
---		gridName = util.GetParam("-grid", "unit_square_01/unit_square_01_quads_2x2_four_bnd.ugx")	
+		if not structGrid then
+			gridName = util.GetParam("-grid", "grids/dc_quads.ugx")
+		else
+			gridName = util.GetParam("-grid", "grids/unit_square_01_quads_2x2_4bnd.ugx")
+		end
 	end
 else print("Chosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
@@ -389,9 +398,12 @@ if bNoLineSearch==false then
 	newtonSolver:set_line_search(StandardLineSearch(10, 1.0, 0.9, true))
 end
 
--- newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
-
--- SaveVectorForConnectionViewer(u, "StartSolution.vec")
+if debugNewton then
+	newtonDbgWriter = GridFunctionDebugWriter(approxSpace)
+	newtonDbgWriter:set_conn_viewer_output(true)
+	newtonDbgWriter:set_vtk_output(false)
+	newtonSolver:set_debug(newtonDbgWriter)
+end
 
 --------------------------------------------------------------------------------
 --  Apply Solver
@@ -419,8 +431,6 @@ if boolStat==1 then
 		if newtonSolver:prepare(u) == false then
 		print ("Newton solver prepare failed.") exit()
 	end
-
---	SaveVectorForConnectionViewer(u, "StartSolution.vec")
 
 	if newtonSolver:apply(u) == false then
 		print ("Newton solver apply failed.") exit()
