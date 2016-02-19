@@ -9,7 +9,7 @@
 ug_load_script("ug_util.lua")
 
 dim 		= util.GetParamNumber("-dim", 2)
-type 		= util.GetParam("-type", "fvcr")
+discrType 	= util.GetParam("-type", "fvcr")
 order 		= util.GetParamNumber("-order", 1)
 vorder 		= util.GetParamNumber("-vorder", order)
 porder 		= util.GetParamNumber("-porder", vorder-1)
@@ -40,13 +40,13 @@ numTimeSteps=  util.GetParamNumber("-numTimeSteps", 5)
 numPreRefs 	= util.GetParamNumber("-numPreRefs", 0)
 numRefs 	= util.GetParamNumber("-numRefs",2)
 
-if type == "fv1" then 	InitUG(dim, AlgebraType("CPU", dim+1));
-else					InitUG(dim, AlgebraType("CPU", 1));
+if discrType == "fv1" then 	InitUG(dim, AlgebraType("CPU", dim+1));
+else						InitUG(dim, AlgebraType("CPU", 1));
 end
 
 -- undo fvcr only options if type is not fvcr
 if upwind == "linear" then
-	if type~="fvcr" then
+	if discrType~="fvcr" then
 		print("Upwind type '"..upwind.."' only supported for fvcr discretization.")
 		upwind = "no"
 	else
@@ -59,14 +59,14 @@ else
 end
 
 if bPSep == true then
-	if type~="fvcr" then
+	if discrType~="fvcr" then
 		print("Warning: pressure separation only supported for fvcr discretization.")
 		bPSep=false
 	end
 end
 
 if bPLin == true then
-	if type~="fvcr" then
+	if discrType~="fvcr" then
 		print("Warning: pressure gradient defect modification only supported for fvcr discretization.")
 		bPLin=false
 	end
@@ -93,7 +93,7 @@ if dim == 2 then
 else print("Chosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
 if bNoUpwindInDefect == true then
-	if type~="fvcr" then
+	if discrType~="fvcr" then
 		print("Warning: no upwind in defect modification only supported for fvcr discretization.")
 		bNoUpwindInDefect=false
 	else
@@ -101,7 +101,7 @@ if bNoUpwindInDefect == true then
 	end
 end
 if bLinUpwindInDefect == true then
-	if type~="fvcr" then
+	if discrType~="fvcr" then
 		print("Warning: linear upwind in defect modification only supported for fvcr discretization.")
 		bLinUpwindInDefect=false
 	else
@@ -114,7 +114,7 @@ print(" Chosen Parameters:")
 print("    dim                 = " .. dim)
 print("    numTotalRefs        = " .. numRefs)
 print("    numPreRefs          = " .. numPreRefs)
-print("    type                = " .. type)
+print("    type                = " .. discrType)
 if boolStat==false then
 print("    dt                  = " .. dt)
 print("    numTimeSteps        = " .. numTimeSteps)
@@ -127,12 +127,12 @@ print("    grad-div factor     = " .. graddivFactor)
 print("    exact jacob. factor = " .. exJacFactor)
 print("    peclet blend        = " .. tostring(bPecletBlend))
 print("    upwind              = " .. upwind)
-if type=="fv1" then
+if discrType=="fv1" then
 print("    pac upwind          = " .. tostring(bPac))
 print("    stab                = " .. stab)
 print("    diffLength          = " .. diffLength)
 end
-if type=="fvcr" then
+if discrType=="fvcr" then
 print("    pressure separation = " .. tostring(bPSep))
 print("    no upwind in defect = " .. tostring(bNoUpwindInDefect))
 if bLinUpwind==true then
@@ -173,12 +173,12 @@ elseif  dim == 2 then VelCmp = {"u", "v"} FctCmp = {"u", "v", "p"}
 elseif  dim == 3 then VelCmp = {"u", "v", "w"} FctCmp = {"u", "v", "w", "p"}
 else print("Choosen Dimension " .. dim .. "not supported. Exiting.") exit() end
 
-if type == "fv1" then
+if discrType == "fv1" then
 	approxSpace:add_fct(FctCmp, "Lagrange", 1) 
-elseif type == "fv" then
+elseif discrType == "fv" then
 	approxSpace:add_fct(VelCmp, "Lagrange", vorder) 
 	approxSpace:add_fct("p", "Lagrange", porder) 
-elseif type == "fe" then
+elseif discrType == "fe" then
 	if porder==0 then
 		if vorder==1 then
 			approxSpace:add_fct(VelCmp, "Crouzeix-Raviart",1)
@@ -190,10 +190,10 @@ elseif type == "fe" then
 		approxSpace:add_fct(VelCmp, "Lagrange", vorder) 
 		approxSpace:add_fct("p", "Lagrange", porder) 
 	end
-elseif type=="fvcr" then
+elseif discrType=="fvcr" then
 	approxSpace:add_fct(VelCmp, "Crouzeix-Raviart")
 	approxSpace:add_fct("p", "piecewise-constant") 
-else print("Disc Type '"..type.."' not supported.") exit() end
+else print("Disc Type '"..discrType.."' not supported.") exit() end
 
 -- finally we print some statistic on the distributed dofs
 approxSpace:init_levels()
@@ -205,38 +205,38 @@ approxSpace:print_local_dof_statistic(2)
 -- Discretization
 --------------------------------------------------------------------------------
 
-NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, type)
+NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discrType)
 
 fctUsed = "u"
 if dim >= 2 then fctUsed = fctUsed .. ", v" end
 if dim >= 3 then fctUsed = fctUsed .. ", w" end
 fctUsed = fctUsed .. ", p"
 
-NavierStokesDisc = NavierStokes(fctUsed, "Inner", type)
+NavierStokesDisc = NavierStokes(fctUsed, "Inner", discrType)
 NavierStokesDisc:set_exact_jacobian(exJacFactor)
 NavierStokesDisc:set_stokes(bStokes)
 NavierStokesDisc:set_laplace( not(bNoLaplace) )
 NavierStokesDisc:set_kinematic_viscosity(1.0/reynoldsNr)
 
 --upwind if available
-if type == "fv1" or type == "fvcr" then
+if discrType == "fv1" or discrType == "fvcr" then
 	NavierStokesDisc:set_upwind(upwind)
 	NavierStokesDisc:set_peclet_blend(bPecletBlend)
 end
 
 -- fv1 must be stablilized
-if type == "fv1" then
+if discrType == "fv1" then
 	NavierStokesDisc:set_stabilization(stab, diffLength)
 	NavierStokesDisc:set_pac_upwind(bPac)
 end
 
 -- set grad div factor if available
-if type == "fvcr" then
+if discrType == "fvcr" then
 	NavierStokesDisc:set_grad_div(graddivFactor)
 end
 
 -- fe must be stabilized for (Pk, Pk) space
-if type == "fe" and porder == vorder then
+if discrType == "fe" and porder == vorder then
 	NavierStokesDisc:set_stabilization(3)
 end
 
@@ -276,7 +276,8 @@ u = GridFunction(approxSpace)
 if bNoUpwindInDefect == true then
 	NavierStokesDisc:set_defect_upwind(false)
 end
-if type=="fvcr" then
+tOrder = 0.0
+if discrType=="fvcr" then
 	tBefore = os.clock()
 --	OrderCRCuthillMcKee(approxSpace,u,true)
 --	CROrderCuthillMcKee(approxSpace,u,true,false,false,true)
@@ -286,11 +287,13 @@ if type=="fvcr" then
 	-- OrderLex(approxSpace, "lr")
 	tAfter = os.clock()
 	tOrder = tAfter-tBefore
-	print("Ordering took " .. tAfter-tBefore .. " seconds.")
-else
-	if type=="fv1" then
-		OrderCuthillMcKee(approxSpace,true)
-	end
+	print("Ordering took " .. tOrder .. " seconds.")
+elseif discrType=="fv1" then
+	tBefore = os.clock()
+	OrderCuthillMcKee(approxSpace,true)
+	tAfter = os.clock()
+	tOrder = tAfter-tBefore
+	print("Ordering took " .. tOrder .. " seconds.")
 end
 u:set(0)
 
@@ -312,32 +315,33 @@ ilutSolver = LinearSolver()
 ilutSolver:set_preconditioner(ilut)
 ilutSolver:set_convergence_check(ConvCheck(100000,  lintol, linred, true))
 
-if type=="fv1" then 
-	ilutsmoother = ILUT()
-	ilutsmoother:set_threshold(1e-4)
---	ilutsmoother:set_info(true)
-	smoother=ilutsmoother
-elseif type=="fvcr" then 
+if discrType=="fv1" then 
+--	smoother = ILUT()
+--	smoother:set_threshold(1e-4)
+--	smoother:set_info(true)
+	smoother = ILU()
+elseif discrType=="fvcr" then 
 	smoother=Vanka()
 	smoother=CRILUT(1e-1,1e-3,true)
-elseif type=="fv" or type=="fe" then 
+elseif discrType=="fv" or discrType=="fe" then 
 	smoother=ElementGaussSeidel()
 end
 smoother:set_damp(0.8)
 
-if type=="fv1" then 
-	basePre = ILUT()
-	basePre:set_threshold(1e-7)
-elseif type=="fvcr" then 
+if discrType=="fv1" then 
+--	basePre = ILUT()
+--	basePre:set_threshold(1e-7)
+	basePre = ILU()
+elseif discrType=="fvcr" then 
 	basePre = CRILUT(1e-1,1e-2,false)
-elseif type=="fv" or type=="fe" then 
+elseif discrType=="fv" or discrType=="fe" then 
 	basePre=ElementGaussSeidel()
 end
 baseSolver = LinearSolver()
 baseSolver:set_preconditioner(basePre)
 baseSolver:set_convergence_check(ConvCheck(10000, lintol*0.1,linred*0.1,false))
 
-if type=="fv1" then   
+if discrType=="fv1" then   
 --  for ilu 2 is sufficient
 	numSmooth=2
 else
@@ -364,13 +368,13 @@ BiCGStabSolver = BiCGStab()
 BiCGStabSolver:set_preconditioner(smoother)
 BiCGStabSolver:set_convergence_check(ConvCheck(100000, lintol, linred, true))
 
-if type=="fv1" then 
+if discrType=="fv1" then 
 	solver=gmgSolver
-elseif type=="fvcr" then 
+elseif discrType=="fvcr" then 
 	solver=ilutSolver
 	solver=gmgSolver
 --	solver=egsSolver
-elseif type=="fv" or type=="fe" then 
+elseif discrType=="fv" or discrType=="fe" then 
 	solver=egsSolver
 --	solver=ilutSolver
 --	solver=LU()
