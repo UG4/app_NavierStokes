@@ -56,7 +56,7 @@ if dim == 2 then
 	--gridName = util.GetParam("--grid", "grids/cylinder_box_tri_fine.ugx")
 	--gridName = util.GetParam("--grid", "grids/cylinder_rotate_box_tri_fine.ugx")
 elseif dim == 3 then
-	gridName = util.GetParam("--grid", "grids/cylinder3d.ugx")
+	gridName = util.GetParam("--grid", "../grids/cylinder3d.ugx")
     --gridName = util.GetParam("--grid", "grids/cylinder3d_fine.ugx")
 else print("Choosen Dimension not supported. Exiting."); exit(); end
 

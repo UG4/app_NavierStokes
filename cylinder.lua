@@ -87,23 +87,28 @@ function CreateDomain()
 	LoadDomain(dom, gridName)
 	
 	
+	-- NOTE: Projector creation in script-code is deprecated. Instead one should
+	--		 add projectors to individual subsets directly in ProMesh.
+	if     dim == 2 then 
+		ProjectVerticesToSphere(dom, {0.2, 0.2}, 0.05, 0.001)
+		falloffProjector = SphereProjector(MakeVec(0.2, 0.2, 0), 0.1, 0.15)
+	elseif dim == 3 then 
+		falloffProjector = CylinderProjector(MakeVec(0.5, 0.2, 0.0), MakeVec(0, 0, 1), 0.04, 0.1)
+	end
+
+	local projHandler = ProjectionHandler(dom:subset_handler())
+	dom:set_refinement_projector(projHandler)
+
+	projHandler:set_projector("Inner", falloffProjector)
+	projHandler:set_projector("CylinderWall", falloffProjector)
+	if dim == 3 then
+		projHandler:set_projector("BackWall", falloffProjector)
+		projHandler:set_projector("FrontWall", falloffProjector)
+	end
+
 	-- Create a refiner instance. This is a factory method
 	-- which automatically creates a parallel refiner if required.
 	local refiner =  GlobalDomainRefiner(dom)
-	if     dim == 2 then 
-		ProjectVerticesToSphere(dom, {0.2, 0.2}, 0.05, 0.001)
-		falloffProjector = SphericalFalloffProjector(dom, {0.2, 0.2}, 0.1, 0.15)
-	elseif dim == 3 then 
-		falloffProjector = CylindricalFalloffProjector(dom, {0.5, 0.2, 0.0}, {0, 0, 1}, 0.04, 0.1)
-	end
-	local refProjector = DomainRefinementProjectionHandler(dom)
-	refProjector:set_callback("Inner", falloffProjector)
-	refProjector:set_callback("CylinderWall", falloffProjector)
-	if dim == 3 then
-	refProjector:set_callback("BackWall", falloffProjector)
-	refProjector:set_callback("FrontWall", falloffProjector)
-	end
-	refiner:set_refinement_callback(refProjector)
 	
 	write("Pre-Refining("..numPreRefs.."): ")
 	for i=1,numPreRefs do write(i .. " ");	refiner:refine(); end
