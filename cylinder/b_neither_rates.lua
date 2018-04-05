@@ -30,10 +30,10 @@ if not(bConvRates) and not(bBenchmarkRates) then
 		local C_L = 2*DL[2]/(Umean2*L)
 	
 		local PEval = GlobalGridFunctionNumberData(u, "p")
-		local Delta_P = PEval:evaluate({0.15, 0.2}) - PEval:evaluate( {0.25, 0.2} )
+		local Delta_P = PEval:evaluate_global({0.15, 0.2}) - PEval:evaluate_global( {0.25, 0.2} )
 	
-		print("p1: "..PEval:evaluate({0.15, 0.2}))
-		print("p2: "..PEval:evaluate({0.25, 0.2}))
+		print("p1: "..PEval:evaluate_global({0.15, 0.2}))
+		print("p2: "..PEval:evaluate_global({0.25, 0.2}))
 	
 		print("C_D - ref.CD: "..string.format("%.3e", C_D - ref.CD))
 		print("C_L - ref.CL: "..string.format("%.3e", C_L - ref.CL))
