@@ -13,7 +13,7 @@ Please install/clone this repository through UG4's package manager
 ## How to use the navier_stokes scripts ##
 Once you compiled UG4 (with the cmake option -DNavierStokes=ON)
 and after sourcing 'ugbash'
-(cf. https://github.com/UG4/ughub/wiki#compilation-of-ug4),
+(cf. https://github.com/UG4/ughub#compilation-of-ug4),
 you may execute a script like this (from any folder you like):
 
     ugshell -ex navier_stokes/drivencavity.lua
