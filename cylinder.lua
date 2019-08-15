@@ -233,7 +233,7 @@ function CreateSolver(approxSpace, discType)
 	end
 	
 	smootherDesc = util.smooth.parseParams()
-	smoother = util.smooth.create(smootherDesc)
+--	smoother = util.smooth.create(smootherDesc)
 
 	local numPreSmooth, numPostSmooth, baseLev, cycle, bRAP = util.gmg.parseParams()
 	local gmg = util.gmg.create(approxSpace, smoother, numPreSmooth, numPostSmooth,
