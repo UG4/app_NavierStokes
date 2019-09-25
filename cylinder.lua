@@ -32,7 +32,7 @@ upwind      = util.GetParam("-upwind", "lps", "Upwind type")
 stab        = util.GetParam("-stab", "flow", "Stabilization type")
 diffLength  = util.GetParam("-difflength", "cor", "Diffusion length type")
 
-discType, vorder, porder = util.ns.parseParams()
+local discType, vorder, porder = util.ns.parseParams()
 
 local Viscosity	= 1e-3
 local Um = 0.3
@@ -126,9 +126,11 @@ function CreateDomain()
 	return dom
 end
 
-function CreateApproxSpace(dom, discType, p)
+function CreateApproxSpace(dom, discType, vorder, porder)
 
-	local approxSpace = util.ns.CreateApproxSpace(dom, discType, p, p-1)
+	if porder == nil then porder = vorder -1 end
+
+	local approxSpace = util.ns.CreateApproxSpace(dom, discType, vorder, porder)
 	
 	-- print statistic on the distributed dofs
 	--approxSpace:init_levels()
@@ -143,7 +145,7 @@ end
 -- Discretization
 --------------------------------------------------------------------------------
 globalNSDisc = nil
-function CreateDomainDisc(approxSpace, discType, vorder, porder)
+function CreateDomainDisc(approxSpace, discType)
 
 	local FctCmp = approxSpace:names()
 	NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discType)
@@ -170,7 +172,7 @@ function CreateDomainDisc(approxSpace, discType, vorder, porder)
 	
 	-- fe must be stabilized for (Pk, Pk) space
 	if discType == "fe" and porder == vorder then
-		NavierStokesDisc:set_stabilization(3)
+		NavierStokesDisc:set_stabilization(10)
 	end
 	if discType == "fe" then
 		NavierStokesDisc:set_quad_order(math.pow(vorder, dim)+2)
@@ -216,7 +218,7 @@ end
 -- Solution of the Problem
 --------------------------------------------------------------------------------
 
-function CreateSolver(approxSpace, discType, p)
+function CreateSolver(approxSpace, discType)
 
 	local base = SuperLU()
 	
@@ -230,16 +232,19 @@ function CreateSolver(approxSpace, discType, p)
 		smoother = ComponentGaussSeidel(0.1, {"p"}, {0}, {1})
 	end
 	
+	smootherDesc = util.smooth.parseParams()
+--	smoother = util.smooth.create(smootherDesc)
+
 	local numPreSmooth, numPostSmooth, baseLev, cycle, bRAP = util.gmg.parseParams()
 	local gmg = util.gmg.create(approxSpace, smoother, numPreSmooth, numPostSmooth,
 							 cycle, base, baseLev, bRAP)
 	gmg:add_prolongation_post_process(AverageComponent("p"))
 	transfer = StdTransfer()
 	transfer:enable_p1_lagrange_optimization(false)
-	--gmg:set_transfer(transfer)
+	gmg:set_transfer(transfer)
 	
 	local sol = util.solver.parseParams()
-	local solver = util.solver.create(sol, smoother)
+	local solver = util.solver.create(sol, gmg)
 	if bStokes then
 		solver:set_convergence_check(ConvCheck(10000, 5e-12, 1e-99, true))
 	else 
@@ -251,7 +256,7 @@ function CreateSolver(approxSpace, discType, p)
 	local newtonSolver = NewtonSolver()
 	newtonSolver:set_linear_solver(solver)
 	newtonSolver:set_convergence_check(convCheck)
-	newtonSolver:set_line_search(StandardLineSearch(10, 1.0, 0.9, true, true))
+	newtonSolver:set_line_search(StandardLineSearch(10, 1.0, 0.9, false, false))
 	--newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 	
 	return newtonSolver
@@ -372,8 +377,8 @@ if bBenchmarkRates then
 		if not util.HasParamOption("-replot") then
 
 			local approxSpace = util.ns.CreateApproxSpace(dom, discType, p, ppress)
-			local domainDisc = CreateDomainDisc(approxSpace, discType, p, ppress)
-			local solver = CreateSolver(approxSpace, discType, p)
+			local domainDisc = CreateDomainDisc(approxSpace, discType)
+			local solver = CreateSolver(approxSpace, discType)
 		
 			local h, DoFs, level = {}, {}, {}	
 			local meas = {CD = {}, CL = {}, DeltaP = {}}
@@ -545,9 +550,9 @@ if not(bConvRates) and not(bBenchmarkRates) then
 
 	local p = vorder
 	local dom = CreateDomain()
-	local approxSpace = CreateApproxSpace(dom, discType, p)
-	local domainDisc = CreateDomainDisc(approxSpace, discType, p)
-	local solver = CreateSolver(approxSpace, discType, p)
+	local approxSpace = CreateApproxSpace(dom, discType, vorder, porder)
+	local domainDisc = CreateDomainDisc(approxSpace, discType)
+	local solver = CreateSolver(approxSpace, discType)
 	--solver:set_debug(GridFunctionDebugWriter(approxSpace))
 			
 	print(solver:config_string())
