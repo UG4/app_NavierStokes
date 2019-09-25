@@ -1,0 +1,37 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf130
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red28\green0\blue207;\red0\green116\blue0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 For the Cylinder Benchmark 3 scenarios are presented:\
+\
+(1) The fitted case with a mesh, which contains the immersed cylinder\
+(2) The unfitted case with a mesh, which does not contain the immersed cylinder\
+	plus: for the navier stokes discretisation, the enriched finite element space is applied using flat-top ansatz spaces for a good approximation of the pressure forces at the cylinder boundary\
+(3) The unfitted case with a mesh, which does not contain the immersed cylinder\
+	plus: for the navier stokes discretisation, the usual finite element space defined on the non-cut elements is applied yielding a bad approximation of the pressure forces at the cylinder boundary\
+\
+For all 3 scenarios we tested the convergence rate (by comparing the solutions on different refinement levels) and the pressure.\
+\
+Regarding the pressure, the fitted case provides the evaluation of the pressure difference between back and front of the cylinder (delta_p) and the 2 unfitted cases also provide the evaluation of the pressure values along the immersed cylinder (pressure_profile).\
+\
+For more information on these test cases see [1] and [2].\
+\
+\pard\tx529\pardeftab529\pardirnatural\partightenfactor0
+
+\f1\fs22 \cf0 \CocoaLigature0 \
+[1] S. H\'f6llbacher, G. Wittum:\
+    \cf2 'Rotational test spaces for a fully-implicit FVM and FEM for the DNS of\
+\cf0     \cf2 'fluid-particle interaction'\cf0 \
+    Journal of Computational Physics, vol. \cf2 393\cf0 , (\cf2 2019\cf0 ), pp. \cf2 186\cf0 \'96\cf2 213\cf0 \
+    open access link: https:\cf3 //authors.elsevier.com/sd/article/S0021999119303298\cf0 \
+    DOI: https:\cf3 //doi.org/10.1016/j.jcp.2019.05.004\cf0 \
+\
+[2]  S. Hoellbacher, G. Wittum:\
+    \cf2 'Gradient-consistent enrichment of finite element spaces for the DNS\
+\cf0     \cf2 'of fluid-particle interaction.'\cf0 \
+    submitted to Jounal of Computational Physics\
+\
+\
+}

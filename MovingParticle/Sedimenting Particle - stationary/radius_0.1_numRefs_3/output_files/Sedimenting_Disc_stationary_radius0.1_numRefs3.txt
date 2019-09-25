@@ -1,0 +1,2 @@
+1.000000e-01 	 1.547868e+00 	 -3.796146e-02 	 8.150795e-04 	 -1.473893e-04 	 0.000000e+00 	 1.000000e+00 	 0.000000e+00 	  # radius, f1, transVel[0], rotVel[0], transVel[1], rotVel[1], center_coords, (m_bSharedIP = 0 )  
+ 

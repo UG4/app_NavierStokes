@@ -1,0 +1,285 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf130
+{\fonttbl\f0\fnil\fcharset0 Menlo-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab529
+\pard\tx529\pardeftab529\pardirnatural\partightenfactor0
+
+\f0\b\fs22 \cf0 \CocoaLigature0 ********************************************************************************\
+* ugshell - ug4.0.2, head revision 'unknown',                                  *\
+*                    compiled 'Mo 23 Sep 2019 21:21:53 CEST'                   *\
+*                    on 'Susannes-MacBook-Pro-2.local' (DEBUG).                *\
+*                                                                              *\
+* arguments:                                                                   *\
+*   -outproc id:         Sets the output-proc to id. Default is 0.             *\
+*   -ex scriptname:      Executes the specified script.                        *\
+*   -noquit:             Runs the interactive shell after specified script.    *\
+*   -noterm:             Terminal logging will be disabled.                    *\
+*   -logtofile filename: Output will be written to the specified file.         *\
+*   -call:               Combines all following arguments to one lua command   *\
+*                        and executes it. Ignored if it follows '-ex'.         *\
+*                        '(', ')', and '"' have to be escaped, e.g.: '\\('      *\
+* Additional parameters are passed to the script through ugargc and ugargv.    *\
+*                                                                              *\
+* Initializing: paths... done, bridge... done, plugins... done                 *\
+********************************************************************************\
+Pre-Refining(1): 1 done. Distributing... done. Post-Refining(5): 1 2 3 4 5 done.\
+\
+\
+>> -------------------------------------------------------------------\
+>>    Computing solutions and error norms of the following problem\
+>> -------------------------------------------------------------------\
+>>     dim        = 2\
+>>     grid       = grids/cylinder_tri_regular.ugx\
+>>     minLev     = 1\
+>>     maxLev     = 6\
+>>     type       = fv1\
+>>     order      = 1\
+\
+\
+>> Create ApproximationSpace: fv1, 1\
+>> Create Domain Disc: fv1, 1\
+>> Create Solver\
+>> Allocating storage for solution vectors.\
+\
+>> Computing Level 1, fv1, 1.\
+>> Preparing inital guess on level 1.\
+>> Start: Computing solution on level 1.\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    2.663623e-02      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     6.323118e-15   2.373878e-13\
+   #     ++++ Line Search converged.\
+   #    1:    6.323118e-15    2.373878e-13\
+   # Absolute defect norm 1.000000e-10 reached after 1 steps.\
+   # Relative reduction 1.000000e-08 reached after 1 steps.\
+   # Average reduction over 1 steps: 2.373878e-13\
+   # #####  Iteration converged  #####\
+\
+>> Newton Solver done.\
+>> End: Solver done.\
+\
+>> Computing Level 2, fv1, 1.\
+>> Preparing inital guess on level 2.\
+>> Start: Computing solution on level 2.\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    1.906924e-02      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.033368e-15   1.590713e-13\
+   #     ++++ Line Search converged.\
+   #    1:    3.033368e-15    1.590713e-13\
+   # Absolute defect norm 1.000000e-10 reached after 1 steps.\
+   # Relative reduction 1.000000e-08 reached after 1 steps.\
+   # Average reduction over 1 steps: 1.590713e-13\
+   # #####  Iteration converged  #####\
+\
+>> Newton Solver done.\
+>> End: Solver done.\
+\
+>> Computing Level 3, fv1, 1.\
+>> Preparing inital guess on level 3.\
+>> Start: Computing solution on level 3.\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    1.400681e-02      -------\
+SuperLU preprocess, N = 48600, nnz = 1008792... done.\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     9.454297e-16   6.749787e-14\
+   #     ++++ Line Search converged.\
+   #    1:    9.454297e-16    6.749787e-14\
+   # Absolute defect norm 1.000000e-10 reached after 1 steps.\
+   # Relative reduction 1.000000e-08 reached after 1 steps.\
+   # Average reduction over 1 steps: 6.749787e-14\
+   # #####  Iteration converged  #####\
+\
+>> Newton Solver done.\
+>> End: Solver done.\
+\
+>> Computing Level 4, fv1, 1.\
+>> Preparing inital guess on level 4.\
+>> Start: Computing solution on level 4.\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    1.123484e-02      -------\
+SuperLU preprocess, N = 192432, nnz = 4017456... done.\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.004997e-16   1.784624e-14\
+   #     ++++ Line Search converged.\
+   #    1:    2.004997e-16    1.784624e-14\
+   # Absolute defect norm 1.000000e-10 reached after 1 steps.\
+   # Relative reduction 1.000000e-08 reached after 1 steps.\
+   # Average reduction over 1 steps: 1.784624e-14\
+   # #####  Iteration converged  #####\
+\
+>> Newton Solver done.\
+>> End: Solver done.\
+\
+>> Computing Level 5, fv1, 1.\
+>> Preparing inital guess on level 5.\
+>> Start: Computing solution on level 5.\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    1.092003e-02      -------\
+SuperLU preprocess, N = 765792, nnz = 16034400... done.\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.665269e-16   3.356465e-14\
+   #     ++++ Line Search converged.\
+   #    1:    3.665269e-16    3.356465e-14\
+   # Absolute defect norm 1.000000e-10 reached after 1 steps.\
+   # Relative reduction 1.000000e-08 reached after 1 steps.\
+   # Average reduction over 1 steps: 3.356465e-14\
+   # #####  Iteration converged  #####\
+\
+>> Newton Solver done.\
+>> End: Solver done.\
+\
+>> Computing Level 6, fv1, 1.\
+>> Preparing inital guess on level 6.\
+>> Start: Computing solution on level 6.\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    1.311032e-02      -------\
+SuperLU preprocess, N = 3055296, nnz = 64066752... done.\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.677304e-15   3.567650e-13\
+   #     ++++ Line Search converged.\
+   #    1:    4.677304e-15    3.567650e-13\
+   # Absolute defect norm 1.000000e-10 reached after 1 steps.\
+   # Relative reduction 1.000000e-08 reached after 1 steps.\
+   # Average reduction over 1 steps: 3.567650e-13\
+   # #####  Iteration converged  #####\
+\
+>> Newton Solver done.\
+>> End: Solver done.\
+\
+>> Error Norm values on Level 6.\
+>> #DoF       on Level 6 is 3055296\
+\
+>> Error Norm values on Level 5.\
+>> #DoF       on Level 5 is 765792\
+>> L2 l-lmax  for u on Level 5 is 2.243e-05\
+>> H1 l-lmax  for u on Level 5 is 1.315e-02\
+>> L2 l-(l-1) for u on Level 5 is 2.243e-05\
+>> H1 l-(l-1) for u on Level 5 is 1.315e-02\
+>> L2 l-lmax  for p on Level 5 is 1.432e-06\
+>> H1 l-lmax  for p on Level 5 is 1.238e-03\
+>> L2 l-(l-1) for p on Level 5 is 1.432e-06\
+>> H1 l-(l-1) for p on Level 5 is 1.238e-03\
+>> L2 l-lmax  for v on Level 5 is 5.008e-06\
+>> H1 l-lmax  for v on Level 5 is 6.979e-03\
+>> L2 l-(l-1) for v on Level 5 is 5.008e-06\
+>> H1 l-(l-1) for v on Level 5 is 6.979e-03\
+\
+>> Error Norm values on Level 4.\
+>> #DoF       on Level 4 is 192432\
+>> L2 l-lmax  for u on Level 4 is 1.116e-04\
+>> H1 l-lmax  for u on Level 4 is 2.942e-02\
+>> L2 l-(l-1) for u on Level 4 is 8.953e-05\
+>> H1 l-(l-1) for u on Level 4 is 2.631e-02\
+>> L2 l-lmax  for p on Level 4 is 5.744e-06\
+>> H1 l-lmax  for p on Level 4 is 2.455e-03\
+>> L2 l-(l-1) for p on Level 4 is 4.603e-06\
+>> H1 l-(l-1) for p on Level 4 is 1.778e-03\
+>> L2 l-lmax  for v on Level 4 is 2.457e-05\
+>> H1 l-lmax  for v on Level 4 is 1.562e-02\
+>> L2 l-(l-1) for v on Level 4 is 1.988e-05\
+>> H1 l-(l-1) for v on Level 4 is 1.396e-02\
+\
+>> Error Norm values on Level 3.\
+>> #DoF       on Level 3 is 48600\
+>> L2 l-lmax  for u on Level 3 is 4.660e-04\
+>> H1 l-lmax  for u on Level 3 is 6.038e-02\
+>> L2 l-(l-1) for u on Level 3 is 3.561e-04\
+>> H1 l-(l-1) for u on Level 3 is 5.264e-02\
+>> L2 l-lmax  for p on Level 3 is 2.062e-05\
+>> H1 l-lmax  for p on Level 3 is 4.023e-03\
+>> L2 l-(l-1) for p on Level 3 is 1.568e-05\
+>> H1 l-(l-1) for p on Level 3 is 2.539e-03\
+>> L2 l-lmax  for v on Level 3 is 1.015e-04\
+>> H1 l-lmax  for v on Level 3 is 3.204e-02\
+>> L2 l-(l-1) for v on Level 3 is 7.825e-05\
+>> H1 l-(l-1) for v on Level 3 is 2.787e-02\
+\
+>> Error Norm values on Level 2.\
+>> #DoF       on Level 2 is 12396\
+>> L2 l-lmax  for u on Level 2 is 1.861e-03\
+>> H1 l-lmax  for u on Level 2 is 1.219e-01\
+>> L2 l-(l-1) for u on Level 2 is 1.403e-03\
+>> H1 l-(l-1) for u on Level 2 is 1.053e-01\
+>> L2 l-lmax  for p on Level 2 is 7.503e-05\
+>> H1 l-lmax  for p on Level 2 is 6.182e-03\
+>> L2 l-(l-1) for p on Level 2 is 5.635e-05\
+>> H1 l-(l-1) for p on Level 2 is 3.739e-03\
+>> L2 l-lmax  for v on Level 2 is 3.989e-04\
+>> H1 l-lmax  for v on Level 2 is 6.438e-02\
+>> L2 l-(l-1) for v on Level 2 is 3.029e-04\
+>> H1 l-(l-1) for v on Level 2 is 5.538e-02\
+\
+>> Error Norm values on Level 1.\
+>> #DoF       on Level 1 is 3222\
+>> L2 l-lmax  for u on Level 1 is 7.173e-03\
+>> H1 l-lmax  for u on Level 1 is 2.462e-01\
+>> L2 l-(l-1) for u on Level 1 is 5.355e-03\
+>> H1 l-(l-1) for u on Level 1 is 2.104e-01\
+>> L2 l-lmax  for p on Level 1 is 2.813e-04\
+>> H1 l-lmax  for p on Level 1 is 9.261e-03\
+>> L2 l-(l-1) for p on Level 1 is 2.106e-04\
+>> H1 l-(l-1) for p on Level 1 is 5.527e-03\
+>> L2 l-lmax  for v on Level 1 is 1.506e-03\
+>> H1 l-lmax  for v on Level 1 is 1.277e-01\
+>> L2 l-(l-1) for v on Level 1 is 1.131e-03\
+>> H1 l-(l-1) for v on Level 1 is 1.080e-01\
+\
+>> Statistic for type: fv1, order: 1, comp: u [ u ]\
+\
+ L |        h |   #DoFs | l2 l-lmax |  rate | h1 l-lmax |  rate | l2 l-prev |  rate | h1 l-prev |  rate |\
+---------------------------------------------------------------------------------------------------------\
+ 1 | 1.55e-01 |    3222 |  7.17e-03 |    -- |  2.46e-01 |    -- |  5.35e-03 |    -- |  2.10e-01 |    -- |\
+ 2 | 7.76e-02 |   12396 |  1.86e-03 | 1.947 |  1.22e-01 | 1.014 |  1.40e-03 | 1.932 |  1.05e-01 | 0.998 |\
+ 3 | 3.88e-02 |   48600 |  4.66e-04 | 1.998 |  6.04e-02 | 1.013 |  3.56e-04 | 1.978 |  5.26e-02 | 1.000 |\
+ 4 | 1.94e-02 |  192432 |  1.12e-04 | 2.062 |  2.94e-02 | 1.037 |  8.95e-05 | 1.992 |  2.63e-02 | 1.001 |\
+ 5 | 9.70e-03 |  765792 |  2.24e-05 | 2.314 |  1.31e-02 | 1.162 |  2.24e-05 | 1.997 |  1.31e-02 | 1.001 |\
+ 6 | 4.85e-03 | 3055296 |        -- |    -- |        -- |    -- |        -- |    -- |        -- |    -- |\
+\
+>> Statistic for type: fv1, order: 1, comp: p [ p ]\
+\
+ L |        h |   #DoFs | l2 l-lmax |  rate | h1 l-lmax |  rate | l2 l-prev |  rate | h1 l-prev |  rate |\
+---------------------------------------------------------------------------------------------------------\
+ 1 | 1.55e-01 |    3222 |  2.81e-04 |    -- |  9.26e-03 |    -- |  2.11e-04 |    -- |  5.53e-03 |    -- |\
+ 2 | 7.76e-02 |   12396 |  7.50e-05 | 1.907 |  6.18e-03 | 0.583 |  5.63e-05 | 1.902 |  3.74e-03 | 0.564 |\
+ 3 | 3.88e-02 |   48600 |  2.06e-05 | 1.863 |  4.02e-03 | 0.620 |  1.57e-05 | 1.845 |  2.54e-03 | 0.558 |\
+ 4 | 1.94e-02 |  192432 |  5.74e-06 | 1.844 |  2.46e-03 | 0.712 |  4.60e-06 | 1.768 |  1.78e-03 | 0.514 |\
+ 5 | 9.70e-03 |  765792 |  1.43e-06 | 2.004 |  1.24e-03 | 0.987 |  1.43e-06 | 1.685 |  1.24e-03 | 0.522 |\
+ 6 | 4.85e-03 | 3055296 |        -- |    -- |        -- |    -- |        -- |    -- |        -- |    -- |\
+\
+>> Statistic for type: fv1, order: 1, comp: v [ v ]\
+\
+ L |        h |   #DoFs | l2 l-lmax |  rate | h1 l-lmax |  rate | l2 l-prev |  rate | h1 l-prev |  rate |\
+---------------------------------------------------------------------------------------------------------\
+ 1 | 1.55e-01 |    3222 |  1.51e-03 |    -- |  1.28e-01 |    -- |  1.13e-03 |    -- |  1.08e-01 |    -- |\
+ 2 | 7.76e-02 |   12396 |  3.99e-04 | 1.917 |  6.44e-02 | 0.988 |  3.03e-04 | 1.901 |  5.54e-02 | 0.964 |\
+ 3 | 3.88e-02 |   48600 |  1.02e-04 | 1.974 |  3.20e-02 | 1.007 |  7.83e-05 | 1.953 |  2.79e-02 | 0.990 |\
+ 4 | 1.94e-02 |  192432 |  2.46e-05 | 2.047 |  1.56e-02 | 1.036 |  1.99e-05 | 1.977 |  1.40e-02 | 0.998 |\
+ 5 | 9.70e-03 |  765792 |  5.01e-06 | 2.294 |  6.98e-03 | 1.162 |  5.01e-06 | 1.989 |  6.98e-03 | 1.000 |\
+ 6 | 4.85e-03 | 3055296 |        -- |    -- |        -- |    -- |        -- |    -- |        -- |    -- |\
+}

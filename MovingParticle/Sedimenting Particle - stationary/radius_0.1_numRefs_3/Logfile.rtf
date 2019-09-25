@@ -1,0 +1,98 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf130
+{\fonttbl\f0\fnil\fcharset0 Menlo-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab529
+\pard\tx529\pardeftab529\pardirnatural\partightenfactor0
+
+\f0\b\fs22 \cf0 \CocoaLigature0 ********************************************************************************\
+* ugshell - ug4.0.2, head revision 'unknown',                                  *\
+*                    compiled 'Sa 14 Sep 2019 09:22:01 CEST'                   *\
+*                    on 'Susannes-MacBook-Pro-2.local' (DEBUG).                *\
+*                                                                              *\
+* arguments:                                                                   *\
+*   -outproc id:         Sets the output-proc to id. Default is 0.             *\
+*   -ex scriptname:      Executes the specified script.                        *\
+*   -noquit:             Runs the interactive shell after specified script.    *\
+*   -noterm:             Terminal logging will be disabled.                    *\
+*   -logtofile filename: Output will be written to the specified file.         *\
+*   -call:               Combines all following arguments to one lua command   *\
+*                        and executes it. Ignored if it follows '-ex'.         *\
+*                        '(', ')', and '"' have to be escaped, e.g.: '\\('      *\
+* Additional parameters are passed to the script through ugargc and ugargv.    *\
+*                                                                              *\
+* Initializing: paths... done, bridge... done, plugins... done                 *\
+********************************************************************************\
+ Chosen Parameters:\
+    dim              = 2\
+    numTotalRefs     = 3\
+    numPreRefs       = 3\
+    grid             = grids/channel_4x12_irregular_tri_PrsBndCond.ugx\
+	   radius           = 0.1\
+    center           = 1  0\
+	   visc             = 1\
+	   densityFluid		= 1\
+	   densityPrt		= 2\
+    stokes           = true\
+Loading Domain grids/channel_4x12_irregular_tri_PrsBndCond.ugx ... done.\
+Performing integrity check on domain ... done.\
+Pre-Refining(3): 1 2 3 done.\
+Distributing... done.\
+Post-Refining(0): done.\
+| ----------------------------------------------------------------------------------------------------------------------- |\
+|  Number of DoFs (All Procs)                                                                                             |\
+|  Algebra: Block 3 (divide by 3 for #Index)                                                                              |\
+|                                                                                                                         |\
+|    GridLevel   |       Domain |     0: Inner |     1: Upper |     2: Lower |    3: Outlet |     4: Inlet | 5: Pressur.. |\
+| ----------------------------------------------------------------------------------------------------------------------- |\
+| (lev,    0)    |          201 |          105 |           39 |           36 |            9 |            9 |            3 |\
+| (lev,    1)    |          699 |          507 |           75 |           72 |           21 |           21 |            3 |\
+| (lev,    2)    |         2595 |         2211 |          147 |          144 |           45 |           45 |            3 |\
+| (lev,    3)    |         9987 |         9219 |          291 |          288 |           93 |           93 |            3 |\
+| (lev,    0, g) |          201 |          105 |           39 |           36 |            9 |            9 |            3 |\
+| (lev,    1, g) |          699 |          507 |           75 |           72 |           21 |           21 |            3 |\
+| (lev,    2, g) |         2595 |         2211 |          147 |          144 |           45 |           45 |            3 |\
+| (lev,    3, g) |         9987 |         9219 |          291 |          288 |           93 |           93 |            3 |\
+| (surf, top)    |         9987 |         9219 |          291 |          288 |           93 |           93 |            3 |\
+| ----------------------------------------------------------------------------------------------------------------------- |\
+| For Legend and Options: print_statistic("legend").                                                                      |\
+| ----------------------------------------------------------------------------------------------------------------------- |\
+ParticleProvider constructor\
+ParticleProviderSphere constructor\
+init bool_marker done!\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1, 0)\
++++ density = 2\
++++ radius = 0.1\
+\
++++ linear velocity: (0, 0)\
++++ angular velocity: (0, 0)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+\
+ #cut elements: 20\
+\
+ For detailed info on the cut element geometry see file ./'CutElementData.txt'\
+\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    3.081812e-01      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.995558e-14   6.475277e-14\
+   #     ++++ Line Search converged.\
+   #    1:    1.995558e-14    6.475277e-14\
+   # Absolute defect norm 1.000000e-08 reached after 1 steps.\
+   # Relative reduction 1.000000e-09 reached after 1 steps.\
+   # Average reduction over 1 steps: 6.475277e-14\
+   # #####  Iteration converged  #####\
+\
+done.\
+\
+\
+Program ended with exit code: 0}

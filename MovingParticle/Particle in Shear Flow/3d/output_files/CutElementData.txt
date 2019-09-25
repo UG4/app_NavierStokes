@@ -1,0 +1,3776 @@
+--------- New cut element --------
+
+Cut element corner 0: -4.999963e-01, 5.000007e-01 
+Cut element corner 1: -2.594198e-01, 2.118262e-01 
+Cut element corner 2: -5.105775e-01, 3.789510e-01 
+Cut element corner 3: -2.131461e-01, 3.834631e-01 
+Cut element corner 4: -2.468589e-01, 2.290947e-01 
+Cut element corner 5: -2.597865e-01, 3.648540e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.368476e-01, 1.847881e-01 
+Cut element corner 1: -2.594198e-01, 2.118262e-01 
+Cut element corner 2: -2.421051e-01, 2.047918e-01 
+Cut element corner 3: -2.603022e-01, 2.017309e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: -5.105775e-01, 3.789510e-01 
+Cut element corner 1: -3.134440e-01, 2.988623e-01 
+Cut element corner 2: -3.860425e-01, 2.297768e-01 
+Cut element corner 3: -5.211587e-01, 2.579014e-01 
+Cut element corner 4: -2.935170e-01, 2.451055e-01 
+Cut element corner 5: -3.976843e-01, 1.757392e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.468589e-01, 2.290947e-01 
+Cut element corner 1: -2.421051e-01, 2.047918e-01 
+Cut element corner 2: -2.594198e-01, 2.118262e-01 
+Cut element corner 3: -2.603022e-01, 2.017309e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 1
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: -2.594198e-01, 2.118262e-01 
+Cut element corner 1: -2.468589e-01, 2.290947e-01 
+Cut element corner 2: -2.603022e-01, 2.017309e-01 
+Cut element corner 3: -5.105775e-01, 3.789510e-01 
+Cut element corner 4: -2.597865e-01, 3.648540e-01 
+Cut element corner 5: -3.860425e-01, 2.297768e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.597865e-01, 3.648540e-01 
+Cut element corner 1: -5.105775e-01, 3.789510e-01 
+Cut element corner 2: -3.134440e-01, 2.988623e-01 
+Cut element corner 3: -3.860425e-01, 2.297768e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: 5.425036e-01, 7.646814e-02 
+Cut element corner 1: 1.844224e-01, 9.659599e-02 
+Cut element corner 2: 4.355802e-01, -7.052888e-02 
+Cut element corner 3: 3.486770e-01, 1.552134e-01 
+Cut element corner 4: 1.854462e-01, 1.083082e-01 
+Cut element corner 5: 4.354467e-01, -7.036901e-02 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 6.762716e-02, -1.799269e-01 
+Cut element corner 1: 3.123710e-01, -2.399154e-01 
+Cut element corner 2: 2.217333e-01, -3.645229e-01 
+Cut element corner 3: 1.233793e-01, -2.990764e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 1
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: 6.761567e-01, -3.587034e-01 
+Cut element corner 1: 3.180755e-01, -3.385756e-01 
+Cut element corner 2: 5.692333e-01, -5.057004e-01 
+Cut element corner 3: 3.526968e-01, -2.272926e-01 
+Cut element corner 4: 3.202812e-01, -3.133420e-01 
+Cut element corner 5: 3.408841e-01, -2.321725e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.111521e-01, -4.855726e-01 
+Cut element corner 1: 1.257449e-01, -4.287411e-01 
+Cut element corner 2: 1.400806e-01, -4.004396e-01 
+Cut element corner 3: 3.180755e-01, -3.385756e-01 
+Cut element corner 4: 2.792596e-01, -3.363937e-01 
+Cut element corner 5: 2.948034e-01, -3.291209e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.217333e-01, -3.645229e-01 
+Cut element corner 1: 5.692333e-01, -5.057004e-01 
+Cut element corner 2: 2.111521e-01, -4.855726e-01 
+Cut element corner 3: 3.123710e-01, -2.399154e-01 
+Cut element corner 4: 3.408841e-01, -2.321725e-01 
+Cut element corner 5: 2.970746e-01, -2.895697e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.180755e-01, -3.385756e-01 
+Cut element corner 1: 3.202812e-01, -3.133420e-01 
+Cut element corner 2: 2.948034e-01, -3.291209e-01 
+Cut element corner 3: 2.111521e-01, -4.855726e-01 
+Cut element corner 4: 2.970746e-01, -2.895697e-01 
+Cut element corner 5: 1.400806e-01, -4.004396e-01 
+
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 0
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 5.692333e-01, -5.057004e-01 
+Cut element corner 1: 3.180755e-01, -3.385756e-01 
+Cut element corner 2: 2.111521e-01, -4.855726e-01 
+Cut element corner 3: 3.408841e-01, -2.321725e-01 
+Cut element corner 4: 3.202812e-01, -3.133420e-01 
+Cut element corner 5: 2.970746e-01, -2.895697e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.217333e-01, -3.645229e-01 
+Cut element corner 1: 1.233793e-01, -2.990764e-01 
+Cut element corner 2: 3.123710e-01, -2.399154e-01 
+Cut element corner 3: 2.111521e-01, -4.855726e-01 
+Cut element corner 4: 1.400806e-01, -4.004396e-01 
+Cut element corner 5: 2.970746e-01, -2.895697e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.211587e-01, 2.579014e-01 
+Cut element corner 1: -5.317400e-01, 1.368517e-01 
+Cut element corner 2: -1.736588e-01, 1.167238e-01 
+Cut element corner 3: -3.700842e-01, 7.693682e-02 
+Cut element corner 4: -3.370958e-01, 7.331969e-03 
+Cut element corner 5: -2.129322e-01, 6.273115e-02 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 6.691777e-02, -1.714507e-01 
+Cut element corner 1: 5.622301e-02, -1.861537e-01 
+Cut element corner 2: 4.265223e-02, -1.615924e-01 
+Cut element corner 3: -2.911634e-01, -1.513229e-01 
+Cut element corner 4: -1.753504e-01, -2.283869e-01 
+Cut element corner 5: -2.850098e-01, -8.092530e-02 
+
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 0
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -1.736588e-01, 1.167238e-01 
+Cut element corner 1: -2.911634e-01, -1.513229e-01 
+Cut element corner 2: 6.691777e-02, -1.714507e-01 
+Cut element corner 3: -2.129322e-01, 6.273115e-02 
+Cut element corner 4: -2.850098e-01, -8.092530e-02 
+Cut element corner 5: 4.265223e-02, -1.615924e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.911634e-01, -1.513229e-01 
+Cut element corner 1: -1.736588e-01, 1.167238e-01 
+Cut element corner 2: -5.317400e-01, 1.368517e-01 
+Cut element corner 3: -2.850098e-01, -8.092530e-02 
+Cut element corner 4: -2.129322e-01, 6.273115e-02 
+Cut element corner 5: -3.370958e-01, 7.331969e-03 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 4.354467e-01, -7.036901e-02 
+Cut element corner 1: 4.355802e-01, -7.052888e-02 
+Cut element corner 2: 4.354516e-01, -7.047664e-02 
+Cut element corner 3: 4.354227e-01, -7.052003e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: 6.761567e-01, -3.587034e-01 
+Cut element corner 1: 4.355802e-01, -7.052888e-02 
+Cut element corner 2: 3.180755e-01, -3.385756e-01 
+Cut element corner 3: 3.526968e-01, -2.272926e-01 
+Cut element corner 4: 4.354612e-01, -7.069243e-02 
+Cut element corner 5: 3.202812e-01, -3.133420e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.010176e-01, -3.181427e-01 
+Cut element corner 1: 3.180755e-01, -3.385756e-01 
+Cut element corner 2: 2.948034e-01, -3.291209e-01 
+Cut element corner 3: 2.792596e-01, -3.363937e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: 4.355802e-01, -7.052888e-02 
+Cut element corner 1: 4.354612e-01, -7.069243e-02 
+Cut element corner 2: 4.354516e-01, -7.047664e-02 
+Cut element corner 3: 4.354227e-01, -7.052003e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: 3.202812e-01, -3.133420e-01 
+Cut element corner 1: 3.180755e-01, -3.385756e-01 
+Cut element corner 2: 2.948034e-01, -3.291209e-01 
+Cut element corner 3: 3.010176e-01, -3.181427e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: 4.355802e-01, -7.052888e-02 
+Cut element corner 1: 4.354612e-01, -7.069243e-02 
+Cut element corner 2: 4.354227e-01, -7.052003e-02 
+Cut element corner 3: 3.180755e-01, -3.385756e-01 
+Cut element corner 4: 3.202812e-01, -3.133420e-01 
+Cut element corner 5: 3.010176e-01, -3.181427e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.180755e-01, -3.385756e-01 
+Cut element corner 1: 2.792596e-01, -3.363937e-01 
+Cut element corner 2: 3.010176e-01, -3.181427e-01 
+Cut element corner 3: 6.691777e-02, -1.714507e-01 
+Cut element corner 4: 5.622301e-02, -1.861537e-01 
+Cut element corner 5: 6.762991e-02, -1.633037e-01 
+
+Original corner ID: 1
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 4.355802e-01, -7.052888e-02 
+Cut element corner 1: 4.354227e-01, -7.052003e-02 
+Cut element corner 2: 4.354467e-01, -7.036901e-02 
+Cut element corner 3: 1.844224e-01, 9.659599e-02 
+Cut element corner 4: 1.772772e-01, 8.677285e-02 
+Cut element corner 5: 1.854462e-01, 1.083082e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 4.249990e-01, -1.915786e-01 
+Cut element corner 1: 6.691777e-02, -1.714507e-01 
+Cut element corner 2: 3.180755e-01, -3.385756e-01 
+Cut element corner 3: 3.079088e-01, -1.440087e-01 
+Cut element corner 4: 6.762991e-02, -1.633037e-01 
+Cut element corner 5: 3.010176e-01, -3.181427e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 6.691777e-02, -1.714507e-01 
+Cut element corner 1: 4.249990e-01, -1.915786e-01 
+Cut element corner 2: 1.844224e-01, 9.659599e-02 
+Cut element corner 3: 6.762991e-02, -1.633037e-01 
+Cut element corner 4: 3.079088e-01, -1.440087e-01 
+Cut element corner 5: 1.772772e-01, 8.677285e-02 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.180755e-01, -3.385756e-01 
+Cut element corner 1: 4.355802e-01, -7.052888e-02 
+Cut element corner 2: 4.249990e-01, -1.915786e-01 
+Cut element corner 3: 3.010176e-01, -3.181427e-01 
+Cut element corner 4: 4.354227e-01, -7.052003e-02 
+Cut element corner 5: 3.079088e-01, -1.440087e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 4.249990e-01, -1.915786e-01 
+Cut element corner 1: 4.355802e-01, -7.052888e-02 
+Cut element corner 2: 1.844224e-01, 9.659599e-02 
+Cut element corner 3: 3.079088e-01, -1.440087e-01 
+Cut element corner 4: 4.354227e-01, -7.052003e-02 
+Cut element corner 5: 1.772772e-01, 8.677285e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.211587e-01, 2.579014e-01 
+Cut element corner 1: -3.976843e-01, 1.757392e-01 
+Cut element corner 2: -3.700842e-01, 7.693682e-02 
+Cut element corner 3: -2.935170e-01, 2.451055e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: 1.854462e-01, 1.083082e-01 
+Cut element corner 1: 1.593345e-01, 1.067884e-01 
+Cut element corner 2: 1.844224e-01, 9.659599e-02 
+Cut element corner 3: 1.772772e-01, 8.677285e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 1
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: -5.211587e-01, 2.579014e-01 
+Cut element corner 1: -2.935170e-01, 2.451055e-01 
+Cut element corner 2: -3.700842e-01, 7.693682e-02 
+Cut element corner 3: -1.736588e-01, 1.167238e-01 
+Cut element corner 4: -1.696175e-01, 1.629562e-01 
+Cut element corner 5: -2.129322e-01, 6.273115e-02 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 6.762991e-02, -1.633037e-01 
+Cut element corner 1: 4.265223e-02, -1.615924e-01 
+Cut element corner 2: 6.691777e-02, -1.714507e-01 
+Cut element corner 3: 5.622301e-02, -1.861537e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 1
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: -1.736588e-01, 1.167238e-01 
+Cut element corner 1: -1.696175e-01, 1.629562e-01 
+Cut element corner 2: -1.246182e-01, 8.409140e-02 
+Cut element corner 3: 1.844224e-01, 9.659599e-02 
+Cut element corner 4: 1.593345e-01, 1.067884e-01 
+Cut element corner 5: 1.772772e-01, 8.677285e-02 
+
+Original corner ID: 1
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -1.736588e-01, 1.167238e-01 
+Cut element corner 1: -1.246182e-01, 8.409140e-02 
+Cut element corner 2: -2.129322e-01, 6.273115e-02 
+Cut element corner 3: 6.691777e-02, -1.714507e-01 
+Cut element corner 4: 6.762991e-02, -1.633037e-01 
+Cut element corner 5: 4.265223e-02, -1.615924e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 1.844224e-01, 9.659599e-02 
+Cut element corner 1: -1.736588e-01, 1.167238e-01 
+Cut element corner 2: 6.691777e-02, -1.714507e-01 
+Cut element corner 3: 1.772772e-01, 8.677285e-02 
+Cut element corner 4: -1.246182e-01, 8.409140e-02 
+Cut element corner 5: 6.762991e-02, -1.633037e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -1.696175e-01, 1.629562e-01 
+Cut element corner 1: -1.246182e-01, 8.409140e-02 
+Cut element corner 2: -2.129322e-01, 6.273115e-02 
+Cut element corner 3: -1.736588e-01, 1.167238e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 1
+Interface corner ID: 2
+
+--------- New cut element --------
+
+Cut element corner 0: -4.999963e-01, 5.000007e-01 
+Cut element corner 1: -1.380718e-01, 5.000007e-01 
+Cut element corner 2: -2.594198e-01, 2.118262e-01 
+Cut element corner 3: -2.131461e-01, 3.834631e-01 
+Cut element corner 4: -1.481307e-01, 4.015506e-01 
+Cut element corner 5: -2.468589e-01, 2.290947e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.238526e-01, 5.000007e-01 
+Cut element corner 1: 2.110754e-01, 3.749459e-01 
+Cut element corner 2: 1.115990e-01, 2.334231e-01 
+Cut element corner 3: -1.380718e-01, 5.000007e-01 
+Cut element corner 4: 9.638536e-02, 4.047487e-01 
+Cut element corner 5: 5.803736e-02, 2.650913e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.368476e-01, 1.847881e-01 
+Cut element corner 1: -2.594198e-01, 2.118262e-01 
+Cut element corner 2: -2.134458e-01, 2.118262e-01 
+Cut element corner 3: -2.421051e-01, 2.047918e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: -1.380718e-01, 5.000007e-01 
+Cut element corner 1: -1.481307e-01, 4.015506e-01 
+Cut element corner 2: 5.803736e-02, 2.650913e-01 
+Cut element corner 3: -2.594198e-01, 2.118262e-01 
+Cut element corner 4: -2.468589e-01, 2.290947e-01 
+Cut element corner 5: -2.134458e-01, 2.118262e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.594198e-01, 2.118262e-01 
+Cut element corner 1: -2.421051e-01, 2.047918e-01 
+Cut element corner 2: -2.468589e-01, 2.290947e-01 
+Cut element corner 3: -2.134458e-01, 2.118262e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: -1.380718e-01, 5.000007e-01 
+Cut element corner 1: -1.481307e-01, 4.015506e-01 
+Cut element corner 2: 9.638536e-02, 4.047487e-01 
+Cut element corner 3: 5.803736e-02, 2.650913e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: 3.430812e-01, -7.634837e-02 
+Cut element corner 1: 1.744860e-01, -7.634837e-02 
+Cut element corner 2: 3.325532e-01, -1.793902e-01 
+Cut element corner 3: 2.217333e-01, -3.645229e-01 
+Cut element corner 4: 6.762716e-02, -1.799269e-01 
+Cut element corner 5: 3.123710e-01, -2.399154e-01 
+
+Original corner ID: 1
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 5.692333e-01, -5.057004e-01 
+Cut element corner 1: 6.905812e-01, -2.175259e-01 
+Cut element corner 2: 6.761567e-01, -3.587034e-01 
+Cut element corner 3: 3.408841e-01, -2.321725e-01 
+Cut element corner 4: 3.506528e-01, -2.175259e-01 
+Cut element corner 5: 3.526968e-01, -2.272926e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.217333e-01, -3.645229e-01 
+Cut element corner 1: 5.836577e-01, -3.645229e-01 
+Cut element corner 2: 5.692333e-01, -5.057004e-01 
+Cut element corner 3: 3.123710e-01, -2.399154e-01 
+Cut element corner 4: 3.402339e-01, -2.241996e-01 
+Cut element corner 5: 3.408841e-01, -2.321725e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.430812e-01, -7.634837e-02 
+Cut element corner 1: 5.836577e-01, -3.645229e-01 
+Cut element corner 2: 2.217333e-01, -3.645229e-01 
+Cut element corner 3: 3.325532e-01, -1.793902e-01 
+Cut element corner 4: 3.402339e-01, -2.241996e-01 
+Cut element corner 5: 3.123710e-01, -2.399154e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 5.836577e-01, -3.645229e-01 
+Cut element corner 1: 6.905812e-01, -2.175259e-01 
+Cut element corner 2: 5.692333e-01, -5.057004e-01 
+Cut element corner 3: 3.402339e-01, -2.241996e-01 
+Cut element corner 4: 3.506528e-01, -2.175259e-01 
+Cut element corner 5: 3.408841e-01, -2.321725e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.430812e-01, -7.634837e-02 
+Cut element corner 1: 6.905812e-01, -2.175259e-01 
+Cut element corner 2: 5.836577e-01, -3.645229e-01 
+Cut element corner 3: 3.325532e-01, -1.793902e-01 
+Cut element corner 4: 3.506528e-01, -2.175259e-01 
+Cut element corner 5: 3.402339e-01, -2.241996e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 5.569281e-01, 2.176457e-01 
+Cut element corner 1: 5.425036e-01, 7.646814e-02 
+Cut element corner 2: 4.355802e-01, -7.052888e-02 
+Cut element corner 3: 3.730834e-01, 2.176457e-01 
+Cut element corner 4: 3.486770e-01, 1.552134e-01 
+Cut element corner 5: 4.354467e-01, -7.036901e-02 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.238526e-01, 5.000007e-01 
+Cut element corner 1: 1.115990e-01, 2.334231e-01 
+Cut element corner 2: 2.110754e-01, 3.749459e-01 
+Cut element corner 3: 4.644291e-01, 2.118262e-01 
+Cut element corner 4: 1.357239e-01, 2.118262e-01 
+Cut element corner 5: 2.587313e-01, 3.304020e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 1.744860e-01, -7.634837e-02 
+Cut element corner 1: 1.984191e-01, 9.693514e-02 
+Cut element corner 2: 3.430812e-01, -7.634837e-02 
+Cut element corner 3: 2.797338e-01, -3.983134e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 1
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: 4.060645e-01, 1.232824e-01 
+Cut element corner 1: 4.500047e-01, 7.064864e-02 
+Cut element corner 2: 4.160110e-01, 7.064864e-02 
+Cut element corner 3: 4.228429e-01, 8.630624e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: 4.644291e-01, 2.118262e-01 
+Cut element corner 1: 1.357239e-01, 2.118262e-01 
+Cut element corner 2: 2.587313e-01, 3.304020e-01 
+Cut element corner 3: 4.500047e-01, 7.064864e-02 
+Cut element corner 4: 3.960207e-01, 9.258050e-02 
+Cut element corner 5: 4.060645e-01, 1.232824e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.430812e-01, -7.634837e-02 
+Cut element corner 1: 4.644291e-01, 2.118262e-01 
+Cut element corner 2: 4.500047e-01, 7.064864e-02 
+Cut element corner 3: 1.984191e-01, 9.693514e-02 
+Cut element corner 4: 1.357239e-01, 2.118262e-01 
+Cut element corner 5: 3.960207e-01, 9.258050e-02 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.960207e-01, 9.258050e-02 
+Cut element corner 1: 4.060645e-01, 1.232824e-01 
+Cut element corner 2: 4.500047e-01, 7.064864e-02 
+Cut element corner 3: 4.160110e-01, 7.064864e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 1
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: 4.500047e-01, 7.064864e-02 
+Cut element corner 1: 3.960207e-01, 9.258050e-02 
+Cut element corner 2: 4.160110e-01, 7.064864e-02 
+Cut element corner 3: 3.430812e-01, -7.634837e-02 
+Cut element corner 4: 1.984191e-01, 9.693514e-02 
+Cut element corner 5: 2.797338e-01, -3.983134e-02 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 4.500047e-01, 7.064864e-02 
+Cut element corner 1: 5.569281e-01, 2.176457e-01 
+Cut element corner 2: 4.355802e-01, -7.052888e-02 
+Cut element corner 3: 4.228429e-01, 8.630624e-02 
+Cut element corner 4: 3.730834e-01, 2.176457e-01 
+Cut element corner 5: 4.354467e-01, -7.036901e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 1.744860e-01, -7.634837e-02 
+Cut element corner 1: 3.325532e-01, -1.793902e-01 
+Cut element corner 2: 2.797338e-01, -3.983134e-02 
+Cut element corner 3: 3.430812e-01, -7.634837e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 1
+Interface corner ID: 2
+
+--------- New cut element --------
+
+Cut element corner 0: 6.761567e-01, -3.587034e-01 
+Cut element corner 1: 6.905812e-01, -2.175259e-01 
+Cut element corner 2: 4.355802e-01, -7.052888e-02 
+Cut element corner 3: 3.526968e-01, -2.272926e-01 
+Cut element corner 4: 3.506528e-01, -2.175259e-01 
+Cut element corner 5: 4.354612e-01, -7.069243e-02 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 4.355802e-01, -7.052888e-02 
+Cut element corner 1: 4.354467e-01, -7.036901e-02 
+Cut element corner 2: 4.354516e-01, -7.047664e-02 
+Cut element corner 3: 4.500047e-01, 7.064864e-02 
+Cut element corner 4: 4.228429e-01, 8.630624e-02 
+Cut element corner 5: 4.160110e-01, 7.064864e-02 
+
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 0
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 4.355802e-01, -7.052888e-02 
+Cut element corner 1: 4.354516e-01, -7.047664e-02 
+Cut element corner 2: 4.354612e-01, -7.069243e-02 
+Cut element corner 3: 4.500047e-01, 7.064864e-02 
+Cut element corner 4: 4.160110e-01, 7.064864e-02 
+Cut element corner 5: 4.188639e-01, -3.303896e-03 
+
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 4.355802e-01, -7.052888e-02 
+Cut element corner 1: 6.905812e-01, -2.175259e-01 
+Cut element corner 2: 4.500047e-01, 7.064864e-02 
+Cut element corner 3: 4.354612e-01, -7.069243e-02 
+Cut element corner 4: 3.506528e-01, -2.175259e-01 
+Cut element corner 5: 4.188639e-01, -3.303896e-03 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 4.500047e-01, 7.064864e-02 
+Cut element corner 1: 4.160110e-01, 7.064864e-02 
+Cut element corner 2: 4.188639e-01, -3.303896e-03 
+Cut element corner 3: 3.430812e-01, -7.634837e-02 
+Cut element corner 4: 2.797338e-01, -3.983134e-02 
+Cut element corner 5: 3.325532e-01, -1.793902e-01 
+
+Original corner ID: 1
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.430812e-01, -7.634837e-02 
+Cut element corner 1: 4.500047e-01, 7.064864e-02 
+Cut element corner 2: 6.905812e-01, -2.175259e-01 
+Cut element corner 3: 3.325532e-01, -1.793902e-01 
+Cut element corner 4: 4.188639e-01, -3.303896e-03 
+Cut element corner 5: 3.506528e-01, -2.175259e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.238526e-01, 5.000007e-01 
+Cut element corner 1: 5.713526e-01, 3.588232e-01 
+Cut element corner 2: 4.644291e-01, 2.118262e-01 
+Cut element corner 3: 2.110754e-01, 3.749459e-01 
+Cut element corner 4: 2.492945e-01, 3.588232e-01 
+Cut element corner 5: 2.587313e-01, 3.304020e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 5.569281e-01, 2.176457e-01 
+Cut element corner 1: 3.206420e-01, 3.136407e-01 
+Cut element corner 2: 3.730834e-01, 2.176457e-01 
+Cut element corner 3: 4.500047e-01, 7.064864e-02 
+Cut element corner 4: 4.060645e-01, 1.232824e-01 
+Cut element corner 5: 4.228429e-01, 8.630624e-02 
+
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 5.713526e-01, 3.588232e-01 
+Cut element corner 1: 4.500047e-01, 7.064864e-02 
+Cut element corner 2: 4.644291e-01, 2.118262e-01 
+Cut element corner 3: 2.492945e-01, 3.588232e-01 
+Cut element corner 4: 4.060645e-01, 1.232824e-01 
+Cut element corner 5: 2.587313e-01, 3.304020e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 5.569281e-01, 2.176457e-01 
+Cut element corner 1: 4.500047e-01, 7.064864e-02 
+Cut element corner 2: 5.713526e-01, 3.588232e-01 
+Cut element corner 3: 3.206420e-01, 3.136407e-01 
+Cut element corner 4: 4.060645e-01, 1.232824e-01 
+Cut element corner 5: 2.492945e-01, 3.588232e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.180755e-01, -3.385756e-01 
+Cut element corner 1: 1.606277e-01, -5.773072e-01 
+Cut element corner 2: 2.111521e-01, -4.855726e-01 
+Cut element corner 3: 2.792596e-01, -3.363937e-01 
+Cut element corner 4: 4.500696e-02, -4.281320e-01 
+Cut element corner 5: 1.257449e-01, -4.287411e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.911634e-01, -1.513229e-01 
+Cut element corner 1: -9.053005e-02, -4.101824e-01 
+Cut element corner 2: 6.691777e-02, -1.714507e-01 
+Cut element corner 3: -1.753504e-01, -2.283869e-01 
+Cut element corner 4: -6.066794e-02, -3.559632e-01 
+Cut element corner 5: 5.622301e-02, -1.861537e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 6.691777e-02, -1.714507e-01 
+Cut element corner 1: 2.675511e-01, -4.303102e-01 
+Cut element corner 2: 3.180755e-01, -3.385756e-01 
+Cut element corner 3: 5.622301e-02, -1.861537e-01 
+Cut element corner 4: 9.172799e-02, -3.663610e-01 
+Cut element corner 5: 2.792596e-01, -3.363937e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 6.691777e-02, -1.714507e-01 
+Cut element corner 1: -9.053005e-02, -4.101824e-01 
+Cut element corner 2: 2.675511e-01, -4.303102e-01 
+Cut element corner 3: 5.622301e-02, -1.861537e-01 
+Cut element corner 4: -6.066794e-02, -3.559632e-01 
+Cut element corner 5: 9.172799e-02, -3.663610e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.180755e-01, -3.385756e-01 
+Cut element corner 1: 2.675511e-01, -4.303102e-01 
+Cut element corner 2: 1.606277e-01, -5.773072e-01 
+Cut element corner 3: 2.792596e-01, -3.363937e-01 
+Cut element corner 4: 9.172799e-02, -3.663610e-01 
+Cut element corner 5: 4.500696e-02, -4.281320e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 1.606277e-01, -5.773072e-01 
+Cut element corner 1: 2.675511e-01, -4.303102e-01 
+Cut element corner 2: -9.053005e-02, -4.101824e-01 
+Cut element corner 3: 4.500696e-02, -4.281320e-01 
+Cut element corner 4: 9.172799e-02, -3.663610e-01 
+Cut element corner 5: -6.066794e-02, -3.559632e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.664196e-02, 1.946040e-01 
+Cut element corner 1: -2.809257e-01, -7.952781e-02 
+Cut element corner 2: -2.594198e-01, 2.118262e-01 
+Cut element corner 3: -2.080741e-02, -8.106688e-03 
+Cut element corner 4: -7.226061e-02, -7.699640e-02 
+Cut element corner 5: -2.368476e-01, 1.847881e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.217333e-01, -3.645229e-01 
+Cut element corner 1: -4.034920e-02, -3.677023e-01 
+Cut element corner 2: 2.139346e-01, -9.357058e-02 
+Cut element corner 3: 6.762716e-02, -1.799269e-01 
+Cut element corner 4: -2.210420e-02, -1.205266e-01 
+Cut element corner 5: 2.351422e-02, -7.948222e-02 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.139346e-01, -9.357058e-02 
+Cut element corner 1: -2.809257e-01, -7.952781e-02 
+Cut element corner 2: -2.664196e-02, 1.946040e-01 
+Cut element corner 3: 2.351422e-02, -7.948222e-02 
+Cut element corner 4: -7.226061e-02, -7.699640e-02 
+Cut element corner 5: -2.080741e-02, -8.106688e-03 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.809257e-01, -7.952781e-02 
+Cut element corner 1: 2.139346e-01, -9.357058e-02 
+Cut element corner 2: -4.034920e-02, -3.677023e-01 
+Cut element corner 3: -7.226061e-02, -7.699640e-02 
+Cut element corner 4: 2.351422e-02, -7.948222e-02 
+Cut element corner 5: -2.210420e-02, -1.205266e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.139346e-01, -9.357058e-02 
+Cut element corner 1: 3.430812e-01, -7.634837e-02 
+Cut element corner 2: 2.217333e-01, -3.645229e-01 
+Cut element corner 3: 2.351422e-02, -7.948222e-02 
+Cut element corner 4: 1.744860e-01, -7.634837e-02 
+Cut element corner 5: 6.762716e-02, -1.799269e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.594198e-01, 2.118262e-01 
+Cut element corner 1: -2.368476e-01, 1.847881e-01 
+Cut element corner 2: -2.134458e-01, 2.118262e-01 
+Cut element corner 3: -2.664196e-02, 1.946040e-01 
+Cut element corner 4: -2.080741e-02, -8.106688e-03 
+Cut element corner 5: 9.439130e-02, 2.107442e-01 
+
+Original corner ID: 1
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -1.380718e-01, 5.000007e-01 
+Cut element corner 1: 2.238526e-01, 5.000007e-01 
+Cut element corner 2: 9.470596e-02, 4.827785e-01 
+Cut element corner 3: 5.803736e-02, 2.650913e-01 
+Cut element corner 4: 1.115990e-01, 2.334231e-01 
+Cut element corner 5: 1.022310e-01, 2.213345e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.664196e-02, 1.946040e-01 
+Cut element corner 1: -1.380718e-01, 5.000007e-01 
+Cut element corner 2: 9.470596e-02, 4.827785e-01 
+Cut element corner 3: 9.439130e-02, 2.107442e-01 
+Cut element corner 4: 5.803736e-02, 2.650913e-01 
+Cut element corner 5: 1.022310e-01, 2.213345e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.594198e-01, 2.118262e-01 
+Cut element corner 1: -1.380718e-01, 5.000007e-01 
+Cut element corner 2: -2.664196e-02, 1.946040e-01 
+Cut element corner 3: -2.134458e-01, 2.118262e-01 
+Cut element corner 4: 5.803736e-02, 2.650913e-01 
+Cut element corner 5: 9.439130e-02, 2.107442e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.664196e-02, 1.946040e-01 
+Cut element corner 1: -2.080741e-02, -8.106688e-03 
+Cut element corner 2: 9.439130e-02, 2.107442e-01 
+Cut element corner 3: 2.139346e-01, -9.357058e-02 
+Cut element corner 4: 2.351422e-02, -7.948222e-02 
+Cut element corner 5: 1.105110e-01, 1.898831e-01 
+
+Original corner ID: 1
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.352825e-01, 1.946040e-01 
+Cut element corner 1: 9.470596e-02, 4.827785e-01 
+Cut element corner 2: 2.238526e-01, 5.000007e-01 
+Cut element corner 3: 1.115658e-01, 2.111558e-01 
+Cut element corner 4: 1.022310e-01, 2.213345e-01 
+Cut element corner 5: 1.115990e-01, 2.334231e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.664196e-02, 1.946040e-01 
+Cut element corner 1: 9.470596e-02, 4.827785e-01 
+Cut element corner 2: 3.352825e-01, 1.946040e-01 
+Cut element corner 3: 9.439130e-02, 2.107442e-01 
+Cut element corner 4: 1.022310e-01, 2.213345e-01 
+Cut element corner 5: 1.115658e-01, 2.111558e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.139346e-01, -9.357058e-02 
+Cut element corner 1: -2.664196e-02, 1.946040e-01 
+Cut element corner 2: 3.352825e-01, 1.946040e-01 
+Cut element corner 3: 1.105110e-01, 1.898831e-01 
+Cut element corner 4: 9.439130e-02, 2.107442e-01 
+Cut element corner 5: 1.115658e-01, 2.111558e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.430812e-01, -7.634837e-02 
+Cut element corner 1: 1.984191e-01, 9.693514e-02 
+Cut element corner 2: 1.744860e-01, -7.634837e-02 
+Cut element corner 3: 2.139346e-01, -9.357058e-02 
+Cut element corner 4: 1.105110e-01, 1.898831e-01 
+Cut element corner 5: 2.351422e-02, -7.948222e-02 
+
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.238526e-01, 5.000007e-01 
+Cut element corner 1: 4.644291e-01, 2.118262e-01 
+Cut element corner 2: 3.352825e-01, 1.946040e-01 
+Cut element corner 3: 1.115990e-01, 2.334231e-01 
+Cut element corner 4: 1.357239e-01, 2.118262e-01 
+Cut element corner 5: 1.115658e-01, 2.111558e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.430812e-01, -7.634837e-02 
+Cut element corner 1: 3.352825e-01, 1.946040e-01 
+Cut element corner 2: 4.644291e-01, 2.118262e-01 
+Cut element corner 3: 1.984191e-01, 9.693514e-02 
+Cut element corner 4: 1.115658e-01, 2.111558e-01 
+Cut element corner 5: 1.357239e-01, 2.118262e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.352825e-01, 1.946040e-01 
+Cut element corner 1: 3.430812e-01, -7.634837e-02 
+Cut element corner 2: 2.139346e-01, -9.357058e-02 
+Cut element corner 3: 1.115658e-01, 2.111558e-01 
+Cut element corner 4: 1.984191e-01, 9.693514e-02 
+Cut element corner 5: 1.105110e-01, 1.898831e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.217333e-01, -3.645229e-01 
+Cut element corner 1: 6.762716e-02, -1.799269e-01 
+Cut element corner 2: 1.233793e-01, -2.990764e-01 
+Cut element corner 3: -8.056653e-02, -3.880717e-01 
+Cut element corner 4: -5.557854e-02, -2.618739e-01 
+Cut element corner 5: -6.780739e-02, -3.405016e-01 
+
+Original corner ID: 1
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.111521e-01, -4.855726e-01 
+Cut element corner 1: 1.400806e-01, -4.004396e-01 
+Cut element corner 2: 1.257449e-01, -4.287411e-01 
+Cut element corner 3: -9.114776e-02, -5.091214e-01 
+Cut element corner 4: -7.676021e-02, -4.364594e-01 
+Cut element corner 5: -7.362072e-02, -4.437751e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -8.056653e-02, -3.880717e-01 
+Cut element corner 1: 2.111521e-01, -4.855726e-01 
+Cut element corner 2: -9.114776e-02, -5.091214e-01 
+Cut element corner 3: -6.780739e-02, -3.405016e-01 
+Cut element corner 4: 1.400806e-01, -4.004396e-01 
+Cut element corner 5: -7.676021e-02, -4.364594e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.217333e-01, -3.645229e-01 
+Cut element corner 1: 2.111521e-01, -4.855726e-01 
+Cut element corner 2: -8.056653e-02, -3.880717e-01 
+Cut element corner 3: 1.233793e-01, -2.990764e-01 
+Cut element corner 4: 1.400806e-01, -4.004396e-01 
+Cut element corner 5: -6.780739e-02, -3.405016e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.368476e-01, 1.847881e-01 
+Cut element corner 1: -2.697009e-01, 1.599029e-01 
+Cut element corner 2: -2.594198e-01, 2.118262e-01 
+Cut element corner 3: -2.603022e-01, 2.017309e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 1
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: -6.234429e-01, -1.234459e-01 
+Cut element corner 1: -5.723008e-01, 6.722773e-02 
+Cut element corner 2: -5.617196e-01, 1.882774e-01 
+Cut element corner 3: -3.343126e-01, -1.009230e-01 
+Cut element corner 4: -4.207785e-01, -3.359796e-02 
+Cut element corner 5: -3.412800e-01, -7.577614e-02 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.105775e-01, 3.789510e-01 
+Cut element corner 1: -5.723008e-01, 6.722773e-02 
+Cut element corner 2: -5.211587e-01, 2.579014e-01 
+Cut element corner 3: -3.860425e-01, 2.297768e-01 
+Cut element corner 4: -4.433046e-01, 7.727637e-02 
+Cut element corner 5: -3.976843e-01, 1.757392e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.594198e-01, 2.118262e-01 
+Cut element corner 1: -5.617196e-01, 1.882774e-01 
+Cut element corner 2: -5.105775e-01, 3.789510e-01 
+Cut element corner 3: -2.603022e-01, 2.017309e-01 
+Cut element corner 4: -4.064876e-01, 1.363943e-01 
+Cut element corner 5: -3.860425e-01, 2.297768e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.617196e-01, 1.882774e-01 
+Cut element corner 1: -3.412800e-01, -7.577614e-02 
+Cut element corner 2: -4.064876e-01, 1.363943e-01 
+Cut element corner 3: -2.594198e-01, 2.118262e-01 
+Cut element corner 4: -2.697009e-01, 1.599029e-01 
+Cut element corner 5: -2.603022e-01, 2.017309e-01 
+
+Original corner ID: 1
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.617196e-01, 1.882774e-01 
+Cut element corner 1: -5.723008e-01, 6.722773e-02 
+Cut element corner 2: -5.105775e-01, 3.789510e-01 
+Cut element corner 3: -4.064876e-01, 1.363943e-01 
+Cut element corner 4: -4.433046e-01, 7.727637e-02 
+Cut element corner 5: -3.860425e-01, 2.297768e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.617196e-01, 1.882774e-01 
+Cut element corner 1: -4.064876e-01, 1.363943e-01 
+Cut element corner 2: -3.412800e-01, -7.577614e-02 
+Cut element corner 3: -5.723008e-01, 6.722773e-02 
+Cut element corner 4: -4.433046e-01, 7.727637e-02 
+Cut element corner 5: -4.207785e-01, -3.359796e-02 
+
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 0
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.423055e-01, -3.419965e-01 
+Cut element corner 1: -3.153217e-01, -2.057191e-01 
+Cut element corner 2: -2.088082e-01, -3.315972e-01 
+Cut element corner 3: -2.911634e-01, -1.513229e-01 
+Cut element corner 4: -2.850098e-01, -8.092530e-02 
+Cut element corner 5: -1.753504e-01, -2.283869e-01 
+
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.211587e-01, 2.579014e-01 
+Cut element corner 1: -5.828820e-01, -5.382194e-02 
+Cut element corner 2: -5.317400e-01, 1.368517e-01 
+Cut element corner 3: -3.700842e-01, 7.693682e-02 
+Cut element corner 4: -3.706940e-01, -3.729278e-02 
+Cut element corner 5: -3.370958e-01, 7.331969e-03 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.423055e-01, -3.419965e-01 
+Cut element corner 1: -2.911634e-01, -1.513229e-01 
+Cut element corner 2: -5.828820e-01, -5.382194e-02 
+Cut element corner 3: -3.153217e-01, -2.057191e-01 
+Cut element corner 4: -2.850098e-01, -8.092530e-02 
+Cut element corner 5: -3.706940e-01, -3.729278e-02 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.317400e-01, 1.368517e-01 
+Cut element corner 1: -5.828820e-01, -5.382194e-02 
+Cut element corner 2: -2.911634e-01, -1.513229e-01 
+Cut element corner 3: -3.370958e-01, 7.331969e-03 
+Cut element corner 4: -3.706940e-01, -3.729278e-02 
+Cut element corner 5: -2.850098e-01, -8.092530e-02 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -6.234429e-01, -1.234459e-01 
+Cut element corner 1: -4.005412e-01, -1.979462e-01 
+Cut element corner 2: -3.343126e-01, -1.009230e-01 
+Cut element corner 3: -3.828664e-01, -4.116204e-01 
+Cut element corner 4: -3.464758e-01, -2.759452e-01 
+Cut element corner 5: -3.257481e-01, -1.231544e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.557854e-02, -2.618739e-01 
+Cut element corner 1: -8.056653e-02, -3.880717e-01 
+Cut element corner 2: -1.937909e-01, -2.524459e-01 
+Cut element corner 3: -6.780739e-02, -3.405016e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: -9.114776e-02, -5.091214e-01 
+Cut element corner 1: -1.712413e-01, -4.131813e-01 
+Cut element corner 2: -7.676021e-02, -4.364594e-01 
+Cut element corner 3: -7.362072e-02, -4.437751e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: -3.828664e-01, -4.116204e-01 
+Cut element corner 1: -2.425764e-01, -3.265902e-01 
+Cut element corner 2: -3.257481e-01, -1.231544e-01 
+Cut element corner 3: -8.056653e-02, -3.880717e-01 
+Cut element corner 4: -6.780739e-02, -3.405016e-01 
+Cut element corner 5: -1.937909e-01, -2.524459e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.257481e-01, -1.231544e-01 
+Cut element corner 1: -3.464758e-01, -2.759452e-01 
+Cut element corner 2: -2.425764e-01, -3.265902e-01 
+Cut element corner 3: -3.828664e-01, -4.116204e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 1
+Interface corner ID: 2
+
+--------- New cut element --------
+
+Cut element corner 0: -8.056653e-02, -3.880717e-01 
+Cut element corner 1: -9.114776e-02, -5.091214e-01 
+Cut element corner 2: -3.828664e-01, -4.116204e-01 
+Cut element corner 3: -6.780739e-02, -3.405016e-01 
+Cut element corner 4: -7.676021e-02, -4.364594e-01 
+Cut element corner 5: -2.425764e-01, -3.265902e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.828664e-01, -4.116204e-01 
+Cut element corner 1: -3.464758e-01, -2.759452e-01 
+Cut element corner 2: -2.425764e-01, -3.265902e-01 
+Cut element corner 3: -9.114776e-02, -5.091214e-01 
+Cut element corner 4: -1.712413e-01, -4.131813e-01 
+Cut element corner 5: -7.676021e-02, -4.364594e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -6.234429e-01, -1.234459e-01 
+Cut element corner 1: -6.340241e-01, -2.444956e-01 
+Cut element corner 2: -5.723008e-01, 6.722773e-02 
+Cut element corner 3: -4.005412e-01, -1.979462e-01 
+Cut element corner 4: -3.893936e-01, -2.254392e-01 
+Cut element corner 5: -4.405711e-01, -9.056463e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.211587e-01, 2.579014e-01 
+Cut element corner 1: -5.723008e-01, 6.722773e-02 
+Cut element corner 2: -5.828820e-01, -5.382194e-02 
+Cut element corner 3: -3.700842e-01, 7.693682e-02 
+Cut element corner 4: -4.297489e-01, 1.958269e-02 
+Cut element corner 5: -3.706940e-01, -3.729278e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.365423e-01, -2.760651e-01 
+Cut element corner 1: -3.423055e-01, -3.419965e-01 
+Cut element corner 2: -3.153217e-01, -2.057191e-01 
+Cut element corner 3: -2.088082e-01, -3.315972e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: -6.340241e-01, -2.444956e-01 
+Cut element corner 1: -5.828820e-01, -5.382194e-02 
+Cut element corner 2: -5.723008e-01, 6.722773e-02 
+Cut element corner 3: -4.008148e-01, -1.031466e-01 
+Cut element corner 4: -3.706940e-01, -3.729278e-02 
+Cut element corner 5: -4.297489e-01, 1.958269e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.828820e-01, -5.382194e-02 
+Cut element corner 1: -6.340241e-01, -2.444956e-01 
+Cut element corner 2: -3.423055e-01, -3.419965e-01 
+Cut element corner 3: -3.706940e-01, -3.729278e-02 
+Cut element corner 4: -4.008148e-01, -1.031466e-01 
+Cut element corner 5: -3.153217e-01, -2.057191e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.723008e-01, 6.722773e-02 
+Cut element corner 1: -4.297489e-01, 1.958269e-02 
+Cut element corner 2: -4.405711e-01, -9.056463e-02 
+Cut element corner 3: -6.340241e-01, -2.444956e-01 
+Cut element corner 4: -4.008148e-01, -1.031466e-01 
+Cut element corner 5: -3.893936e-01, -2.254392e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -6.340241e-01, -2.444956e-01 
+Cut element corner 1: -4.008148e-01, -1.031466e-01 
+Cut element corner 2: -3.893936e-01, -2.254392e-01 
+Cut element corner 3: -3.423055e-01, -3.419965e-01 
+Cut element corner 4: -3.153217e-01, -2.057191e-01 
+Cut element corner 5: -3.365423e-01, -2.760651e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.211587e-01, 2.579014e-01 
+Cut element corner 1: -3.700842e-01, 7.693682e-02 
+Cut element corner 2: -3.976843e-01, 1.757392e-01 
+Cut element corner 3: -5.723008e-01, 6.722773e-02 
+Cut element corner 4: -4.297489e-01, 1.958269e-02 
+Cut element corner 5: -4.433046e-01, 7.727637e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.723008e-01, 6.722773e-02 
+Cut element corner 1: -4.405711e-01, -9.056463e-02 
+Cut element corner 2: -4.207785e-01, -3.359796e-02 
+Cut element corner 3: -6.234429e-01, -1.234459e-01 
+Cut element corner 4: -4.005412e-01, -1.979462e-01 
+Cut element corner 5: -3.343126e-01, -1.009230e-01 
+
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -4.297489e-01, 1.958269e-02 
+Cut element corner 1: -5.723008e-01, 6.722773e-02 
+Cut element corner 2: -4.405711e-01, -9.056463e-02 
+Cut element corner 3: -4.433046e-01, 7.727637e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: -4.433046e-01, 7.727637e-02 
+Cut element corner 1: -4.207785e-01, -3.359796e-02 
+Cut element corner 2: -5.723008e-01, 6.722773e-02 
+Cut element corner 3: -4.405711e-01, -9.056463e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 1
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: -3.423055e-01, -3.419965e-01 
+Cut element corner 1: -2.088082e-01, -3.315972e-01 
+Cut element corner 2: -3.365423e-01, -2.760651e-01 
+Cut element corner 3: -9.114776e-02, -5.091214e-01 
+Cut element corner 4: -7.362072e-02, -4.437751e-01 
+Cut element corner 5: -1.712413e-01, -4.131813e-01 
+
+Original corner ID: 1
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.828664e-01, -4.116204e-01 
+Cut element corner 1: -6.340241e-01, -2.444956e-01 
+Cut element corner 2: -6.234429e-01, -1.234459e-01 
+Cut element corner 3: -3.464758e-01, -2.759452e-01 
+Cut element corner 4: -3.893936e-01, -2.254392e-01 
+Cut element corner 5: -4.005412e-01, -1.979462e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -9.114776e-02, -5.091214e-01 
+Cut element corner 1: -3.934476e-01, -5.326701e-01 
+Cut element corner 2: -3.828664e-01, -4.116204e-01 
+Cut element corner 3: -1.712413e-01, -4.131813e-01 
+Cut element corner 4: -3.451464e-01, -2.887332e-01 
+Cut element corner 5: -3.464758e-01, -2.759452e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.423055e-01, -3.419965e-01 
+Cut element corner 1: -3.934476e-01, -5.326701e-01 
+Cut element corner 2: -9.114776e-02, -5.091214e-01 
+Cut element corner 3: -3.365423e-01, -2.760651e-01 
+Cut element corner 4: -3.451464e-01, -2.887332e-01 
+Cut element corner 5: -1.712413e-01, -4.131813e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.934476e-01, -5.326701e-01 
+Cut element corner 1: -6.340241e-01, -2.444956e-01 
+Cut element corner 2: -3.828664e-01, -4.116204e-01 
+Cut element corner 3: -3.451464e-01, -2.887332e-01 
+Cut element corner 4: -3.893936e-01, -2.254392e-01 
+Cut element corner 5: -3.464758e-01, -2.759452e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.423055e-01, -3.419965e-01 
+Cut element corner 1: -6.340241e-01, -2.444956e-01 
+Cut element corner 2: -3.934476e-01, -5.326701e-01 
+Cut element corner 3: -3.365423e-01, -2.760651e-01 
+Cut element corner 4: -3.893936e-01, -2.254392e-01 
+Cut element corner 5: -3.451464e-01, -2.887332e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -4.999963e-01, 5.000007e-01 
+Cut element corner 1: -3.131188e-01, 6.130961e-01 
+Cut element corner 2: -1.380718e-01, 5.000007e-01 
+Cut element corner 3: -2.131461e-01, 3.834631e-01 
+Cut element corner 4: -1.822972e-01, 4.059994e-01 
+Cut element corner 5: -1.481307e-01, 4.015506e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.238526e-01, 5.000007e-01 
+Cut element corner 1: -1.380718e-01, 5.000007e-01 
+Cut element corner 2: 4.880560e-02, 6.130961e-01 
+Cut element corner 3: 2.110754e-01, 3.749459e-01 
+Cut element corner 4: 9.638536e-02, 4.047487e-01 
+Cut element corner 5: 1.860090e-01, 3.958968e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -1.395038e-02, 4.426691e-01 
+Cut element corner 1: 3.438113e-02, 4.719186e-01 
+Cut element corner 2: 8.773028e-02, 4.374504e-01 
+Cut element corner 3: 6.386541e-02, 4.252436e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: -3.131188e-01, 6.130961e-01 
+Cut element corner 1: 4.880560e-02, 6.130961e-01 
+Cut element corner 2: -1.380718e-01, 5.000007e-01 
+Cut element corner 3: -1.822972e-01, 4.059994e-01 
+Cut element corner 4: -9.394403e-02, 4.327830e-01 
+Cut element corner 5: -1.481307e-01, 4.015506e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 4.880560e-02, 6.130961e-01 
+Cut element corner 1: 1.860090e-01, 3.958968e-01 
+Cut element corner 2: -9.394403e-02, 4.327830e-01 
+Cut element corner 3: 3.438113e-02, 4.719186e-01 
+Cut element corner 4: 8.773028e-02, 4.374504e-01 
+Cut element corner 5: -1.395038e-02, 4.426691e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -1.380718e-01, 5.000007e-01 
+Cut element corner 1: 9.638536e-02, 4.047487e-01 
+Cut element corner 2: -1.481307e-01, 4.015506e-01 
+Cut element corner 3: 4.880560e-02, 6.130961e-01 
+Cut element corner 4: 1.860090e-01, 3.958968e-01 
+Cut element corner 5: -9.394403e-02, 4.327830e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.131188e-01, 6.130961e-01 
+Cut element corner 1: 3.438113e-02, 4.719186e-01 
+Cut element corner 2: 4.880560e-02, 6.130961e-01 
+Cut element corner 3: -1.822972e-01, 4.059994e-01 
+Cut element corner 4: -1.395038e-02, 4.426691e-01 
+Cut element corner 5: -9.394403e-02, 4.327830e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.818811e-01, 3.307410e-01 
+Cut element corner 1: 5.425036e-01, 7.646814e-02 
+Cut element corner 2: 5.569281e-01, 2.176457e-01 
+Cut element corner 3: 2.778597e-01, 2.677889e-01 
+Cut element corner 4: 3.486770e-01, 1.552134e-01 
+Cut element corner 5: 3.730834e-01, 2.176457e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.238526e-01, 5.000007e-01 
+Cut element corner 1: 4.880560e-02, 6.130961e-01 
+Cut element corner 2: 4.107300e-01, 6.130961e-01 
+Cut element corner 3: 2.110754e-01, 3.749459e-01 
+Cut element corner 4: 1.860090e-01, 3.958968e-01 
+Cut element corner 5: 2.229677e-01, 3.759256e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.963056e-01, 4.719186e-01 
+Cut element corner 1: 2.826771e-01, 3.283897e-01 
+Cut element corner 2: 2.366477e-01, 3.752961e-01 
+Cut element corner 3: 3.438113e-02, 4.719186e-01 
+Cut element corner 4: 6.386541e-02, 4.252436e-01 
+Cut element corner 5: 8.773028e-02, 4.374504e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 4.107300e-01, 6.130961e-01 
+Cut element corner 1: 2.356830e-01, 7.261914e-01 
+Cut element corner 2: 3.963056e-01, 4.719186e-01 
+Cut element corner 3: 2.229677e-01, 3.759256e-01 
+Cut element corner 4: 2.114390e-01, 3.869597e-01 
+Cut element corner 5: 2.366477e-01, 3.752961e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 4.880560e-02, 6.130961e-01 
+Cut element corner 1: 2.356830e-01, 7.261914e-01 
+Cut element corner 2: 4.107300e-01, 6.130961e-01 
+Cut element corner 3: 1.860090e-01, 3.958968e-01 
+Cut element corner 4: 2.114390e-01, 3.869597e-01 
+Cut element corner 5: 2.229677e-01, 3.759256e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.356830e-01, 7.261914e-01 
+Cut element corner 1: 3.438113e-02, 4.719186e-01 
+Cut element corner 2: 3.963056e-01, 4.719186e-01 
+Cut element corner 3: 2.114390e-01, 3.869597e-01 
+Cut element corner 4: 8.773028e-02, 4.374504e-01 
+Cut element corner 5: 2.366477e-01, 3.752961e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 4.880560e-02, 6.130961e-01 
+Cut element corner 1: 3.438113e-02, 4.719186e-01 
+Cut element corner 2: 2.356830e-01, 7.261914e-01 
+Cut element corner 3: 1.860090e-01, 3.958968e-01 
+Cut element corner 4: 8.773028e-02, 4.374504e-01 
+Cut element corner 5: 2.114390e-01, 3.869597e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.238526e-01, 5.000007e-01 
+Cut element corner 1: 4.107300e-01, 6.130961e-01 
+Cut element corner 2: 5.713526e-01, 3.588232e-01 
+Cut element corner 3: 2.110754e-01, 3.749459e-01 
+Cut element corner 4: 2.229677e-01, 3.759256e-01 
+Cut element corner 5: 2.492945e-01, 3.588232e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 5.569281e-01, 2.176457e-01 
+Cut element corner 1: 3.730834e-01, 2.176457e-01 
+Cut element corner 2: 3.206420e-01, 3.136407e-01 
+Cut element corner 3: 3.963056e-01, 4.719186e-01 
+Cut element corner 4: 2.826771e-01, 3.283897e-01 
+Cut element corner 5: 2.366477e-01, 3.752961e-01 
+
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 0
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 5.713526e-01, 3.588232e-01 
+Cut element corner 1: 3.963056e-01, 4.719186e-01 
+Cut element corner 2: 5.569281e-01, 2.176457e-01 
+Cut element corner 3: 2.492945e-01, 3.588232e-01 
+Cut element corner 4: 2.366477e-01, 3.752961e-01 
+Cut element corner 5: 3.206420e-01, 3.136407e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.963056e-01, 4.719186e-01 
+Cut element corner 1: 5.713526e-01, 3.588232e-01 
+Cut element corner 2: 4.107300e-01, 6.130961e-01 
+Cut element corner 3: 2.366477e-01, 3.752961e-01 
+Cut element corner 4: 2.492945e-01, 3.588232e-01 
+Cut element corner 5: 2.229677e-01, 3.759256e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.818811e-01, 3.307410e-01 
+Cut element corner 1: 3.963056e-01, 4.719186e-01 
+Cut element corner 2: 3.438113e-02, 4.719186e-01 
+Cut element corner 3: 2.778597e-01, 2.677889e-01 
+Cut element corner 4: 2.826771e-01, 3.283897e-01 
+Cut element corner 5: 6.386541e-02, 4.252436e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.963056e-01, 4.719186e-01 
+Cut element corner 1: 3.818811e-01, 3.307410e-01 
+Cut element corner 2: 5.569281e-01, 2.176457e-01 
+Cut element corner 3: 2.826771e-01, 3.283897e-01 
+Cut element corner 4: 2.778597e-01, 2.677889e-01 
+Cut element corner 5: 3.730834e-01, 2.176457e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.423055e-01, -3.419965e-01 
+Cut element corner 1: -9.053005e-02, -4.101824e-01 
+Cut element corner 2: -2.911634e-01, -1.513229e-01 
+Cut element corner 3: -2.088082e-01, -3.315972e-01 
+Cut element corner 4: -6.066794e-02, -3.559632e-01 
+Cut element corner 5: -1.753504e-01, -2.283869e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.111521e-01, -4.855726e-01 
+Cut element corner 1: 1.606277e-01, -5.773072e-01 
+Cut element corner 2: -9.114776e-02, -5.091214e-01 
+Cut element corner 3: 1.257449e-01, -4.287411e-01 
+Cut element corner 4: 4.500696e-02, -4.281320e-01 
+Cut element corner 5: -7.362072e-02, -4.437751e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -9.114776e-02, -5.091214e-01 
+Cut element corner 1: -1.416721e-01, -6.008560e-01 
+Cut element corner 2: -3.423055e-01, -3.419965e-01 
+Cut element corner 3: -7.362072e-02, -4.437751e-01 
+Cut element corner 4: -7.286556e-02, -4.097256e-01 
+Cut element corner 5: -2.088082e-01, -3.315972e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -9.053005e-02, -4.101824e-01 
+Cut element corner 1: -1.416721e-01, -6.008560e-01 
+Cut element corner 2: 1.606277e-01, -5.773072e-01 
+Cut element corner 3: -6.066794e-02, -3.559632e-01 
+Cut element corner 4: -7.286556e-02, -4.097256e-01 
+Cut element corner 5: 4.500696e-02, -4.281320e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -9.114776e-02, -5.091214e-01 
+Cut element corner 1: 1.606277e-01, -5.773072e-01 
+Cut element corner 2: -1.416721e-01, -6.008560e-01 
+Cut element corner 3: -7.362072e-02, -4.437751e-01 
+Cut element corner 4: 4.500696e-02, -4.281320e-01 
+Cut element corner 5: -7.286556e-02, -4.097256e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.423055e-01, -3.419965e-01 
+Cut element corner 1: -1.416721e-01, -6.008560e-01 
+Cut element corner 2: -9.053005e-02, -4.101824e-01 
+Cut element corner 3: -2.088082e-01, -3.315972e-01 
+Cut element corner 4: -7.286556e-02, -4.097256e-01 
+Cut element corner 5: -6.066794e-02, -3.559632e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.818811e-01, 3.307410e-01 
+Cut element corner 1: 1.844224e-01, 9.659599e-02 
+Cut element corner 2: 5.425036e-01, 7.646814e-02 
+Cut element corner 3: 2.778597e-01, 2.677889e-01 
+Cut element corner 4: 1.854462e-01, 1.083082e-01 
+Cut element corner 5: 3.486770e-01, 1.552134e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -4.999963e-01, 5.000007e-01 
+Cut element corner 1: -5.105775e-01, 3.789510e-01 
+Cut element corner 2: -3.131188e-01, 6.130961e-01 
+Cut element corner 3: -2.131461e-01, 3.834631e-01 
+Cut element corner 4: -2.597865e-01, 3.648540e-01 
+Cut element corner 5: -1.822972e-01, 4.059994e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 6.386541e-02, 4.252436e-01 
+Cut element corner 1: -1.395038e-02, 4.426691e-01 
+Cut element corner 2: 3.438113e-02, 4.719186e-01 
+Cut element corner 3: -4.685923e-03, 4.255931e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 0
+Interface corner ID: 1
+Interface corner ID: 3
+
+--------- New cut element --------
+
+Cut element corner 0: -5.105775e-01, 3.789510e-01 
+Cut element corner 1: -5.211587e-01, 2.579014e-01 
+Cut element corner 2: -3.237001e-01, 4.920464e-01 
+Cut element corner 3: -3.134440e-01, 2.988623e-01 
+Cut element corner 4: -2.935170e-01, 2.451055e-01 
+Cut element corner 5: -2.225644e-01, 3.319440e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.131188e-01, 6.130961e-01 
+Cut element corner 1: -5.105775e-01, 3.789510e-01 
+Cut element corner 2: -3.237001e-01, 4.920464e-01 
+Cut element corner 3: -1.822972e-01, 4.059994e-01 
+Cut element corner 4: -2.597865e-01, 3.648540e-01 
+Cut element corner 5: -2.054322e-01, 4.000155e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.438113e-02, 4.719186e-01 
+Cut element corner 1: -3.131188e-01, 6.130961e-01 
+Cut element corner 2: -3.237001e-01, 4.920464e-01 
+Cut element corner 3: -1.395038e-02, 4.426691e-01 
+Cut element corner 4: -1.822972e-01, 4.059994e-01 
+Cut element corner 5: -2.054322e-01, 4.000155e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.105775e-01, 3.789510e-01 
+Cut element corner 1: -2.597865e-01, 3.648540e-01 
+Cut element corner 2: -3.134440e-01, 2.988623e-01 
+Cut element corner 3: -3.237001e-01, 4.920464e-01 
+Cut element corner 4: -2.054322e-01, 4.000155e-01 
+Cut element corner 5: -2.225644e-01, 3.319440e-01 
+
+Original corner ID: 1
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.237001e-01, 4.920464e-01 
+Cut element corner 1: -2.054322e-01, 4.000155e-01 
+Cut element corner 2: -2.225644e-01, 3.319440e-01 
+Cut element corner 3: 3.438113e-02, 4.719186e-01 
+Cut element corner 4: -1.395038e-02, 4.426691e-01 
+Cut element corner 5: -4.685923e-03, 4.255931e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.438113e-02, 4.719186e-01 
+Cut element corner 1: 2.379990e-02, 3.508689e-01 
+Cut element corner 2: 3.818811e-01, 3.307410e-01 
+Cut element corner 3: 6.386541e-02, 4.252436e-01 
+Cut element corner 4: 8.079806e-02, 3.065154e-01 
+Cut element corner 5: 2.778597e-01, 2.677889e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 1.844224e-01, 9.659599e-02 
+Cut element corner 1: 1.593345e-01, 1.067884e-01 
+Cut element corner 2: 1.854462e-01, 1.083082e-01 
+Cut element corner 3: 2.379990e-02, 3.508689e-01 
+Cut element corner 4: -5.262918e-02, 3.046152e-01 
+Cut element corner 5: 8.079806e-02, 3.065154e-01 
+
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.211587e-01, 2.579014e-01 
+Cut element corner 1: -1.736588e-01, 1.167238e-01 
+Cut element corner 2: -3.342813e-01, 3.709967e-01 
+Cut element corner 3: -2.935170e-01, 2.451055e-01 
+Cut element corner 4: -1.696175e-01, 1.629562e-01 
+Cut element corner 5: -2.114188e-01, 2.753905e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 1.844224e-01, 9.659599e-02 
+Cut element corner 1: 2.379990e-02, 3.508689e-01 
+Cut element corner 2: -1.736588e-01, 1.167238e-01 
+Cut element corner 3: 1.593345e-01, 1.067884e-01 
+Cut element corner 4: -5.262918e-02, 3.046152e-01 
+Cut element corner 5: -1.696175e-01, 1.629562e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.342813e-01, 3.709967e-01 
+Cut element corner 1: -1.736588e-01, 1.167238e-01 
+Cut element corner 2: 2.379990e-02, 3.508689e-01 
+Cut element corner 3: -2.114188e-01, 2.753905e-01 
+Cut element corner 4: -1.696175e-01, 1.629562e-01 
+Cut element corner 5: -5.262918e-02, 3.046152e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.211587e-01, 2.579014e-01 
+Cut element corner 1: -3.342813e-01, 3.709967e-01 
+Cut element corner 2: -3.237001e-01, 4.920464e-01 
+Cut element corner 3: -2.935170e-01, 2.451055e-01 
+Cut element corner 4: -2.114188e-01, 2.753905e-01 
+Cut element corner 5: -2.225644e-01, 3.319440e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.438113e-02, 4.719186e-01 
+Cut element corner 1: 6.386541e-02, 4.252436e-01 
+Cut element corner 2: -4.685923e-03, 4.255931e-01 
+Cut element corner 3: 2.379990e-02, 3.508689e-01 
+Cut element corner 4: 8.079806e-02, 3.065154e-01 
+Cut element corner 5: -5.262918e-02, 3.046152e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.237001e-01, 4.920464e-01 
+Cut element corner 1: -1.368226e-01, 6.051418e-01 
+Cut element corner 2: 3.438113e-02, 4.719186e-01 
+Cut element corner 3: -2.225644e-01, 3.319440e-01 
+Cut element corner 4: -1.562513e-01, 3.332881e-01 
+Cut element corner 5: -4.685923e-03, 4.255931e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.342813e-01, 3.709967e-01 
+Cut element corner 1: -1.368226e-01, 6.051418e-01 
+Cut element corner 2: -3.237001e-01, 4.920464e-01 
+Cut element corner 3: -2.114188e-01, 2.753905e-01 
+Cut element corner 4: -1.562513e-01, 3.332881e-01 
+Cut element corner 5: -2.225644e-01, 3.319440e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -1.368226e-01, 6.051418e-01 
+Cut element corner 1: 2.379990e-02, 3.508689e-01 
+Cut element corner 2: 3.438113e-02, 4.719186e-01 
+Cut element corner 3: -1.562513e-01, 3.332881e-01 
+Cut element corner 4: -5.262918e-02, 3.046152e-01 
+Cut element corner 5: -4.685923e-03, 4.255931e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.342813e-01, 3.709967e-01 
+Cut element corner 1: 2.379990e-02, 3.508689e-01 
+Cut element corner 2: -1.368226e-01, 6.051418e-01 
+Cut element corner 3: -2.114188e-01, 2.753905e-01 
+Cut element corner 4: -5.262918e-02, 3.046152e-01 
+Cut element corner 5: -1.562513e-01, 3.332881e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 3.818811e-01, 3.307410e-01 
+Cut element corner 1: 2.379990e-02, 3.508689e-01 
+Cut element corner 2: 1.844224e-01, 9.659599e-02 
+Cut element corner 3: 2.778597e-01, 2.677889e-01 
+Cut element corner 4: 8.079806e-02, 3.065154e-01 
+Cut element corner 5: 1.854462e-01, 1.083082e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: 2.217333e-01, -3.645229e-01 
+Cut element corner 1: -8.056653e-02, -3.880717e-01 
+Cut element corner 2: -4.034920e-02, -3.677023e-01 
+Cut element corner 3: 6.762716e-02, -1.799269e-01 
+Cut element corner 4: -5.557854e-02, -2.618739e-01 
+Cut element corner 5: -2.210420e-02, -1.205266e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.809257e-01, -7.952781e-02 
+Cut element corner 1: -7.226061e-02, -7.699640e-02 
+Cut element corner 2: -3.196780e-01, -9.915514e-02 
+Cut element corner 3: -2.594198e-01, 2.118262e-01 
+Cut element corner 4: -2.368476e-01, 1.847881e-01 
+Cut element corner 5: -2.697009e-01, 1.599029e-01 
+
+Original corner ID: 1
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 3
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.617196e-01, 1.882774e-01 
+Cut element corner 1: -5.832255e-01, -1.030766e-01 
+Cut element corner 2: -6.234429e-01, -1.234459e-01 
+Cut element corner 3: -3.412800e-01, -7.577614e-02 
+Cut element corner 4: -3.264457e-01, -9.996146e-02 
+Cut element corner 5: -3.343126e-01, -1.009230e-01 
+
+Original corner ID: 0
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 1
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.594198e-01, 2.118262e-01 
+Cut element corner 1: -5.215022e-01, 2.086467e-01 
+Cut element corner 2: -5.617196e-01, 1.882774e-01 
+Cut element corner 3: -2.697009e-01, 1.599029e-01 
+Cut element corner 4: -3.264547e-01, -9.171748e-02 
+Cut element corner 5: -3.412800e-01, -7.577614e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.809257e-01, -7.952781e-02 
+Cut element corner 1: -5.215022e-01, 2.086467e-01 
+Cut element corner 2: -2.594198e-01, 2.118262e-01 
+Cut element corner 3: -3.196780e-01, -9.915514e-02 
+Cut element corner 4: -3.264547e-01, -9.171748e-02 
+Cut element corner 5: -2.697009e-01, 1.599029e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -5.215022e-01, 2.086467e-01 
+Cut element corner 1: -5.832255e-01, -1.030766e-01 
+Cut element corner 2: -5.617196e-01, 1.882774e-01 
+Cut element corner 3: -3.264547e-01, -9.171748e-02 
+Cut element corner 4: -3.264457e-01, -9.996146e-02 
+Cut element corner 5: -3.412800e-01, -7.577614e-02 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.809257e-01, -7.952781e-02 
+Cut element corner 1: -5.832255e-01, -1.030766e-01 
+Cut element corner 2: -5.215022e-01, 2.086467e-01 
+Cut element corner 3: -3.196780e-01, -9.915514e-02 
+Cut element corner 4: -3.264457e-01, -9.996146e-02 
+Cut element corner 5: -3.264547e-01, -9.171748e-02 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -4.034920e-02, -3.677023e-01 
+Cut element corner 1: -8.056653e-02, -3.880717e-01 
+Cut element corner 2: -2.809257e-01, -7.952781e-02 
+Cut element corner 3: -2.210420e-02, -1.205266e-01 
+Cut element corner 4: -5.557854e-02, -2.618739e-01 
+Cut element corner 5: -7.226061e-02, -7.699640e-02 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -8.056653e-02, -3.880717e-01 
+Cut element corner 1: -5.557854e-02, -2.618739e-01 
+Cut element corner 2: -1.937909e-01, -2.524459e-01 
+Cut element corner 3: -2.809257e-01, -7.952781e-02 
+Cut element corner 4: -7.226061e-02, -7.699640e-02 
+Cut element corner 5: -3.196780e-01, -9.915514e-02 
+
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 0
+Original corner ID: 1
+
+Interface corner ID: 1
+Interface corner ID: 2
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -6.234429e-01, -1.234459e-01 
+Cut element corner 1: -5.832255e-01, -1.030766e-01 
+Cut element corner 2: -3.828664e-01, -4.116204e-01 
+Cut element corner 3: -3.343126e-01, -1.009230e-01 
+Cut element corner 4: -3.264457e-01, -9.996146e-02 
+Cut element corner 5: -3.257481e-01, -1.231544e-01 
+
+Original corner ID: 0
+Original corner ID: 3
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.828664e-01, -4.116204e-01 
+Cut element corner 1: -3.426490e-01, -3.912511e-01 
+Cut element corner 2: -8.056653e-02, -3.880717e-01 
+Cut element corner 3: -3.257481e-01, -1.231544e-01 
+Cut element corner 4: -3.216853e-01, -1.072434e-01 
+Cut element corner 5: -1.937909e-01, -2.524459e-01 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -3.828664e-01, -4.116204e-01 
+Cut element corner 1: -5.832255e-01, -1.030766e-01 
+Cut element corner 2: -3.426490e-01, -3.912511e-01 
+Cut element corner 3: -3.257481e-01, -1.231544e-01 
+Cut element corner 4: -3.264457e-01, -9.996146e-02 
+Cut element corner 5: -3.216853e-01, -1.072434e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -8.056653e-02, -3.880717e-01 
+Cut element corner 1: -3.426490e-01, -3.912511e-01 
+Cut element corner 2: -2.809257e-01, -7.952781e-02 
+Cut element corner 3: -1.937909e-01, -2.524459e-01 
+Cut element corner 4: -3.216853e-01, -1.072434e-01 
+Cut element corner 5: -3.196780e-01, -9.915514e-02 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 3
+Original corner ID: 3
+Original corner ID: 3
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+
+--------- New cut element --------
+
+Cut element corner 0: -2.809257e-01, -7.952781e-02 
+Cut element corner 1: -3.426490e-01, -3.912511e-01 
+Cut element corner 2: -5.832255e-01, -1.030766e-01 
+Cut element corner 3: -3.196780e-01, -9.915514e-02 
+Cut element corner 4: -3.216853e-01, -1.072434e-01 
+Cut element corner 5: -3.264457e-01, -9.996146e-02 
+
+Original corner ID: 1
+Original corner ID: 3
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 3
+Interface corner ID: 4
+Interface corner ID: 5
+

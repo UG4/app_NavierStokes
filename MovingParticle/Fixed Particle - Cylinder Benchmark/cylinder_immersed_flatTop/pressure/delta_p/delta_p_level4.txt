@@ -1,0 +1,2 @@
+1.280309e-01 	 1.256227e-02 	 1.154686e-01 
+# interpolVal1[dim], interpolVal2[dim], deltaP

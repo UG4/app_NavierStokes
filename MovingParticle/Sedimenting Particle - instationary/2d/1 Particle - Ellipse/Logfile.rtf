@@ -1,0 +1,952 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf130
+{\fonttbl\f0\fnil\fcharset0 Menlo-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab529
+\pard\tx529\pardeftab529\pardirnatural\partightenfactor0
+
+\f0\b\fs22 \cf0 \CocoaLigature0 ********************************************************************************\
+* ugshell - ug4.0.2, head revision 'unknown',                                  *\
+*                    compiled 'Sa 14 Sep 2019 09:22:01 CEST'                   *\
+*                    on 'Susannes-MacBook-Pro-2.local' (DEBUG).                *\
+*                                                                              *\
+* arguments:                                                                   *\
+*   -outproc id:         Sets the output-proc to id. Default is 0.             *\
+*   -ex scriptname:      Executes the specified script.                        *\
+*   -noquit:             Runs the interactive shell after specified script.    *\
+*   -noterm:             Terminal logging will be disabled.                    *\
+*   -logtofile filename: Output will be written to the specified file.         *\
+*   -call:               Combines all following arguments to one lua command   *\
+*                        and executes it. Ignored if it follows '-ex'.         *\
+*                        '(', ')', and '"' have to be escaped, e.g.: '\\('      *\
+* Additional parameters are passed to the script through ugargc and ugargv.    *\
+*                                                                              *\
+* Initializing: paths... done, bridge... done, plugins... done                 *\
+********************************************************************************\
+ Chosen Parameters:\
+    dim              = 2\
+    numTotalRefs     = 3\
+    numPreRefs       = 2\
+    dt               = 0.01\
+    numTimeSteps     = 300\
+    grid             = grids/sedimenting_2x12_irregular.ugx\
+	   radius           = 0.125\
+    center           = 1  0\
+    ellipticAxis     = 0.125  0.25\
+	   theta            = 90\
+	   visc             = 0.1\
+	   densityFluid		= 1\
+	   densityPrt		= 1.25\
+    stokes           = false\
+Loading Domain grids/sedimenting_2x12_irregular.ugx ... done.\
+Performing integrity check on domain ... done.\
+Pre-Refining(2): 1 2 done.\
+Distributing... done.\
+Post-Refining(1): 1 done.\
+| ----------------------------------------------------------------------------------------------------------------------- |\
+|  Number of DoFs (All Procs)                                                                                             |\
+|  Algebra: Block 3 (divide by 3 for #Index)                                                                              |\
+|                                                                                                                         |\
+|    GridLevel   |       Domain |     0: Inner |     1: Upper |     2: Lower |    3: Outlet |     4: Inlet | 5: Pressur.. |\
+| ----------------------------------------------------------------------------------------------------------------------- |\
+| (lev,    0)    |          462 |          291 |           75 |           72 |           12 |            9 |            3 |\
+| (lev,    1)    |         1668 |         1326 |          147 |          144 |           27 |           21 |            3 |\
+| (lev,    2)    |         6321 |         5637 |          291 |          288 |           57 |           45 |            3 |\
+| (lev,    3)    |        24591 |        23223 |          579 |          576 |          117 |           93 |            3 |\
+| (lev,    0, g) |          462 |          291 |           75 |           72 |           12 |            9 |            3 |\
+| (lev,    1, g) |         1668 |         1326 |          147 |          144 |           27 |           21 |            3 |\
+| (lev,    2, g) |         6321 |         5637 |          291 |          288 |           57 |           45 |            3 |\
+| (lev,    3, g) |        24591 |        23223 |          579 |          576 |          117 |           93 |            3 |\
+| (surf, top)    |        24591 |        23223 |          579 |          576 |          117 |           93 |            3 |\
+| ----------------------------------------------------------------------------------------------------------------------- |\
+| For Legend and Options: print_statistic("legend").                                                                      |\
+| ----------------------------------------------------------------------------------------------------------------------- |\
+ParticleProvider constructor\
+ParticleProviderEllipse constructor\
+init bool_marker done!\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1, 0)\
++++ density = 1.25\
++++ theta = 90\
++++ elliptic_axis_x = 0.125\
++++ elliptic_axis_y = 0.25\
+\
++++ linear velocity: (0, 0)\
++++ angular velocity: (0, 0)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+\
+ #cut elements: 46\
+\
+ For detailed info on the cut element geometry see file ./'CutElementData.txt'\
+\
+++++++ TIMESTEP 1 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    2.405211e-01      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.988279e-03   8.266548e-03\
+   #     ++++ Line Search converged.\
+   #    1:    1.988279e-03    8.266548e-03\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     6.364416e-05   3.200967e-02\
+   #     ++++ Line Search converged.\
+   #    2:    6.364416e-05    3.200967e-02\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.788712e-06   7.524197e-02\
+   #     ++++ Line Search converged.\
+   #    3:    4.788712e-06    7.524197e-02\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     7.085459e-07   1.479617e-01\
+   #     ++++ Line Search converged.\
+   #    4:    7.085459e-07    1.479617e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.384681e-07   1.954257e-01\
+   #     ++++ Line Search converged.\
+   #    5:    1.384681e-07    1.954257e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.787687e-08   2.013234e-01\
+   #     ++++ Line Search converged.\
+   #    6:    2.787687e-08    2.013234e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     5.581545e-09   2.002214e-01\
+   #     ++++ Line Search converged.\
+   #    7:    5.581545e-09    2.002214e-01\
+   # Absolute defect norm 1.000000e-08 reached after 7 steps.\
+   # Average reduction over 7 steps: 8.116553e-02\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.000000e+00, 0.000000e+00)\
++++ density = 1.250000e+00\
++++ theta = 9.000000e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (1.775035e+00, -3.470619e-03)\
++++ angular velocity: (2.819022e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [1297,0]\
+ rotInd(0) = [1296,0]\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.017750e+00, -3.470619e-05)\
++++ density = 1.250000e+00\
++++ theta = 9.016152e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (1.775035e+00, -3.470619e-03)\
++++ angular velocity: (2.819022e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 1  END ++++++\
+++++++ TIMESTEP 2 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    4.798377e-02      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.009031e-03   6.270934e-02\
+   #     ++++ Line Search converged.\
+   #    1:    3.009031e-03    6.270934e-02\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.367963e-04   4.546192e-02\
+   #     ++++ Line Search converged.\
+   #    2:    1.367963e-04    4.546192e-02\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     9.295232e-06   6.794943e-02\
+   #     ++++ Line Search converged.\
+   #    3:    9.295232e-06    6.794943e-02\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     5.171866e-07   5.563999e-02\
+   #     ++++ Line Search converged.\
+   #    4:    5.171866e-07    5.563999e-02\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     5.062938e-08   9.789383e-02\
+   #     ++++ Line Search converged.\
+   #    5:    5.062938e-08    9.789383e-02\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     6.108745e-09   1.206561e-01\
+   #     ++++ Line Search converged.\
+   #    6:    6.108745e-09    1.206561e-01\
+   # Absolute defect norm 1.000000e-08 reached after 6 steps.\
+   # Average reduction over 6 steps: 7.092668e-02\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.017750e+00, -3.470619e-05)\
++++ density = 1.250000e+00\
++++ theta = 9.016152e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (2.988615e+00, -5.182514e-03)\
++++ angular velocity: (5.014343e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [1338,0]\
+ rotInd(0) = [1296,0]\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.047636e+00, -8.653133e-05)\
++++ density = 1.250000e+00\
++++ theta = 9.044882e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (2.988615e+00, -5.182514e-03)\
++++ angular velocity: (5.014343e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 2  END ++++++\
+++++++ TIMESTEP 3 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    3.123611e-02      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.340097e-03   1.069306e-01\
+   #     ++++ Line Search converged.\
+   #    1:    3.340097e-03    1.069306e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.811269e-04   5.422803e-02\
+   #     ++++ Line Search converged.\
+   #    2:    1.811269e-04    5.422803e-02\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.000340e-05   5.522870e-02\
+   #     ++++ Line Search converged.\
+   #    3:    1.000340e-05    5.522870e-02\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     6.730697e-07   6.728407e-02\
+   #     ++++ Line Search converged.\
+   #    4:    6.730697e-07    6.728407e-02\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.965594e-08   7.377532e-02\
+   #     ++++ Line Search converged.\
+   #    5:    4.965594e-08    7.377532e-02\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.070931e-09   8.198276e-02\
+   #     ++++ Line Search converged.\
+   #    6:    4.070931e-09    8.198276e-02\
+   # Absolute defect norm 1.000000e-08 reached after 6 steps.\
+   # Average reduction over 6 steps: 7.120429e-02\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.047636e+00, -8.653133e-05)\
++++ density = 1.250000e+00\
++++ theta = 9.044882e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (3.944155e+00, 9.942196e-03)\
++++ angular velocity: (3.966369e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [1337,0]\
+ rotInd(0) = [1296,0]\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.087078e+00, 1.289063e-05)\
++++ density = 1.250000e+00\
++++ theta = 9.067607e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (3.944155e+00, 9.942196e-03)\
++++ angular velocity: (3.966369e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 3  END ++++++\
+++++++ TIMESTEP 4 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    4.384071e-02      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.436301e-03   1.011913e-01\
+   #     ++++ Line Search converged.\
+   #    1:    4.436301e-03    1.011913e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.336690e-04   9.775465e-02\
+   #     ++++ Line Search converged.\
+   #    2:    4.336690e-04    9.775465e-02\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     7.977023e-05   1.839426e-01\
+   #     ++++ Line Search converged.\
+   #    3:    7.977023e-05    1.839426e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.671158e-05   2.094965e-01\
+   #     ++++ Line Search converged.\
+   #    4:    1.671158e-05    2.094965e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.101427e-06   2.454242e-01\
+   #     ++++ Line Search converged.\
+   #    5:    4.101427e-06    2.454242e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.020340e-06   2.487767e-01\
+   #     ++++ Line Search converged.\
+   #    6:    1.020340e-06    2.487767e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.498224e-07   2.448424e-01\
+   #     ++++ Line Search converged.\
+   #    7:    2.498224e-07    2.448424e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     6.146355e-08   2.460290e-01\
+   #     ++++ Line Search converged.\
+   #    8:    6.146355e-08    2.460290e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.513474e-08   2.462392e-01\
+   #     ++++ Line Search converged.\
+   #    9:    1.513474e-08    2.462392e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.729793e-09   2.464392e-01\
+   #     ++++ Line Search converged.\
+   #   10:    3.729793e-09    2.464392e-01\
+   # Absolute defect norm 1.000000e-08 reached after 10 steps.\
+   # Average reduction over 10 steps: 1.963273e-01\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.087078e+00, 1.289063e-05)\
++++ density = 1.250000e+00\
++++ theta = 9.067607e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (4.765600e+00, 1.895105e-02)\
++++ angular velocity: (2.289678e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [1379,0]\
+ rotInd(0) = [1378,0]\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.134734e+00, 2.024012e-04)\
++++ density = 1.250000e+00\
++++ theta = 9.080726e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (4.765600e+00, 1.895105e-02)\
++++ angular velocity: (2.289678e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 4  END ++++++\
+++++++ TIMESTEP 5 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    4.562548e-02      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     5.673076e-03   1.243401e-01\
+   #     ++++ Line Search converged.\
+   #    1:    5.673076e-03    1.243401e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     6.231266e-04   1.098393e-01\
+   #     ++++ Line Search converged.\
+   #    2:    6.231266e-04    1.098393e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     9.668487e-05   1.551609e-01\
+   #     ++++ Line Search converged.\
+   #    3:    9.668487e-05    1.551609e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.863195e-05   1.927080e-01\
+   #     ++++ Line Search converged.\
+   #    4:    1.863195e-05    1.927080e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.029050e-06   2.162442e-01\
+   #     ++++ Line Search converged.\
+   #    5:    4.029050e-06    2.162442e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     8.750954e-07   2.171965e-01\
+   #     ++++ Line Search converged.\
+   #    6:    8.750954e-07    2.171965e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.871895e-07   2.139075e-01\
+   #     ++++ Line Search converged.\
+   #    7:    1.871895e-07    2.139075e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.041283e-08   2.158927e-01\
+   #     ++++ Line Search converged.\
+   #    8:    4.041283e-08    2.158927e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     8.771002e-09   2.170351e-01\
+   #     ++++ Line Search converged.\
+   #    9:    8.771002e-09    2.170351e-01\
+   # Absolute defect norm 1.000000e-08 reached after 9 steps.\
+   # Average reduction over 9 steps: 1.793743e-01\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.134734e+00, 2.024012e-04)\
++++ density = 1.250000e+00\
++++ theta = 9.080726e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (5.442082e+00, 4.214175e-02)\
++++ angular velocity: (6.376299e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [1420,0]\
+ rotInd(0) = [1378,0]\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.189155e+00, 6.238187e-04)\
++++ density = 1.250000e+00\
++++ theta = 9.117260e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (5.442082e+00, 4.214175e-02)\
++++ angular velocity: (6.376299e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 5  END ++++++\
+++++++ TIMESTEP 6 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    8.332650e-02      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     6.278067e-03   7.534298e-02\
+   #     ++++ Line Search converged.\
+   #    1:    6.278067e-03    7.534298e-02\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     6.531089e-04   1.040302e-01\
+   #     ++++ Line Search converged.\
+   #    2:    6.531089e-04    1.040302e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     7.038105e-05   1.077631e-01\
+   #     ++++ Line Search converged.\
+   #    3:    7.038105e-05    1.077631e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     8.221758e-06   1.168178e-01\
+   #     ++++ Line Search converged.\
+   #    4:    8.221758e-06    1.168178e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.130666e-06   1.375212e-01\
+   #     ++++ Line Search converged.\
+   #    5:    1.130666e-06    1.375212e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.617996e-07   1.431011e-01\
+   #     ++++ Line Search converged.\
+   #    6:    1.617996e-07    1.431011e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.222018e-08   1.373315e-01\
+   #     ++++ Line Search converged.\
+   #    7:    2.222018e-08    1.373315e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.207692e-09   1.443594e-01\
+   #     ++++ Line Search converged.\
+   #    8:    3.207692e-09    1.443594e-01\
+   # Absolute defect norm 1.000000e-08 reached after 8 steps.\
+   # Average reduction over 8 steps: 1.183522e-01\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.189155e+00, 6.238187e-04)\
++++ density = 1.250000e+00\
++++ theta = 9.117260e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (5.929780e+00, 9.108019e-02)\
++++ angular velocity: (8.201460e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [1420,0]\
+ rotInd(0) = [1461,0]\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.248453e+00, 1.534621e-03)\
++++ density = 1.250000e+00\
++++ theta = 9.164251e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (5.929780e+00, 9.108019e-02)\
++++ angular velocity: (8.201460e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 6  END ++++++\
+++++++ TIMESTEP 7 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    7.832428e-02      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     6.778762e-03   8.654740e-02\
+   #     ++++ Line Search converged.\
+   #    1:    6.778762e-03    8.654740e-02\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     9.752018e-04   1.438613e-01\
+   #     ++++ Line Search converged.\
+   #    2:    9.752018e-04    1.438613e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.615599e-04   1.656682e-01\
+   #     ++++ Line Search converged.\
+   #    3:    1.615599e-04    1.656682e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.861725e-05   1.771309e-01\
+   #     ++++ Line Search converged.\
+   #    4:    2.861725e-05    1.771309e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     6.320004e-06   2.208459e-01\
+   #     ++++ Line Search converged.\
+   #    5:    6.320004e-06    2.208459e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.520906e-06   2.406495e-01\
+   #     ++++ Line Search converged.\
+   #    6:    1.520906e-06    2.406495e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.367459e-07   2.214114e-01\
+   #     ++++ Line Search converged.\
+   #    7:    3.367459e-07    2.214114e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     7.450176e-08   2.212403e-01\
+   #     ++++ Line Search converged.\
+   #    8:    7.450176e-08    2.212403e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.706463e-08   2.290500e-01\
+   #     ++++ Line Search converged.\
+   #    9:    1.706463e-08    2.290500e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.940029e-09   2.308886e-01\
+   #     ++++ Line Search converged.\
+   #   10:    3.940029e-09    2.308886e-01\
+   # Absolute defect norm 1.000000e-08 reached after 10 steps.\
+   # Average reduction over 10 steps: 1.862775e-01\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.248453e+00, 1.534621e-03)\
++++ density = 1.250000e+00\
++++ theta = 9.164251e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (6.454677e+00, 1.303011e-01)\
++++ angular velocity: (6.071858e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [1502,0]\
+ rotInd(0) = [1460,0]\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.312999e+00, 2.837632e-03)\
++++ density = 1.250000e+00\
++++ theta = 9.199040e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (6.454677e+00, 1.303011e-01)\
++++ angular velocity: (6.071858e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 7  END ++++++\
+++++++ TIMESTEP 8 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    8.979603e-02      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.279230e-02   1.424596e-01\
+   #     ++++ Line Search converged.\
+   #    1:    1.279230e-02    1.424596e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.881919e-03   1.471134e-01\
+   #     ++++ Line Search converged.\
+   #    2:    1.881919e-03    1.471134e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.639451e-04   1.402531e-01\
+   #     ++++ Line Search converged.\
+   #    3:    2.639451e-04    1.402531e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.378433e-05   1.279976e-01\
+   #     ++++ Line Search converged.\
+   #    4:    3.378433e-05    1.279976e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     8.317892e-06   2.462056e-01\
+   #     ++++ Line Search converged.\
+   #    5:    8.317892e-06    2.462056e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.770715e-06   2.128802e-01\
+   #     ++++ Line Search converged.\
+   #    6:    1.770715e-06    2.128802e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.031492e-07   1.712016e-01\
+   #     ++++ Line Search converged.\
+   #    7:    3.031492e-07    1.712016e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     5.324598e-08   1.756428e-01\
+   #     ++++ Line Search converged.\
+   #    8:    5.324598e-08    1.756428e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.265586e-08   2.376866e-01\
+   #     ++++ Line Search converged.\
+   #    9:    1.265586e-08    2.376866e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.785543e-09   2.200991e-01\
+   #     ++++ Line Search converged.\
+   #   10:    2.785543e-09    2.200991e-01\
+   # Absolute defect norm 1.000000e-08 reached after 10 steps.\
+   # Average reduction over 10 steps: 1.774865e-01\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.312999e+00, 2.837632e-03)\
++++ density = 1.250000e+00\
++++ theta = 9.199040e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (6.731786e+00, 1.649159e-01)\
++++ angular velocity: (4.136537e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [1502,0]\
+ rotInd(0) = [1544,0]\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.380317e+00, 4.486790e-03)\
++++ density = 1.250000e+00\
++++ theta = 9.222741e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (6.731786e+00, 1.649159e-01)\
++++ angular velocity: (4.136537e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 8  END ++++++\
+++++++ TIMESTEP 9 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    1.577583e-01      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.261681e-02   7.997558e-02\
+   #     ++++ Line Search converged.\
+   #    1:    1.261681e-02    7.997558e-02\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.978375e-03   1.568047e-01\
+   #     ++++ Line Search converged.\
+   #    2:    1.978375e-03    1.568047e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.968900e-04   1.500676e-01\
+   #     ++++ Line Search converged.\
+   #    3:    2.968900e-04    1.500676e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.292623e-05   1.445863e-01\
+   #     ++++ Line Search converged.\
+   #    4:    4.292623e-05    1.445863e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.069889e-05   2.492390e-01\
+   #     ++++ Line Search converged.\
+   #    5:    1.069889e-05    2.492390e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.537641e-06   2.371873e-01\
+   #     ++++ Line Search converged.\
+   #    6:    2.537641e-06    2.371873e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     5.066400e-07   1.996500e-01\
+   #     ++++ Line Search converged.\
+   #    7:    5.066400e-07    1.996500e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.020496e-07   2.014243e-01\
+   #     ++++ Line Search converged.\
+   #    8:    1.020496e-07    2.014243e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.490336e-08   2.440318e-01\
+   #     ++++ Line Search converged.\
+   #    9:    2.490336e-08    2.440318e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     6.110399e-09   2.453645e-01\
+   #     ++++ Line Search converged.\
+   #   10:    6.110399e-09    2.453645e-01\
+   # Absolute defect norm 1.000000e-08 reached after 10 steps.\
+   # Average reduction over 10 steps: 1.814712e-01\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.380317e+00, 4.486790e-03)\
++++ density = 1.250000e+00\
++++ theta = 9.222741e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (6.956227e+00, 1.732267e-01)\
++++ angular velocity: (6.050328e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [1584,0]\
+ rotInd(0) = [1543,0]\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.449880e+00, 6.219057e-03)\
++++ density = 1.250000e+00\
++++ theta = 9.257406e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (6.956227e+00, 1.732267e-01)\
++++ angular velocity: (6.050328e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 9  END ++++++\
+++++++ TIMESTEP 10 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    8.677977e-02      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.410384e-02   1.625245e-01\
+   #     ++++ Line Search converged.\
+   #    1:    1.410384e-02    1.625245e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.268472e-03   1.608407e-01\
+   #     ++++ Line Search converged.\
+   #    2:    2.268472e-03    1.608407e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.910203e-04   2.164542e-01\
+   #     ++++ Line Search converged.\
+   #    3:    4.910203e-04    2.164542e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.296820e-04   2.641073e-01\
+   #     ++++ Line Search converged.\
+   #    4:    1.296820e-04    2.641073e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.945771e-05   3.813767e-01\
+   #     ++++ Line Search converged.\
+   #    5:    4.945771e-05    3.813767e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.105975e-05   4.258133e-01\
+   #     ++++ Line Search converged.\
+   #    6:    2.105975e-05    4.258133e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     8.880803e-06   4.216955e-01\
+   #     ++++ Line Search converged.\
+   #    7:    8.880803e-06    4.216955e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.741549e-06   4.213075e-01\
+   #     ++++ Line Search converged.\
+   #    8:    3.741549e-06    4.213075e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.590275e-06   4.250312e-01\
+   #     ++++ Line Search converged.\
+   #    9:    1.590275e-06    4.250312e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     6.771351e-07   4.257975e-01\
+   #     ++++ Line Search converged.\
+   #   10:    6.771351e-07    4.257975e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.879286e-07   4.252159e-01\
+   #     ++++ Line Search converged.\
+   #   11:    2.879286e-07    4.252159e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.223924e-07   4.250790e-01\
+   #     ++++ Line Search converged.\
+   #   12:    1.223924e-07    4.250790e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     5.204126e-08   4.252001e-01\
+   #     ++++ Line Search converged.\
+   #   13:    5.204126e-08    4.252001e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.212941e-08   4.252283e-01\
+   #     ++++ Line Search converged.\
+   #   14:    2.212941e-08    4.252283e-01\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     9.409567e-09   4.252063e-01\
+   #     ++++ Line Search converged.\
+   #   15:    9.409567e-09    4.252063e-01\
+   # Absolute defect norm 1.000000e-08 reached after 15 steps.\
+   # Average reduction over 15 steps: 3.433023e-01\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.449880e+00, 6.219057e-03)\
++++ density = 1.250000e+00\
++++ theta = 9.257406e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (7.139075e+00, 2.056866e-01)\
++++ angular velocity: (-4.330153e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [1667,0]\
+ rotInd(0) = [1626,0]\
+ +++++++++++++++++++++++++ ParticleProviderEllipse Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (1.521270e+00, 8.275923e-03)\
++++ density = 1.250000e+00\
++++ theta = 9.232596e+01\
++++ elliptic_axis_x = 1.250000e-01\
++++ elliptic_axis_y = 2.500000e-01\
+\
++++ linear velocity: (7.139075e+00, 2.056866e-01)\
++++ angular velocity: (-4.330153e-01, 0.000000e+00)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 10  END ++++++\
+++++++ TIMESTEP 11 BEGIN ++++++\
+}

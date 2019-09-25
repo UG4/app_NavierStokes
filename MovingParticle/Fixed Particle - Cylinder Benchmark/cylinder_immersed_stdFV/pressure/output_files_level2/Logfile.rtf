@@ -1,0 +1,558 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf130
+{\fonttbl\f0\fnil\fcharset0 Menlo-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab529
+\pard\tx529\pardeftab529\pardirnatural\partightenfactor0
+
+\f0\b\fs22 \cf0 \CocoaLigature0 ********************************************************************************\
+* ugshell - ug4.0.2, head revision 'unknown',                                  *\
+*                    compiled 'Fr  6 Sep 2019 14:31:24 CEST'                   *\
+*                    on 'Susannes-MacBook-Pro-2.local' (DEBUG).                *\
+*                                                                              *\
+* arguments:                                                                   *\
+*   -outproc id:         Sets the output-proc to id. Default is 0.             *\
+*   -ex scriptname:      Executes the specified script.                        *\
+*   -noquit:             Runs the interactive shell after specified script.    *\
+*   -noterm:             Terminal logging will be disabled.                    *\
+*   -logtofile filename: Output will be written to the specified file.         *\
+*   -call:               Combines all following arguments to one lua command   *\
+*                        and executes it. Ignored if it follows '-ex'.         *\
+*                        '(', ')', and '"' have to be escaped, e.g.: '\\('      *\
+* Additional parameters are passed to the script through ugargc and ugargv.    *\
+*                                                                              *\
+* Initializing: paths... done, bridge... done, plugins... done                 *\
+********************************************************************************\
+ Chosen Parameters:\
+    dim              = 2\
+    numTotalRefs     = 2\
+    numPreRefs       = 2\
+    grid             = grids/channel_41x220_tri_regular.ugx\
+	   radius           = 0.05\
+    center           = 0.2  0.2\
+	   visc             = 0.001\
+	   densityFluid		= 1\
+	   densityPrt		= 2\
+    stokes           = false\
+Loading Domain grids/channel_41x220_tri_regular.ugx ... done.\
+Performing integrity check on domain ... done.\
+Pre-Refining(2): 1 2 done.\
+Distributing... done.\
+Post-Refining(0): done.\
+| ----------------------------------------------------------------------------------------------------------------------- |\
+|  Number of DoFs (All Procs)                                                                                             |\
+|  Algebra: Block 3 (divide by 3 for #Index)                                                                              |\
+|                                                                                                                         |\
+|    GridLevel   |       Domain |     0: Inner |     1: Upper |     2: Lower |     3: Inlet |    4: Outlet | 5: Pressur.. |\
+| ----------------------------------------------------------------------------------------------------------------------- |\
+| (lev,    0)    |          483 |          315 |           69 |           66 |           15 |           15 |            3 |\
+| (lev,    1)    |         1755 |         1419 |          135 |          132 |           33 |           33 |            3 |\
+| (lev,    2)    |         6675 |         6003 |          267 |          264 |           69 |           69 |            3 |\
+| (lev,    0, g) |          483 |          315 |           69 |           66 |           15 |           15 |            3 |\
+| (lev,    1, g) |         1755 |         1419 |          135 |          132 |           33 |           33 |            3 |\
+| (lev,    2, g) |         6675 |         6003 |          267 |          264 |           69 |           69 |            3 |\
+| (surf, top)    |         6675 |         6003 |          267 |          264 |           69 |           69 |            3 |\
+| ----------------------------------------------------------------------------------------------------------------------- |\
+| For Legend and Options: print_statistic("legend").                                                                      |\
+| ----------------------------------------------------------------------------------------------------------------------- |\
+ParticleProvider constructor\
+ParticleProviderSphere constructor\
+init bool_marker done!\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (0.2, 0.2)\
++++ density = 2\
++++ radius = 0.05\
+\
++++ linear velocity: (0, 0)\
++++ angular velocity: (0, 0)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+\
+ #cut elements: 52\
+\
+ For detailed info on the cut element geometry see file ./'CutElementData.txt'\
+\
+\
+   # ########               Newton Solver                ##\
+   # ########  (Linear Solver: Iterative Linear Solver)  ##\
+   #   Iter      Defect         Rate \
+   #    0:    1.066827e-02      -------\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    1.066827e-02      -------\
+      %    1:    3.139414e-16    2.942757e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 2.942757e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.519314e-03   2.361502e-01\
+   #     ++++ Line Search converged.\
+   #    1:    2.519314e-03    2.361502e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    2.519314e-03      -------\
+      %    1:    8.086032e-17    3.209616e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 3.209616e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.661122e-03   6.593548e-01\
+   #     ++++ Line Search converged.\
+   #    2:    1.661122e-03    6.593548e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    1.661122e-03      -------\
+      %    1:    1.934655e-17    1.164668e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 1.164668e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.022365e-03   6.154666e-01\
+   #     ++++ Line Search converged.\
+   #    3:    1.022365e-03    6.154666e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    1.022365e-03      -------\
+      %    1:    6.494824e-18    6.352744e-15\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 6.352744e-15\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     8.646052e-04   8.456912e-01\
+   #     +    2:           0.5     1.989366e-04   1.945847e-01\
+   #     ++++ Line Search converged.\
+   #    4:    1.989366e-04    1.945847e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    1.989366e-04      -------\
+      %    1:    2.167716e-18    1.089652e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 1.089652e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.518316e-04   7.632158e-01\
+   #     +    2:           0.5     5.431310e-05   2.730171e-01\
+   #     ++++ Line Search converged.\
+   #    5:    5.431310e-05    2.730171e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    5.431310e-05      -------\
+      %    1:    1.207663e-18    2.223521e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 2.223521e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.489817e-05   6.425369e-01\
+   #     ++++ Line Search converged.\
+   #    6:    3.489817e-05    6.425369e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    3.489817e-05      -------\
+      %    1:    5.060277e-19    1.450012e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 1.450012e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.926702e-05   1.125188e+00\
+   #     +    2:           0.5     1.016462e-05   2.912650e-01\
+   #     ++++ Line Search converged.\
+   #    7:    1.016462e-05    2.912650e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    1.016462e-05      -------\
+      %    1:    2.756281e-19    2.711643e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 2.711643e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     9.672129e-06   9.515487e-01\
+   #     +    2:           0.5     3.776515e-06   3.715354e-01\
+   #     ++++ Line Search converged.\
+   #    8:    3.776515e-06    3.715354e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    3.776515e-06      -------\
+      %    1:    1.385368e-19    3.668376e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 3.668376e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.538572e-06   6.721996e-01\
+   #     ++++ Line Search converged.\
+   #    9:    2.538572e-06    6.721996e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    2.538572e-06      -------\
+      %    1:    4.514034e-20    1.778179e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 1.778179e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.358823e-06   1.323115e+00\
+   #     +    2:           0.5     8.295918e-07   3.267947e-01\
+   #     ++++ Line Search converged.\
+   #   10:    8.295918e-07    3.267947e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    8.295918e-07      -------\
+      %    1:    2.431336e-20    2.930762e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 2.930762e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     8.648998e-07   1.042561e+00\
+   #     +    2:           0.5     3.876596e-07   4.672896e-01\
+   #     ++++ Line Search converged.\
+   #   11:    3.876596e-07    4.672896e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    3.876596e-07      -------\
+      %    1:    1.587088e-20    4.094024e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 4.094024e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.394846e-07   6.177703e-01\
+   #     ++++ Line Search converged.\
+   #   12:    2.394846e-07    6.177703e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    2.394846e-07      -------\
+      %    1:    4.943616e-21    2.064273e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 2.064273e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.224170e-07   1.346295e+00\
+   #     +    2:           0.5     8.743643e-08   3.651025e-01\
+   #     ++++ Line Search converged.\
+   #   13:    8.743643e-08    3.651025e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    8.743643e-08      -------\
+      %    1:    3.272746e-21    3.743000e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 3.743000e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     8.454343e-08   9.669131e-01\
+   #     +    2:           0.5     4.577854e-08   5.235637e-01\
+   #     ++++ Line Search converged.\
+   #   14:    4.577854e-08    5.235637e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    4.577854e-08      -------\
+      %    1:    2.172854e-21    4.746447e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 4.746447e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.471442e-08   5.398691e-01\
+   #     ++++ Line Search converged.\
+   #   15:    2.471442e-08    5.398691e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    2.471442e-08      -------\
+      %    1:    5.951875e-22    2.408260e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 2.408260e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.186626e-08   1.289379e+00\
+   #     +    2:           0.5     9.968841e-09   4.033613e-01\
+   #     ++++ Line Search converged.\
+   #   16:    9.968841e-09    4.033613e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    9.968841e-09      -------\
+      %    1:    4.160691e-22    4.173696e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 4.173696e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     8.514735e-09   8.541349e-01\
+   #     +    2:           0.5     5.618387e-09   5.635948e-01\
+   #     ++++ Line Search converged.\
+   #   17:    5.618387e-09    5.635948e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    5.618387e-09      -------\
+      %    1:    2.457065e-22    4.373256e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 4.373256e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.645188e-09   4.708092e-01\
+   #     ++++ Line Search converged.\
+   #   18:    2.645188e-09    4.708092e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    2.645188e-09      -------\
+      %    1:    7.733230e-23    2.923508e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 2.923508e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.190033e-09   1.205976e+00\
+   #     +    2:           0.5     1.194063e-09   4.514094e-01\
+   #     ++++ Line Search converged.\
+   #   19:    1.194063e-09    4.514094e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    1.194063e-09      -------\
+      %    1:    5.049740e-23    4.229041e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 4.229041e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     8.695495e-10   7.282277e-01\
+   #     ++++ Line Search converged.\
+   #   20:    8.695495e-10    7.282277e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    8.695495e-10      -------\
+      %    1:    1.600709e-23    1.840848e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 1.840848e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.228304e-09   1.412575e+00\
+   #     +    2:           0.5     2.956028e-10   3.399494e-01\
+   #     ++++ Line Search converged.\
+   #   21:    2.956028e-10    3.399494e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    2.956028e-10      -------\
+      %    1:    9.222614e-24    3.119935e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 3.119935e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.202795e-10   1.083479e+00\
+   #     +    2:           0.5     1.456774e-10   4.928145e-01\
+   #     ++++ Line Search converged.\
+   #   22:    1.456774e-10    4.928145e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    1.456774e-10      -------\
+      %    1:    6.869759e-24    4.715735e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 4.715735e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     9.067161e-11   6.224139e-01\
+   #     ++++ Line Search converged.\
+   #   23:    9.067161e-11    6.224139e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    9.067161e-11      -------\
+      %    1:    1.903197e-24    2.099000e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 2.099000e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.228436e-10   1.354819e+00\
+   #     +    2:           0.5     3.356379e-11   3.701686e-01\
+   #     ++++ Line Search converged.\
+   #   24:    3.356379e-11    3.701686e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    3.356379e-11      -------\
+      %    1:    1.194515e-24    3.558941e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 3.558941e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.242708e-11   9.661330e-01\
+   #     +    2:           0.5     1.797233e-11   5.354678e-01\
+   #     ++++ Line Search converged.\
+   #   25:    1.797233e-11    5.354678e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    1.797233e-11      -------\
+      %    1:    7.958472e-25    4.428181e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 4.428181e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     9.575920e-12   5.328147e-01\
+   #     ++++ Line Search converged.\
+   #   26:    9.575920e-12    5.328147e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    9.575920e-12      -------\
+      %    1:    2.499711e-25    2.610413e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 2.610413e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.232690e-11   1.287281e+00\
+   #     +    2:           0.5     3.936707e-12   4.111048e-01\
+   #     ++++ Line Search converged.\
+   #   27:    3.936707e-12    4.111048e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    3.936707e-12      -------\
+      %    1:    1.568430e-25    3.984118e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 3.984118e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.299401e-12   8.381121e-01\
+   #     +    2:           0.5     2.225777e-12   5.653906e-01\
+   #     ++++ Line Search converged.\
+   #   28:    2.225777e-12    5.653906e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    2.225777e-12      -------\
+      %    1:    1.032901e-25    4.640629e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 4.640629e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.042525e-12   4.683870e-01\
+   #     ++++ Line Search converged.\
+   #   29:    1.042525e-12    4.683870e-01\
+\
+      % %%%%%%%%      Iterative Linear Solver      %%%%%%%%%%%\
+      % %%%%%%%%   (Precond: Geometric MultiGrid)  %%%%%%%%%%%\
+      %   Iter      Defect         Rate \
+      %    0:    1.042525e-12      -------\
+      %    1:    3.120919e-26    2.993615e-14\
+      % Absolute defect norm 1.000000e-12 reached after 1 steps.\
+      % Average reduction over 1 steps: 2.993615e-14\
+      % %%%%%  Iteration converged  %%%%%\
+\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     1.238976e-12   1.188437e+00\
+   #     +    2:           0.5     4.711728e-13   4.519534e-01\
+   #     ++++ Line Search converged.\
+   #   30:    4.711728e-13    4.519534e-01\
+   # Absolute defect norm 1.000000e-12 reached after 30 steps.\
+   # Average reduction over 30 steps: 4.516856e-01\
+   # #####  Iteration converged  #####\
+\
+done.\
+\
+\
+Program ended with exit code: 0}
