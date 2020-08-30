@@ -31,6 +31,7 @@
 -----------------------------------------------------------------------------------
 
 ug_load_script("ug_util.lua")
+ug_load_script("util/load_balancing_util.lua")
 
 dim 		 = util.GetParamNumber("-dim", 3, "world dimension")
 numRefs 	 = util.GetParamNumber("-numRefs", 2, "number of grid refinements")
@@ -41,7 +42,7 @@ numTimeSteps = util.GetParamNumber("-numTimeSteps", 1250)   -- T = 5.0
 InitUG(dim, AlgebraType("CPU", dim+1));
 
 if 	dim == 3 then
-    gridName = util.GetParam("-grid", "grids/sedimenting_10x10x16_regular.ugx")
+    gridName = util.GetParam("-grid", "Sedimenting_10x10x16_regular.ugx")
 else print("Chosen Dimension " .. dim .. "not supported. Exiting."); exit(); end
 
 
@@ -131,8 +132,8 @@ end
 --------------------------------------------------------------------------
 --------------------------------------------------------------------------
 
-neededSubsets = {"Inner", "Top", "Bottom", "Front", "Back", "Left", "Right", "PressureBndCond"}
-dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, neededSubsets)
+dom = Domain()
+LoadDomain(dom, gridName)
 
 approxSpace = ApproximationSpace(dom)
 
@@ -247,6 +248,60 @@ movingParticle:set_print_cutElemData(print_cutElemData)
 -- print particle data to terminal
 interfaceProvider:print()
 
+
+local ref = GlobalDomainRefiner(dom)
+
+if NumProcs() > 1 then
+	pu = ParticleUnificator(dom)
+	cdgm = ClusteredDualGraphManager()
+	cdgm:add_unificator(SiblingUnificator())
+	cdgm:add_unificator(pu)
+
+	balancer.partitioner = "parmetis"
+	balancer.staticProcHierarchy = true
+	balancer.firstDistLvl = 1
+	balancer.firstDistProcs = 16
+	balancer.redistProcs = 4
+	balancer.redistSteps = 1
+	balancer.parallelElementThreshold = 4
+	balancer.qualityThreshold = 1.1
+	balancer.ParseParameters()
+	bal = balancer.CreateLoadBalancer(dom, balancerDesc)
+	balancer.defaultPartitioner:set_dual_graph_manager(cdgm)
+
+	pu:update_particles(interfaceProvider)
+	  
+	for i = 1, numPreRefs do
+		ref:refine()
+		bal:rebalance()
+	end
+
+
+	for i = numPreRefs+1, numRefs do
+		ref:refine()
+		bal.rebalance("util.refinement: adaption-" ..i)
+	end
+
+	if verbose and NumProcs() > 1 then
+		bal.print_quality_records()
+	end
+
+else
+	for i = 1, numPreRefs do
+		ref:refine()
+	end
+	for i = numPreRefs+1, numRefs do
+		ref:refine()
+	end
+end
+
+movingParticle:set_element_diameter(MaxElementDiameter(dom, topLevel))
+
+approxSpace:init_levels()
+approxSpace:init_top_surface()
+approxSpace:print_statistic()
+OrderCuthillMcKee(approxSpace, true);
+
 --------------------------------------------------------------------------
 -- Boundary conditions
 --------------------------------------------------------------------------
@@ -299,18 +354,12 @@ domainDisc:adjust_solution(u)
 
 -- create algebraic Preconditioner
 ilu = ILU()
-ilu:set_beta(-0.9)
 --ilu:set_debug(dbgWriter)
-
 
 baseSolver = BiCGStab()
 baseSolver:set_preconditioner(ilu)
 baseSolver:set_convergence_check(ConvCheck(10000000, 1e-11, 1e-11, false))
 baseSolver:set_compute_fresh_defect_when_finished(true)
-
-Base = LinearSolver()
-Base:set_convergence_check(ConvCheck(2000000, 1e-13, 1e-13, true))
-Base:set_preconditioner(ILU())
 
 gmg = GeometricMultiGrid(approxSpace)
 gmg:set_discretization(timeDisc)
@@ -345,8 +394,16 @@ exactSolver = SuperLU()
 --exactSolver:set_minimum_for_sparse(10000000)
 
 -- choose a solver
-if Solver == 1 then solver = exactSolver
-else                solver = linSolver
+if NumProcs() > 1 then
+	solver = LinearSolver()
+	solver:set_preconditioner(baseSolver)
+	solver:set_convergence_check(convCheck)
+	solver:set_compute_fresh_defect_when_finished(true)
+	--solver:set_debug(dbgWriter)
+else
+	if Solver == 1 then solver = exactSolver
+	else                solver = linSolver
+	end
 end
 
 newtonConvCheck = ConvCheck()
@@ -460,7 +517,15 @@ for step = 1, numTimeSteps do
 
 -- updates data on cut elements; updates the coordinates of the paricle;
 -- stores particle solution of last time step for access during assembling
-    movingParticle:update(u, approxSpace, baseLevel, topLevel, time, do_dt)
+	if NumProcs() > 1 then
+		movingParticle:pre_balancing_update(u, approxSpace, baseLevel, topLevel, time, do_dt)
+		pu:update_particles(interfaceProvider)     
+		bal:rebalance()
+		movingParticle:post_balancing_update(u, approxSpace, baseLevel, topLevel, time, do_dt)
+	else
+	    movingParticle:update(u, approxSpace, baseLevel, topLevel, time, do_dt)
+	end
+
 
 -- prints particle info to terminal
     interfaceProvider:print()
