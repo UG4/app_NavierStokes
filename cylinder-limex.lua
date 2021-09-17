@@ -661,8 +661,8 @@ if not(bConvRates) and not(bBenchmarkRates) then
   
   
    linSolver = {
-    --  type = "bicgstab", --"bicgstab",
-    type = "superlu", --"bicgstab",
+    type = "bicgstab", --"bicgstab",
+    -- type = "superlu", --"bicgstab",
     convCheck = ConvCheck(100, 1e-16, 1e-8, true),
    }
   }
@@ -705,13 +705,18 @@ if not(bConvRates) and not(bBenchmarkRates) then
       
         type = "linear",
         convCheck = ConvCheck(20, 5e-12, 1e-99, true),
-        precond =    -- [[egs,
+        precond =  {
+          type = "ssc",
+          vertex = {{"p"}, {"u","v"}}
+        },
+        --[[egs,
        {
             type = "egs",
             damping = 1.0,
             vertex = {{"p"}, {"u", "v"}}
      
         },--]]
+        
         approxSpace = approxSpace,
         -- debug = true
        }, -- debugSolver
