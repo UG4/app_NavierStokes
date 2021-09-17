@@ -1,0 +1,16 @@
+set terminal postscript eps enhanced colour "Helvetica" 24
+
+set size 1, 1
+
+set key at 0.48, 1.5
+set key box font ",20"
+set ylabel "wall factor" 
+set xlabel "blockage ratio d/D"
+set title "wall factor as a function of the blockage ratio"
+f(x) = log(1/x) - 0.9157 + 1.7244*x*x - 1.7302*x*x*x*x 
+g(x) = 9.81*x*x*f(x)/4
+
+set output "force.eps"
+
+plot "SedimentingStationary_all_radii_numRefs3.txt" using 1:2 lc 5 pt 5 lw 2 title 'l = 3', "SedimentingStationary_all_radii_numRefs4.txt" using 1:2 lc 3 pt 7 lw 2 title 'l = 4', "SedimentingStationary_all_radii_numRefs4.txt" using 1:2 lc 8 pt 11 lw 4 title 'l = 5', f(x) title 'asympt. sol.' lc -1
+	 

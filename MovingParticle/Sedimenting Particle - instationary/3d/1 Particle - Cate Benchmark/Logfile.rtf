@@ -1,0 +1,551 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf130
+{\fonttbl\f0\fnil\fcharset0 Menlo-Bold;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab529
+\pard\tx529\pardeftab529\pardirnatural\partightenfactor0
+
+\f0\b\fs22 \cf0 \CocoaLigature0 ********************************************************************************\
+* ugshell - ug4.0.2, head revision 'unknown',                                  *\
+*                    compiled 'So 15 Sep 2019 00:26:52 CEST'                   *\
+*                    on 'Susannes-MacBook-Pro-2.local' (DEBUG).                *\
+*                                                                              *\
+* arguments:                                                                   *\
+*   -outproc id:         Sets the output-proc to id. Default is 0.             *\
+*   -ex scriptname:      Executes the specified script.                        *\
+*   -noquit:             Runs the interactive shell after specified script.    *\
+*   -noterm:             Terminal logging will be disabled.                    *\
+*   -logtofile filename: Output will be written to the specified file.         *\
+*   -call:               Combines all following arguments to one lua command   *\
+*                        and executes it. Ignored if it follows '-ex'.         *\
+*                        '(', ')', and '"' have to be escaped, e.g.: '\\('      *\
+* Additional parameters are passed to the script through ugargc and ugargv.    *\
+*                                                                              *\
+* Initializing: paths... done, bridge... done, plugins... done                 *\
+********************************************************************************\
+ Chosen Parameters:\
+    dim              = 3\
+    numTotalRefs     = 2\
+    numPreRefs       = 2\
+    dt               = 0.004\
+    numTimeSteps     = 1250\
+    grid             = grids/sedimenting_10x10x16_regular.ugx\
+	   radius           = 0.075\
+    center           = 0  0  1.2\
+	   visc             = 0.038453608247423\
+	   densityFluid		= 0.97\
+	   densityPrt		= 1.12\
+    stokes           = false\
+Loading Domain grids/sedimenting_10x10x16_regular.ugx ... done.\
+Performing integrity check on domain ... done.\
+Pre-Refining(2): 1 2 done.\
+Distributing... done.\
+Post-Refining(0): done.\
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- |\
+|  Number of DoFs (All Procs)                                                                                                                           |\
+|  Algebra: Block 4 (divide by 4 for #Index)                                                                                                            |\
+|                                                                                                                                                       |\
+|    GridLevel   |       Domain |     0: Inner |      1: Left |     2: Right |     3: Front |      4: Back |    5: Bottom |       6: Top | 7: Pressur.. |\
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- |\
+| (lev,    0)    |          700 |          180 |           36 |           36 |           84 |           84 |          136 |          140 |            4 |\
+| (lev,    1)    |         4212 |         2156 |          196 |          196 |          364 |          364 |          464 |          468 |            4 |\
+| (lev,    2)    |        28900 |        20700 |          900 |          900 |         1500 |         1500 |         1696 |         1700 |            4 |\
+| (lev,    0, g) |          700 |          180 |           36 |           36 |           84 |           84 |          136 |          140 |            4 |\
+| (lev,    1, g) |         4212 |         2156 |          196 |          196 |          364 |          364 |          464 |          468 |            4 |\
+| (lev,    2, g) |        28900 |        20700 |          900 |          900 |         1500 |         1500 |         1696 |         1700 |            4 |\
+| (surf, top)    |        28900 |        20700 |          900 |          900 |         1500 |         1500 |         1696 |         1700 |            4 |\
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- |\
+| For Legend and Options: print_statistic("legend").                                                                                                    |\
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- |\
+ParticleProvider constructor\
+ParticleProviderSphere constructor\
+init bool_marker done!\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (0, 0, 1.2)\
++++ density = 1.12\
++++ radius = 0.075\
+\
++++ linear velocity: (0, 0, 0)\
++++ angular velocity: (0, 0, 0)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+\
+ #cut elements: 141\
+\
+ For detailed info on the cut element geometry see file ./'CutElementData.txt'\
+\
+++++++ TIMESTEP 1 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    1.040111e-04      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     5.938662e-08   5.709640e-04\
+   #     ++++ Line Search converged.\
+   #    1:    5.938662e-08    5.709640e-04\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.600222e-10   7.746226e-03\
+   #     ++++ Line Search converged.\
+   #    2:    4.600222e-10    7.746226e-03\
+   # Absolute defect norm 1.000000e-08 reached after 2 steps.\
+   # Average reduction over 2 steps: 2.103049e-03\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (0.000000e+00, 0.000000e+00, 1.200000e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (-4.984425e-04, 4.373550e-04, -8.638960e-02)\
++++ angular velocity: (3.254317e-04, 1.222223e-02, 1.549230e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [2212,0]\
+ rotInd(0) = [1902,0]\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-1.993770e-06, 1.749420e-06, 1.199654e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (-4.984425e-04, 4.373550e-04, -8.638960e-02)\
++++ angular velocity: (3.254317e-04, 1.222223e-02, 1.549230e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 1  END ++++++\
+++++++ TIMESTEP 2 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    2.902149e-05      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.833416e-08   1.320889e-03\
+   #     ++++ Line Search converged.\
+   #    1:    3.833416e-08    1.320889e-03\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.350286e-10   8.739688e-03\
+   #     ++++ Line Search converged.\
+   #    2:    3.350286e-10    8.739688e-03\
+   # Absolute defect norm 1.000000e-08 reached after 2 steps.\
+   # Average reduction over 2 steps: 3.397669e-03\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-1.993770e-06, 1.749420e-06, 1.199654e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (-6.828798e-04, 6.107182e-04, -1.166676e-01)\
++++ angular velocity: (-1.743612e-03, 1.907347e-02, 1.996486e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [1911,0]\
+ rotInd(0) = [1902,0]\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-4.725289e-06, 4.192293e-06, 1.199188e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (-6.828798e-04, 6.107182e-04, -1.166676e-01)\
++++ angular velocity: (-1.743612e-03, 1.907347e-02, 1.996486e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 2  END ++++++\
+++++++ TIMESTEP 3 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    2.358078e-05      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.132915e-08   1.752663e-03\
+   #     ++++ Line Search converged.\
+   #    1:    4.132915e-08    1.752663e-03\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.180773e-10   5.276596e-03\
+   #     ++++ Line Search converged.\
+   #    2:    2.180773e-10    5.276596e-03\
+   # Absolute defect norm 1.000000e-08 reached after 2 steps.\
+   # Average reduction over 2 steps: 3.041068e-03\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-4.725289e-06, 4.192293e-06, 1.199188e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (-6.232263e-04, 6.338055e-04, -1.359749e-01)\
++++ angular velocity: (-4.345112e-03, 2.239239e-02, 2.070965e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [1911,0]\
+ rotInd(0) = [1902,0]\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-7.218195e-06, 6.727515e-06, 1.198644e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (-6.232263e-04, 6.338055e-04, -1.359749e-01)\
++++ angular velocity: (-4.345112e-03, 2.239239e-02, 2.070965e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 3  END ++++++\
+++++++ TIMESTEP 4 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    2.030075e-05      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.171969e-08   2.055081e-03\
+   #     ++++ Line Search converged.\
+   #    1:    4.171969e-08    2.055081e-03\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.097108e-10   5.026664e-03\
+   #     ++++ Line Search converged.\
+   #    2:    2.097108e-10    5.026664e-03\
+   # Absolute defect norm 1.000000e-08 reached after 2 steps.\
+   # Average reduction over 2 steps: 3.214063e-03\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-7.218195e-06, 6.727515e-06, 1.198644e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (-4.901569e-04, 6.136227e-04, -1.513704e-01)\
++++ angular velocity: (-6.715901e-03, 2.371812e-02, 2.107523e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [1911,0]\
+ rotInd(0) = [1902,0]\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-9.178822e-06, 9.182006e-06, 1.198038e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (-4.901569e-04, 6.136227e-04, -1.513704e-01)\
++++ angular velocity: (-6.715901e-03, 2.371812e-02, 2.107523e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 4  END ++++++\
+++++++ TIMESTEP 5 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    1.815007e-05      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.175427e-08   2.300502e-03\
+   #     ++++ Line Search converged.\
+   #    1:    4.175427e-08    2.300502e-03\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.128486e-10   5.097650e-03\
+   #     ++++ Line Search converged.\
+   #    2:    2.128486e-10    5.097650e-03\
+   # Absolute defect norm 1.000000e-08 reached after 2 steps.\
+   # Average reduction over 2 steps: 3.424493e-03\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-9.178822e-06, 9.182006e-06, 1.198038e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (-3.474325e-04, 5.852051e-04, -1.646266e-01)\
++++ angular velocity: (-8.666392e-03, 2.397063e-02, 2.151385e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [2212,0]\
+ rotInd(0) = [1902,0]\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-1.056855e-05, 1.152283e-05, 1.197380e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (-3.474325e-04, 5.852051e-04, -1.646266e-01)\
++++ angular velocity: (-8.666392e-03, 2.397063e-02, 2.151385e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 5  END ++++++\
+++++++ TIMESTEP 6 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    1.661026e-05      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.086506e-08   2.460230e-03\
+   #     ++++ Line Search converged.\
+   #    1:    4.086506e-08    2.460230e-03\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.344264e-10   5.736597e-03\
+   #     ++++ Line Search converged.\
+   #    2:    2.344264e-10    5.736597e-03\
+   # Absolute defect norm 1.000000e-08 reached after 2 steps.\
+   # Average reduction over 2 steps: 3.756773e-03\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-1.056855e-05, 1.152283e-05, 1.197380e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (-2.175311e-04, 5.573452e-04, -1.759672e-01)\
++++ angular velocity: (-1.022105e-02, 2.359704e-02, 2.220162e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [2212,0]\
+ rotInd(0) = [1902,0]\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-1.143868e-05, 1.375221e-05, 1.196676e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (-2.175311e-04, 5.573452e-04, -1.759672e-01)\
++++ angular velocity: (-1.022105e-02, 2.359704e-02, 2.220162e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 6  END ++++++\
+++++++ TIMESTEP 7 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    1.543137e-05      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.133426e-08   2.678587e-03\
+   #     ++++ Line Search converged.\
+   #    1:    4.133426e-08    2.678587e-03\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.245081e-10   5.431524e-03\
+   #     ++++ Line Search converged.\
+   #    2:    2.245081e-10    5.431524e-03\
+   # Absolute defect norm 1.000000e-08 reached after 2 steps.\
+   # Average reduction over 2 steps: 3.814290e-03\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-1.143868e-05, 1.375221e-05, 1.196676e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (-9.936371e-05, 5.366970e-04, -1.866683e-01)\
++++ angular velocity: (-1.141035e-02, 2.295421e-02, 2.251663e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [2212,0]\
+ rotInd(0) = [1902,0]\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-1.183613e-05, 1.589899e-05, 1.195929e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (-9.936371e-05, 5.366970e-04, -1.866683e-01)\
++++ angular velocity: (-1.141035e-02, 2.295421e-02, 2.251663e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 7  END ++++++\
+++++++ TIMESTEP 8 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    1.445355e-05      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.075871e-08   2.819980e-03\
+   #     ++++ Line Search converged.\
+   #    1:    4.075871e-08    2.819980e-03\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.271192e-10   5.572287e-03\
+   #     ++++ Line Search converged.\
+   #    2:    2.271192e-10    5.572287e-03\
+   # Absolute defect norm 1.000000e-08 reached after 2 steps.\
+   # Average reduction over 2 steps: 3.964056e-03\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-1.183613e-05, 1.589899e-05, 1.195929e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (1.485218e-06, 5.216925e-04, -1.964632e-01)\
++++ angular velocity: (-1.232251e-02, 2.218331e-02, 2.285660e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [2212,0]\
+ rotInd(0) = [1902,0]\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-1.183019e-05, 1.798577e-05, 1.195143e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (1.485218e-06, 5.216925e-04, -1.964632e-01)\
++++ angular velocity: (-1.232251e-02, 2.218331e-02, 2.285660e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 8  END ++++++\
+++++++ TIMESTEP 9 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    1.367264e-05      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     4.015962e-08   2.937224e-03\
+   #     ++++ Line Search converged.\
+   #    1:    4.015962e-08    2.937224e-03\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.225563e-10   5.541793e-03\
+   #     ++++ Line Search converged.\
+   #    2:    2.225563e-10    5.541793e-03\
+   # Absolute defect norm 1.000000e-08 reached after 2 steps.\
+   # Average reduction over 2 steps: 4.034537e-03\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-1.183019e-05, 1.798577e-05, 1.195143e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (8.740121e-05, 5.109801e-04, -2.054731e-01)\
++++ angular velocity: (-1.302232e-02, 2.136161e-02, 2.323107e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [2212,0]\
+ rotInd(0) = [1902,0]\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-1.148059e-05, 2.002969e-05, 1.194322e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (8.740121e-05, 5.109801e-04, -2.054731e-01)\
++++ angular velocity: (-1.302232e-02, 2.136161e-02, 2.323107e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 9  END ++++++\
+++++++ TIMESTEP 10 BEGIN ++++++\
+\
+   # ########       Newton Solver        ##################\
+   # ########  (Linear Solver: SuperLU)  ##################\
+   #   Iter      Defect         Rate \
+   #    0:    1.301344e-05      -------\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     3.956429e-08   3.040264e-03\
+   #     ++++ Line Search converged.\
+   #    1:    3.956429e-08    3.040264e-03\
+   #     ++++ Line Search:\
+   +  Iter       lambda        Defect          Rate \
+   #     +    1:             1     2.165520e-10   5.473420e-03\
+   #     ++++ Line Search converged.\
+   #    2:    2.165520e-10    5.473420e-03\
+   # Absolute defect norm 1.000000e-08 reached after 2 steps.\
+   # Average reduction over 2 steps: 4.079295e-03\
+   # #####  Iteration converged  #####\
+\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-1.148059e-05, 2.002969e-05, 1.194322e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (1.606487e-04, 5.037132e-04, -2.138219e-01)\
++++ angular velocity: (-1.356166e-02, 2.053307e-02, 2.363814e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+ transInd(0) = [2212,0]\
+ rotInd(0) = [1902,0]\
+ +++++++++++++++++++++++++ ParticleProviderSphere Info ++++++++++++++++++++++++++++++ \
++++ num_particles = 1\
+ +++++++++++++++++++++++++ particle 0 ++++++++++++++++++++++++++++++ \
+\
++++ center = (-1.083799e-05, 2.204454e-05, 1.193466e+00)\
++++ density = 1.120000e+00\
++++ radius = 7.500000e-02\
+\
++++ linear velocity: (1.606487e-04, 5.037132e-04, -2.138219e-01)\
++++ angular velocity: (-1.356166e-02, 2.053307e-02, 2.363814e-02)\
+\
+ ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ \
+++++++ TIMESTEP 10  END ++++++\
+++++++ TIMESTEP 11 BEGIN ++++++\
+}

@@ -1,0 +1,15 @@
+set terminal postscript eps enhanced colour "Helvetica" 24
+
+set size 1, 1
+
+set key at 4.9, 0.08
+set key box font ",20"
+set ylabel "translational velocity" 
+set xlabel "time"
+set yrange[-0.5:0.1]
+set title "plot of the translational velocity for grid level 2"
+
+
+set output "plot.eps"
+
+plot "Sedimenting_Sphere_GL2.txt" using 1:6 with lines lc 6 lw 4 title 'using 1:6'

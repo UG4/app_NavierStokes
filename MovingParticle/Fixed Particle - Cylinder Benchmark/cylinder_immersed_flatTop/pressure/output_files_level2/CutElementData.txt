@@ -1,0 +1,734 @@
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.000000e-01, 2.562500e-01 
+Cut element corner 1: 1.875000e-01, 2.562500e-01 
+Cut element corner 2: 1.939553e-01, 2.496333e-01 
+Cut element corner 3: 2.000000e-01, 2.500000e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 1.750000e-01, 2.562500e-01 
+Cut element corner 1: 1.837467e-01, 2.472846e-01 
+Cut element corner 2: 1.875000e-01, 2.484123e-01 
+Cut element corner 3: 1.875000e-01, 2.562500e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 1.875000e-01, 2.562500e-01 
+Cut element corner 1: 1.875000e-01, 2.484123e-01 
+Cut element corner 2: 1.939553e-01, 2.496333e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 1.750000e-01, 2.434375e-01 
+Cut element corner 1: 1.625000e-01, 2.434375e-01 
+Cut element corner 2: 1.676683e-01, 2.381400e-01 
+Cut element corner 3: 1.750000e-01, 2.433013e-01 
+
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 1.750000e-01, 2.562500e-01 
+Cut element corner 1: 1.750000e-01, 2.434375e-01 
+Cut element corner 2: 1.752375e-01, 2.434375e-01 
+Cut element corner 3: 1.837467e-01, 2.472846e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 2
+Interface corner ID: 3
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 1.750000e-01, 2.433013e-01 
+Cut element corner 1: 1.750851e-01, 2.433503e-01 
+Cut element corner 2: 1.750000e-01, 2.434375e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 0
+Interface corner ID: 1
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 1.752375e-01, 2.434375e-01 
+Cut element corner 1: 1.750000e-01, 2.434375e-01 
+Cut element corner 2: 1.750851e-01, 2.433503e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 0
+Interface corner ID: 2
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 1.500000e-01, 2.306250e-01 
+Cut element corner 1: 1.604765e-01, 2.306250e-01 
+Cut element corner 2: 1.613872e-01, 2.317656e-01 
+Cut element corner 3: 1.500000e-01, 2.434375e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 1.676683e-01, 2.381400e-01 
+Cut element corner 1: 1.625000e-01, 2.434375e-01 
+Cut element corner 2: 1.625000e-01, 2.330719e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 0
+Interface corner ID: 2
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 1.500000e-01, 2.434375e-01 
+Cut element corner 1: 1.613872e-01, 2.317656e-01 
+Cut element corner 2: 1.625000e-01, 2.330719e-01 
+Cut element corner 3: 1.625000e-01, 2.434375e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 1.500000e-01, 2.050000e-01 
+Cut element corner 1: 1.502506e-01, 2.050000e-01 
+Cut element corner 2: 1.524115e-01, 2.153407e-01 
+Cut element corner 3: 1.500000e-01, 2.178125e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 1.500000e-01, 2.306250e-01 
+Cut element corner 1: 1.500000e-01, 2.178125e-01 
+Cut element corner 2: 1.532805e-01, 2.178125e-01 
+Cut element corner 3: 1.562545e-01, 2.242142e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 2
+Interface corner ID: 3
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 1.524115e-01, 2.153407e-01 
+Cut element corner 1: 1.532805e-01, 2.178125e-01 
+Cut element corner 2: 1.500000e-01, 2.178125e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 0
+Interface corner ID: 1
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 1.500000e-01, 2.306250e-01 
+Cut element corner 1: 1.562545e-01, 2.242142e-01 
+Cut element corner 2: 1.604765e-01, 2.306250e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 1.500000e-01, 2.050000e-01 
+Cut element corner 1: 1.502277e-01, 2.047666e-01 
+Cut element corner 2: 1.502506e-01, 2.050000e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 1.500000e-01, 2.050000e-01 
+Cut element corner 1: 1.500000e-01, 1.921875e-01 
+Cut element corner 2: 1.506141e-01, 1.921875e-01 
+Cut element corner 3: 1.502277e-01, 2.047666e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 1.500000e-01, 1.793750e-01 
+Cut element corner 1: 1.544521e-01, 1.793750e-01 
+Cut element corner 2: 1.507401e-01, 1.914289e-01 
+Cut element corner 3: 1.500000e-01, 1.921875e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 1.500000e-01, 1.921875e-01 
+Cut element corner 1: 1.507401e-01, 1.914289e-01 
+Cut element corner 2: 1.506141e-01, 1.921875e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 1.750000e-01, 1.537500e-01 
+Cut element corner 1: 1.810016e-01, 1.537500e-01 
+Cut element corner 2: 1.750000e-01, 1.566987e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 1.500000e-01, 1.793750e-01 
+Cut element corner 1: 1.625000e-01, 1.665625e-01 
+Cut element corner 2: 1.625000e-01, 1.669281e-01 
+Cut element corner 3: 1.544521e-01, 1.793750e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 1.750000e-01, 1.537500e-01 
+Cut element corner 1: 1.750000e-01, 1.566987e-01 
+Cut element corner 2: 1.628256e-01, 1.665625e-01 
+Cut element corner 3: 1.625000e-01, 1.665625e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 1.625000e-01, 1.665625e-01 
+Cut element corner 1: 1.628256e-01, 1.665625e-01 
+Cut element corner 2: 1.625000e-01, 1.669281e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 2.000000e-01, 1.500000e-01 
+Cut element corner 1: 1.902154e-01, 1.509667e-01 
+Cut element corner 2: 2.000000e-01, 1.409375e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 0
+Interface corner ID: 1
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 1.750000e-01, 1.537500e-01 
+Cut element corner 1: 1.875000e-01, 1.409375e-01 
+Cut element corner 2: 1.875000e-01, 1.515877e-01 
+Cut element corner 3: 1.810016e-01, 1.537500e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 1.875000e-01, 1.409375e-01 
+Cut element corner 1: 2.000000e-01, 1.409375e-01 
+Cut element corner 2: 1.902154e-01, 1.509667e-01 
+Cut element corner 3: 1.875000e-01, 1.515877e-01 
+
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.500000e-01, 2.050000e-01 
+Cut element corner 1: 2.500000e-01, 2.178125e-01 
+Cut element corner 2: 2.467195e-01, 2.178125e-01 
+Cut element corner 3: 2.497197e-01, 2.052874e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.500000e-01, 2.306250e-01 
+Cut element corner 1: 2.395235e-01, 2.306250e-01 
+Cut element corner 2: 2.437339e-01, 2.242353e-01 
+Cut element corner 3: 2.500000e-01, 2.178125e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 2.500000e-01, 2.178125e-01 
+Cut element corner 1: 2.437339e-01, 2.242353e-01 
+Cut element corner 2: 2.467195e-01, 2.178125e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.000000e-01, 2.562500e-01 
+Cut element corner 1: 2.065132e-01, 2.495740e-01 
+Cut element corner 2: 2.125000e-01, 2.484123e-01 
+Cut element corner 3: 2.125000e-01, 2.562500e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 2.250000e-01, 2.433013e-01 
+Cut element corner 1: 2.250000e-01, 2.434375e-01 
+Cut element corner 2: 2.247625e-01, 2.434375e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 0
+Interface corner ID: 2
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.250000e-01, 2.434375e-01 
+Cut element corner 1: 2.125000e-01, 2.562500e-01 
+Cut element corner 2: 2.125000e-01, 2.484123e-01 
+Cut element corner 3: 2.247625e-01, 2.434375e-01 
+
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.500000e-01, 2.306250e-01 
+Cut element corner 1: 2.375000e-01, 2.434375e-01 
+Cut element corner 2: 2.375000e-01, 2.330719e-01 
+Cut element corner 3: 2.395235e-01, 2.306250e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 2
+Interface corner ID: 3
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 2.250000e-01, 2.433013e-01 
+Cut element corner 1: 2.253076e-01, 2.431222e-01 
+Cut element corner 2: 2.250000e-01, 2.434375e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 0
+Interface corner ID: 1
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.375000e-01, 2.434375e-01 
+Cut element corner 1: 2.250000e-01, 2.434375e-01 
+Cut element corner 2: 2.253076e-01, 2.431222e-01 
+Cut element corner 3: 2.375000e-01, 2.330719e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 2
+Interface corner ID: 3
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 2.000000e-01, 2.562500e-01 
+Cut element corner 1: 2.000000e-01, 2.500000e-01 
+Cut element corner 2: 2.065132e-01, 2.495740e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 2.500000e-01, 2.050000e-01 
+Cut element corner 1: 2.497197e-01, 2.052874e-01 
+Cut element corner 2: 2.497494e-01, 2.050000e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.500000e-01, 1.793750e-01 
+Cut element corner 1: 2.455479e-01, 1.793750e-01 
+Cut element corner 2: 2.427220e-01, 1.740225e-01 
+Cut element corner 3: 2.500000e-01, 1.665625e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 2.373302e-01, 1.667366e-01 
+Cut element corner 1: 2.375000e-01, 1.665625e-01 
+Cut element corner 2: 2.375000e-01, 1.669281e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 0
+Interface corner ID: 2
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.500000e-01, 1.665625e-01 
+Cut element corner 1: 2.427220e-01, 1.740225e-01 
+Cut element corner 2: 2.375000e-01, 1.669281e-01 
+Cut element corner 3: 2.375000e-01, 1.665625e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.500000e-01, 2.050000e-01 
+Cut element corner 1: 2.497494e-01, 2.050000e-01 
+Cut element corner 2: 2.494689e-01, 1.927319e-01 
+Cut element corner 3: 2.500000e-01, 1.921875e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.500000e-01, 1.793750e-01 
+Cut element corner 1: 2.500000e-01, 1.921875e-01 
+Cut element corner 2: 2.493859e-01, 1.921875e-01 
+Cut element corner 3: 2.468689e-01, 1.825844e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 2
+Interface corner ID: 3
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 2.494689e-01, 1.927319e-01 
+Cut element corner 1: 2.493859e-01, 1.921875e-01 
+Cut element corner 2: 2.500000e-01, 1.921875e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 0
+Interface corner ID: 1
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 2.500000e-01, 1.793750e-01 
+Cut element corner 1: 2.468689e-01, 1.825844e-01 
+Cut element corner 2: 2.455479e-01, 1.793750e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 2.250000e-01, 1.537500e-01 
+Cut element corner 1: 2.231268e-01, 1.556700e-01 
+Cut element corner 2: 2.189984e-01, 1.537500e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 2.373302e-01, 1.667366e-01 
+Cut element corner 1: 2.371744e-01, 1.665625e-01 
+Cut element corner 2: 2.375000e-01, 1.665625e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 0
+Interface corner ID: 1
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.250000e-01, 1.537500e-01 
+Cut element corner 1: 2.375000e-01, 1.537500e-01 
+Cut element corner 2: 2.308027e-01, 1.606148e-01 
+Cut element corner 3: 2.250000e-01, 1.566987e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.375000e-01, 1.665625e-01 
+Cut element corner 1: 2.371744e-01, 1.665625e-01 
+Cut element corner 2: 2.308027e-01, 1.606148e-01 
+Cut element corner 3: 2.375000e-01, 1.537500e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 2.250000e-01, 1.537500e-01 
+Cut element corner 1: 2.250000e-01, 1.566987e-01 
+Cut element corner 2: 2.231268e-01, 1.556700e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+------------ ROID_TRIANGLE ----------
+
+Cut element corner 0: 2.035364e-01, 1.501252e-01 
+Cut element corner 1: 2.125000e-01, 1.409375e-01 
+Cut element corner 2: 2.125000e-01, 1.515877e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 0
+Interface corner ID: 2
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.250000e-01, 1.537500e-01 
+Cut element corner 1: 2.189984e-01, 1.537500e-01 
+Cut element corner 2: 2.141612e-01, 1.520473e-01 
+Cut element corner 3: 2.250000e-01, 1.409375e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 1
+Original corner ID: 2
+
+Interface corner ID: 1
+Interface corner ID: 2
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.125000e-01, 1.409375e-01 
+Cut element corner 1: 2.250000e-01, 1.409375e-01 
+Cut element corner 2: 2.141612e-01, 1.520473e-01 
+Cut element corner 3: 2.125000e-01, 1.515877e-01 
+
+Original corner ID: 0
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 2
+
+Interface corner ID: 2
+Interface corner ID: 3
+
+--------- ROID_QUADRILATERAL --------
+
+Cut element corner 0: 2.000000e-01, 1.409375e-01 
+Cut element corner 1: 2.125000e-01, 1.409375e-01 
+Cut element corner 2: 2.035364e-01, 1.501252e-01 
+Cut element corner 3: 2.000000e-01, 1.500000e-01 
+
+Original corner ID: 1
+Original corner ID: 2
+Original corner ID: 0
+Original corner ID: 0
+
+Interface corner ID: 2
+Interface corner ID: 3
+

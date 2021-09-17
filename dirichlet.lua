@@ -619,7 +619,7 @@ if not(bInstat) then
 					vertMax[lev], horizMax[lev] = 0, 0
 					print("Vertical Values: ")
 					for i = 1, #vertY do
-						local val = EvalU:evaluate({vertX, vertY[i]})
+						local val = EvalU:evaluate_global({vertX, vertY[i]})
 						write(string.format("%.14f", val)..", ")
 						local diff = math.abs(val - vertRef[i])
 						vertMax[lev] = math.max(vertMax[lev], diff)				
@@ -627,7 +627,7 @@ if not(bInstat) then
 					print("")
 					print("Horizontal Values: ")
 					for i = 1, #horizX do
-						local val = EvalV:evaluate({horizX[i], horizY})
+						local val = EvalV:evaluate_global({horizX[i], horizY})
 						write(string.format("%.14f", val)..", ")
 						local diff = math.abs(val - horizRef[i])
 						horizMax[lev] = math.max(horizMax[lev], diff)				

@@ -96,7 +96,7 @@ if bBenchmarkRates then
 			
 				-- Delta_P
 				local PEval = GlobalGridFunctionNumberData(u, "p")
-				meas.DeltaP.value[lev] = PEval:evaluate({0.15, 0.2}) - PEval:evaluate( {0.25, 0.2} )
+				meas.DeltaP.value[lev] = PEval:evaluate_global({0.15, 0.2}) - PEval:evaluate_global( {0.25, 0.2} )
 		
 				for n, _ in pairs(meas) do
 					local quant = meas[n]

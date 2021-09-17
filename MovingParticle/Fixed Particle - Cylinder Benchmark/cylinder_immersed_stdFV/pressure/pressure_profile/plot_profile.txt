@@ -1,0 +1,19 @@
+set terminal postscript eps enhanced colour "Helvetica" 24
+
+set size 1, 1
+set key at 6.0,0.13
+set key box font ",20"
+#unset key
+set xlabel "{/Symbol q}“
+set ylabel "pressure" rotate by 90
+set title "pressure along the cylinder boundary“
+
+set output "pressure_profile.eps"
+
+set pointsize 1.2
+set yrange[-0.02:0.14]
+set xrange[0.0:2*pi]
+set ytics nomirror 0.025
+set xtics (0, '{/Symbol p}' pi, '2 {/Symbol p}' 2*pi)
+
+plot "pressure_profile_level3.txt" using 1:2 lc 5 pt 5 lw 2 title 'l = 3', "pressure_profile_level4.txt" using 1:2 lc 3 pt 7 lw 2 title 'l = 4', "pressure_profile_level5.txt" using 1:2 lc 8 pt 11 lw 4 title 'l = 5'
