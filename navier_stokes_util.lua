@@ -49,12 +49,12 @@ function util.ns.CreateApproxSpace(dom, type, vorder, porder)
 		approxSpace:add_fct("p"		, "Piecewise-Constant") 
 	elseif type == "fv" or type == "fe" then
 		if porder==0 then
-			print("ns.createApproximationSpace: porder 0 not valid for "..type); exit();
+			print("ns.CreateApproxSpace: porder 0 not valid for "..type); exit();
 		end
 		approxSpace:add_fct(VelCmp	, "Lagrange", vorder) 
 		approxSpace:add_fct("p"		, "Lagrange", porder) 
 	else 
-		print("ns.createApproximationSpace: Disc Type '"..type.."' not supported."); exit(); 
+		print("ns.CreateApproxSpace: Disc Type '"..type.."' not supported."); exit(); 
 	end
 	
 	return approxSpace, FctCmp, VelCmp
@@ -103,7 +103,7 @@ util.smooth = util.smooth or {}
 
 function util.smooth.parseParams()
 	local smooth = util.GetParam("-smooth", "cgs", "Smoother Type", 
-					{"jac","ilu","ilut","egs","gs","sgs", "cgs"})
+					{"jac","ilu","ilut","egs","gs","sgs", "cgs", "ssc"})
 	
 	return smooth
 end
@@ -115,7 +115,15 @@ function util.smooth.create(smooth)
 	if 	    smooth == "ilu"  then smoother = ILU();
 	elseif 	smooth == "ilut" then smoother = ILUT(1e-6);
 	elseif 	smooth == "egs"  then smoother = ElementGaussSeidel(groupType);
-	elseif 	smooth == "cgs"  then smoother = ComponentGaussSeidel(0.1, {"p"}, {0}, {1})
+	elseif 	smooth == "cgs"  then smoother = ComponentGaussSeidel(1.0, {"p"})
+	                              smoother:set_alpha(1.0)
+	                              smoother:set_beta(1.0)
+	                              smoother:set_weights(true)
+	elseif 	smooth == "ssc"  then smoother=SequentialSubspaceCorrection(1.0)
+																local vanka_space = nil
+																if (dim == 2) then vanka_space = VertexBasedVankaSubspace2dCPU1({"p"}, {"u","v"}) 
+																else vanka_space = VertexBasedVankaSubspace3dCPU1({"p"}, {"u","v","w"}) end 			
+																smoother:set_vertex_subspace(vanka_space)                           
 	elseif 	smooth == "jac"  then smoother = Jacobi(0.66);
 	elseif 	smooth == "gs"   then smoother = GaussSeidel();
 	elseif 	smooth == "sgs"  then smoother = SymmetricGaussSeidel();
