@@ -59,7 +59,7 @@ diffLength  = util.GetParam("-difflength", "cor", "Diffusion length type")
 
 discType, vorder, porder = util.ns.parseParams()
 
-local Viscosity	= 1e-3 --1e-3 --1e-3 -- 1.0 -- 1e-3 -- kinematic (nu=1/Re) or dynamic (mu) does not matter, since \rho=1. 
+local Viscosity	= 1e-3 --e-3 --1e-3 --1e-3 -- 1.0 -- 1e-3 -- kinematic (nu=1/Re) or dynamic (mu) does not matter, since \rho=1. 
 local Um = 0.3
 if dim == 3 then Um = 0.45 end
 local H = 0.41
@@ -344,7 +344,7 @@ function CreateSolver(approxSpace, discType, p)
 	newtonSolver:set_linear_solver(solver)
 	newtonSolver:set_convergence_check(convCheck)
 	newtonSolver:set_line_search(StandardLineSearch(10, 1.0, 0.9, true, true))
-	-- newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
+	newtonSolver:set_debug(GridFunctionDebugWriter(approxSpace))
 	
 	return newtonSolver
 end
@@ -678,7 +678,7 @@ if not(bConvRates) and not(bBenchmarkRates) then
       approxSpace = approxSpace,
       baseLevel = 0,
       baseSolver  = "superlu",
-      cycle = "W",
+      cycle = "F",
       
       rap = true,
       -- discretization = domainDisc,
@@ -688,9 +688,9 @@ if not(bConvRates) and not(bBenchmarkRates) then
 
       smoother  =  -- [[jac, egs,
       {
-        type = "egs",
-        damping = 1.0,
-        vertex = {{"p"}, {"u", "v"}},
+       
+        type = "ssc",
+        vertex = {{"p"}, {"u","v"}}
  
       },--]]
       
@@ -698,7 +698,7 @@ if not(bConvRates) and not(bBenchmarkRates) then
       -- transfer = transfer, 
      debug = true,
     
-      -- transfer = "std",
+     transfer = "std",
       
       -- [[ 
       debugSolver = {
@@ -778,9 +778,9 @@ if not(bConvRates) and not(bBenchmarkRates) then
         tStop = 8.0,
 
         -- Fractional-step-theta (same amount of work as CN, but stable) --
-        scheme = "fracstep", maxStepSize = 0.1, minStepSize = 8.0/4096.0, redStepSize = 0.5,
+       --  scheme = "fracstep", maxStepSize = 0.1, minStepSize = 8.0/4096.0, redStepSize = 0.5,
 
-      --  scheme = "limex", maxStepSize = 0.5, minStepSize = (8.0/2048.0)*1e-4, redStepSize = 0.5, 
+        scheme = "limex", maxStepSize = 0.5, minStepSize = (8.0/2048.0)*1e-4, redStepSize = 0.5, 
        
 
         -- Implicit Euler (requires a small time step) --
@@ -850,10 +850,13 @@ end
     util.SolveNonlinearProblemLimex(
         u, domainDisc, solver,
         vtkWriter, "limex_solution",
-        cTransient.tStart, cTransient.tStop, 
-        cTransient.maxStepSize*0.01,  -- step size
-        cTransient.minStepSize, cTransient.maxStepSize, 
-        adaptiveStepInfo, ComputeEffectiveQuantities)
+        cTransient.tStart, 
+        cTransient.tStop, 
+        cTransient.maxStepSize/10.0,  -- step size
+        cTransient.minStepSize, 
+        cTransient.maxStepSize, 
+        adaptiveStepInfo, 
+        ComputeEffectiveQuantities)
     else
     
      util.SolveNonlinearTimeProblem(

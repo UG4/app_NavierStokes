@@ -8,8 +8,8 @@
 
 ug_load_script("ug_util.lua")
 
-dim 		= util.GetParamNumber("-dim", 2)
-discrType 	= util.GetParam("-type", "fvcr")
+local dim 		= util.GetParamNumber("-dim", 2)
+local discrType 	= util.GetParam("-type", "fvcr")
 order 		= util.GetParamNumber("-order", 1)
 vorder 		= util.GetParamNumber("-vorder", order)
 porder 		= util.GetParamNumber("-porder", vorder-1)
@@ -40,7 +40,7 @@ numTimeSteps=  util.GetParamNumber("-numTimeSteps", 5)
 numPreRefs 	= util.GetParamNumber("-numPreRefs", 0)
 numRefs 	= util.GetParamNumber("-numRefs",2)
 structGrid	= util.HasParamOption("-structGrid", "To use a structured (equidistant) grid")
-debugNewton	= util.HasParamOption("-debugNewton", "To switch on the debugging output for the Newton method")
+local debugNewton	= util.HasParamOption("-debugNewton", "To switch on the debugging output for the Newton method")
 
 if discrType == "fv1" then 	InitUG(dim, AlgebraType("CPU", dim+1));
 else						InitUG(dim, AlgebraType("CPU", 1));
@@ -170,17 +170,19 @@ print("    Reynolds-nr         = " .. reynoldsNr)
 
 
 -- Lets define a list of all subsets that we need
-requiredSubsets = {"Inner", "Top", "Bottom", "Right", "Left"}
-dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
+local requiredSubsets = {"Inner", "Top", "Bottom", "Right", "Left"}
+local dom = util.CreateAndDistributeDomain(gridName, numRefs, numPreRefs, requiredSubsets)
 
 -- All subset are ok. So we can create the Approximation Space
-approxSpace = ApproximationSpace(dom)
+local approxSpace = ApproximationSpace(dom)
 
 -- we destinguish the components of the velocity 
+local VelCmp = {}
+local FctCmp = {}
 if 		dim == 1 then VelCmp = {"u"} FctCmp = {"u", "p"}
 elseif  dim == 2 then VelCmp = {"u", "v"} FctCmp = {"u", "v", "p"}
 elseif  dim == 3 then VelCmp = {"u", "v", "w"} FctCmp = {"u", "v", "w", "p"}
-else print("Choosen Dimension " .. dim .. "not supported. Exiting.") exit() end
+else print("Selected Dimension " .. dim .. "not supported. Exiting.") exit() end
 
 if discrType == "fv1" then
 	approxSpace:add_fct(FctCmp, "Lagrange", 1) 
@@ -214,9 +216,9 @@ approxSpace:print_local_dof_statistic(2)
 -- Discretization
 --------------------------------------------------------------------------------
 
-NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discrType)
+local NavierStokesDisc = NavierStokes(FctCmp, {"Inner"}, discrType)
 
-fctUsed = "u"
+local fctUsed = "u"
 if dim >= 2 then fctUsed = fctUsed .. ", v" end
 if dim >= 3 then fctUsed = fctUsed .. ", w" end
 fctUsed = fctUsed .. ", p"
@@ -253,13 +255,13 @@ end
 -- Boundary conditions and constraints
 --------------------------------------------------------------------------------
 
-InletDisc = NavierStokesInflow(NavierStokesDisc)
+local InletDisc = NavierStokesInflow(NavierStokesDisc)
 InletDisc:add({1,0}, "Top")
 
-WallDisc = NavierStokesWall(NavierStokesDisc)
+local WallDisc = NavierStokesWall(NavierStokesDisc)
 WallDisc:add("Left,Right,Bottom")
 
-domainDisc = DomainDiscretization(approxSpace)
+local domainDisc = DomainDiscretization(approxSpace)
 domainDisc:add(NavierStokesDisc)
 domainDisc:add(InletDisc)
 domainDisc:add(WallDisc)
@@ -280,14 +282,16 @@ else
 end
 op:init()
 
-u = GridFunction(approxSpace)
+local u = GridFunction(approxSpace)
 
 if bNoUpwindInDefect == true then
 	NavierStokesDisc:set_defect_upwind(false)
 end
-tOrder = 0.0
+local tOrder = 0.0
+local tBefore
+local tAfter
 if discrType=="fvcr" then
-	tBefore = os.clock()
+	 tBefore = os.clock()
 --	OrderCRCuthillMcKee(approxSpace,u,true)
 --	CROrderCuthillMcKee(approxSpace,u,true,false,false,true)
 	-- CROrderSloan(approxSpace,u,false,false,true)
@@ -310,7 +314,7 @@ if (bLinearUpwind==true)or(bPLin==true)or(bLinUpwindInDefect==true) then
 	domainDisc:add(DiscConstraintFVCR(u,bLinUpwindInDefect,bLinearUpwind,bPLinDefect,bPLin,false))
 end
 
-egsSolver = LinearSolver()
+local egsSolver = LinearSolver()
 egsSolver:set_preconditioner(ElementGaussSeidel("vertex"))
 -- egsSolver:set_preconditioner(Vanka())
 -- egsSolver:set_preconditioner(ILUT(1e-16))
@@ -359,24 +363,26 @@ else
 	numSmooth=2
 end
 
-gmg = GeometricMultiGrid(approxSpace)
+local gmg = GeometricMultiGrid(approxSpace)
 gmg:set_discretization(domainDisc)
 gmg:set_base_level(0)
 gmg:set_base_solver(baseSolver)
 gmg:set_smoother(smoother)
-gmg:set_cycle_type(1)
+gmg:set_cycle_type("F")
 gmg:set_num_presmooth(numSmooth)
 gmg:set_num_postsmooth(numSmooth)
 gmg:set_damp(MinimalResiduumDamping())
-gmgSolver = LinearSolver()
+
+local gmgSolver = LinearSolver()
 gmgSolver:set_preconditioner(gmg)
 gmgSolver:set_convergence_check(ConvCheck(100, lintol, linred, true))
 
 
-BiCGStabSolver = BiCGStab()
+local BiCGStabSolver = BiCGStab()
 BiCGStabSolver:set_preconditioner(smoother)
 BiCGStabSolver:set_convergence_check(ConvCheck(100000, lintol, linred, true))
 
+local solver
 if discrType=="fv1" then 
 	solver=gmgSolver
 elseif discrType=="fvcr" then 
@@ -391,7 +397,7 @@ elseif discrType=="fv" or discrType=="fe" then
 --	solver=BiCGStabSolver
 end
 
-newtonSolver = NewtonSolver(op)
+local newtonSolver = NewtonSolver(op)
 newtonSolver:set_linear_solver(solver)
 newtonSolver:set_convergence_check(ConvCheck(250, nlintol, nlinred, true))
 if bNoLineSearch==false then
@@ -399,7 +405,7 @@ if bNoLineSearch==false then
 end
 
 if debugNewton then
-	newtonDbgWriter = GridFunctionDebugWriter(approxSpace)
+	local newtonDbgWriter = GridFunctionDebugWriter(approxSpace)
 	newtonDbgWriter:set_conn_viewer_output(true)
 	newtonDbgWriter:set_vtk_output(false)
 	newtonSolver:set_debug(newtonDbgWriter)
@@ -410,10 +416,10 @@ end
 --------------------------------------------------------------------------------
 
 -- start
-time = 0.0
-step = 0
+local time = 0.0
+local step = 0
 
-out = VTKOutput()
+local out = VTKOutput()
 out:clear_selection()
 out:select_all(false)
 out:select_element(VelCmp, "velocity")
@@ -422,11 +428,11 @@ out:select_element("v", "v")
 out:select_element("p", "p")
 
 -- create new grid function for old value
-uOld = u:clone()
+local uOld = u:clone()
 
-tBefore = os.clock()
+local tBefore = os.clock()
 if boolStat==1 then
-
+  print("Computing steady state solution...")
 	newtonSolver:init(op)
 		if newtonSolver:prepare(u) == false then
 		print ("Newton solver prepare failed.") exit()
@@ -438,7 +444,7 @@ if boolStat==1 then
 	
 	-- pressure separation (only fvcr)
 	if bPSep==true then
-		pGradSource=SeparatedPressureSource(approxSpace,u)
+		local pGradSource=SeparatedPressureSource(approxSpace,u)
 		NavierStokesDisc:set_source(pGradSource)
 		pGradSource:update()
 		
@@ -458,11 +464,12 @@ if boolStat==1 then
 		end 
 	end
 	
+	-- print solution to vtu
 	out:print("DrivenCavity", u)
 else
 
 	-- store grid function in vector of  old solutions
-	solTimeSeries = SolutionTimeSeries()
+	local solTimeSeries = SolutionTimeSeries()
 	solTimeSeries:push(uOld, time)
 	
 	out:print("TimeDrivenCavity", u,0,0)
@@ -471,7 +478,7 @@ else
 		print("++++++ TIMESTEP " .. step .. " BEGIN ++++++")
 
 		-- choose time step
-		do_dt = dt
+		local do_dt = dt
 	
 		-- setup time Disc for old solutions and timestep
 		timeDisc:prepare_step(solTimeSeries, do_dt)
@@ -490,7 +497,7 @@ else
 		time = solTimeSeries:time(0) + do_dt
 		
 		-- get oldest solution
-		oldestSol = solTimeSeries:oldest()
+		local oldestSol = solTimeSeries:oldest()
 
 		-- copy values into oldest solution (we reuse the memory here)
 		VecScaleAssign(oldestSol, 1.0, u)
