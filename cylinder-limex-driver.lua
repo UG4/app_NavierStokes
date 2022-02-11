@@ -22,7 +22,6 @@ RequiredPlugins({"Limex", "NavierStokes"})
 
 
 
-
 -- Command line arguments
 local ARGS = {
   dim     = util.GetParamNumber("-dim", 2, "world dimension"),
@@ -37,9 +36,9 @@ local ARGS = {
   stab        = util.GetParam("-stab", "flow", "Stabilization type"),
   diffLength  = util.GetParam("-difflength", "cor", "Diffusion length type"),
   
-  stabGrad             = util.GetParamNumber("--stabGrad", 0.1, "Stabilization parameter."),
-  stabStreamline      = util.GetParamNumber("--stabStreamline", 0.0, "Stabilization parameter."),
-  stabDiv             = util.GetParamNumber("--stabDiv", 0.0, "Stabilization parameter."),
+  stabGrad       = util.GetParamNumber("--stabGrad", 0.1, "Stabilization parameter."),
+  stabStreamline = util.GetParamNumber("--stabStreamline", 0.0, "Stabilization parameter."),
+  stabDiv        = util.GetParamNumber("--stabDiv", 0.0, "Stabilization parameter."),
  
 
   limexNStages = util.GetParamNumber("--limex-num-stages", 4, "number of LIMEX stages: 0:steady state, 1:std. integration, <= 2:LIMEX"),
@@ -135,7 +134,7 @@ local myDbgWriter = GridFunctionDebugWriter(approxSpace)
 --------------------------------------------------------------------------------
 -- Solver setup.
 --------------------------------------------------------------------------------
-local sscSmootherDesc = { type = "ssc", vertex = {{"p"}, {"u","v"}} }
+local sscSmootherDesc = { type = "ssc", vertex = {{"p"}, myVelCmp} }
 local mySmootherDesc = sscSmootherDesc
 
 local mySolverDesc = {
