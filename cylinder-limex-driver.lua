@@ -15,7 +15,7 @@ package.path = package.path..";".. myPath.."/?.lua"
 ug_load_script("ug_util.lua")
 -- ug_load_script("util/domain_disc_util.lua")
 -- ug_load_script("util/conv_rates_static.lua")
-ug_load_script("plugins/Limex/limex_util.lua")
+---ug_load_script("plugins/Limex/limex_util.lua")
 ug_load_script("navier_stokes_util.lua")
 
 RequiredPlugins({"Limex", "NavierStokes"})
@@ -119,7 +119,7 @@ myProblem:Init(ARGS)
 
 local dom = myProblem:CreateDomain(ARGS.gridName, ARGS.numRefs, ARGS.numPreRefs)
 local approxSpace = myProblem:CreateApproxSpace(dom)
-local domainDisc = myProblem:CreateDomainDisc(approxSpace)
+local domainDisc  = myProblem:CreateDomainDisc(approxSpace)
 -- local solver = myProblem:CreateSolver(approxSpace)
 
 local myVelCmp = myProblem:GetVelocityCmps()
@@ -270,8 +270,7 @@ else
     util.SolveNonlinearProblemLimex(
       u, domainDisc, solver,
       vtkWriter, "limex_solution",
-      cTransient.tStart, 
-      cTransient.tStop, 
+      cTransient.tStart, cTransient.tStop, 
       cTransient.maxStepSize/10.0,  -- start step size
       cTransient.minStepSize, 
       cTransient.maxStepSize, 
