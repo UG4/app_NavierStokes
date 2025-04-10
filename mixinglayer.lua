@@ -25,9 +25,9 @@ timeUnit=sigma0/winf
 
 if 	dim == 2 then
 	if elemType == "tri" then 
-		gridName = util.GetParam("-grid", "unit_square/unit_square_tri_4bnd.ugx")
+		gridName = util.GetParam("-grid", "grids/unit_square_01_tri_4bnd.ugx")
 	else
-		gridName = util.GetParam("-grid", "unit_square/unit_square_quads_2x2_4bnd.ugx")
+		gridName = util.GetParam("-grid", "grids/unit_square_01_quads_2x2_4bnd.ugx")
 	end
 else print("Chosen Dimension " .. dim .. "not supported. Exiting.") exit() end
 
@@ -422,10 +422,10 @@ solTimeSeries:push(uOld, time)
 
 function zero(x,y,t) return 0 end
 
-clearFile("kineticEnergy.m")
+--clearFile("kineticEnergy.m")
 -- compute kinetic energy
 ke=kineticEnergy(u)
-writeNumbers("kineticEnergy.m",1,0,ke)
+--writeNumbers("kineticEnergy.m",1,0,ke)
 
 for step = 1 + tsOffset, numTimeSteps do
 	print("++++++ TIMESTEP " .. step .. " BEGIN ++++++")
@@ -474,7 +474,7 @@ for step = 1 + tsOffset, numTimeSteps do
 	
 	-- compute kinetic energy
 	ke=kineticEnergy(u)
-	writeNumbers("kineticEnergy.m",step+1,time,ke)
+	--writeNumbers("kineticEnergy.m",step+1,time,ke)
 	
 	if step % outputFactor == 0 then
 	
